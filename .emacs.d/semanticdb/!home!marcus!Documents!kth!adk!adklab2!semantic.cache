@@ -1,0 +1,50 @@
+;; Object semanticdb-project-database-file
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "semanticdb-project-database-file"
+  :tables
+  (list
+    (semanticdb-table "semanticdb-table"
+      :major-mode java-mode
+      :tags 
+        '( ("java.util.LinkedList" include nil nil [217 245])
+            ("java.util.List" include nil nil [246 268])
+            ("java.lang.Math" include nil nil [269 291])
+            ("ClosestWords" type
+               (:typemodifiers ("public")
+                :members 
+                  ( ("closestDistance" variable (:type "int") (reparse-symbol class_member_declaration) [366 391])
+                    ("printArray" function
+                       (:arguments 
+                          ( ("memo" variable
+                               (:dereference 2
+                                :type "int")
+                                (reparse-symbol formal_parameters) [922 934]))                          
+                        :type "void")
+                        (reparse-symbol class_member_declaration) [906 1189])
+                    ("partDist" function
+                       (:arguments 
+                          ( ("w1" variable (:type "String") (reparse-symbol formal_parameters) [1214 1223])
+                            ("w2" variable (:type "String") (reparse-symbol formal_parameters) [1225 1234])
+                            ("w1len" variable (:type "int") (reparse-symbol formal_parameters) [1236 1245])
+                            ("w2len" variable (:type "int") (reparse-symbol formal_parameters) [1247 1256]))                          
+                        :type "int")
+                        (reparse-symbol class_member_declaration) [1201 1919])
+                    ("ClosestWords" function
+                       (:constructor-flag t
+                        :typemodifiers ("public")
+                        :arguments 
+                          ( ("w" variable (:type "String") (reparse-symbol formal_parameters) [2050 2058])
+                            ("" variable (:type "wordList") (reparse-symbol formal_parameters) [2073 2081]))                          )
+                        (reparse-symbol class_member_declaration) [2030 2614])
+                    ("getMinDistance" function (:type "int") (reparse-symbol class_member_declaration) [2618 2672])
+                    ("getClosestWords" function (:constructor-flag t) (reparse-symbol class_member_declaration) [2689 2737]))                  
+                :type "class")
+                nil [293 2739]))          
+      :file "ClosestWords.java"
+      :pointmax 2740
+      :fsize 2740
+      :lastmodtime '(22975 55763 283310 944000)
+      :unmatched-syntax nil))
+  :file "!home!marcus!Documents!kth!adk!adklab2!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

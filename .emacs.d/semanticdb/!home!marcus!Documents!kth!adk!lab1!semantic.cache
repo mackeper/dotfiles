@@ -1,0 +1,115 @@
+;; Object semanticdb-project-database-file
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "semanticdb-project-database-file"
+  :tables
+  (list
+    (semanticdb-table "semanticdb-table"
+      :major-mode c-mode
+      :tags 
+        '( ("stdio.h" include (:system-flag t) nil [418 436])
+            ("stdlib.h" include (:system-flag t) nil [437 456])
+            ("ALPHABET" variable (:constant-flag t) nil [499 507])
+            ("u2l" variable
+               (:dereference 1
+                :typemodifiers ("static")
+                :type "unsigned char")
+                nil [542 574])
+            ("pos" variable
+               (:typemodifiers ("static")
+                :default-value "0L"
+                :type "long")
+                nil [575 607])
+            ("ReadChar" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [630 635]))                  
+                :type "int")
+                nil [609 672])
+            ("Tokenize" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [696 701]))                  
+                :type "void")
+                nil [674 1121])
+            ("Initialize" function
+               (:typemodifiers ("static")
+                :arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [1146 1151]))                  
+                :type "void")
+                nil [1123 2848])
+            ("main" function
+               (:arguments 
+                  ( ("" variable (:type "void") (reparse-symbol arg-sub-list) [2859 2864]))                  
+                :type "int")
+                nil [2850 2916]))          
+      :file "tokenizer.c"
+      :pointmax 2917
+      :fsize 2916
+      :lastmodtime '(22952 1774 586262 918000)
+      :unmatched-syntax nil
+      :lexical-table 
+        '(("ALPHABET" . ((string "\"ABCDEFGHIJKLMNOPQRSTUVWXYZÄÅÖ\"" 508 . 539)))
+          )
+)
+    (semanticdb-table "semanticdb-table"
+      :major-mode c-mode
+      :tags 
+        '( ("iostream" include (:system-flag t) nil [1 20])
+            ("string" include (:system-flag t) nil [21 38])
+            ("fstream" include (:system-flag t) nil [39 57])
+            ("main" function (:type "int") nil [60 225]))          
+      :file "sort_indexes.c"
+      :pointmax 226
+      :unmatched-syntax nil)
+    (semanticdb-table "semanticdb-table"
+      :major-mode c++-mode
+      :tags 
+        '( ("iostream" include (:system-flag t) nil [1 20])
+            ("string" include (:system-flag t) nil [21 38])
+            ("fstream" include (:system-flag t) nil [39 57])
+            ("vector" include (:system-flag t) nil [58 75])
+            ("std" using (:type ("std" type
+                 (:prototype t
+                  :type "namespace")
+                  nil nil)) nil [78 98])
+            ("getIndexes" function
+               (:pointer 1
+                :arguments 
+                  ( ("filename" variable
+                       (:pointer 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [117 132])
+                    ("index_array" variable
+                       (:pointer 1
+                        :type "int")
+                        (reparse-symbol arg-sub-list) [133 150])
+                    ("len" variable (:type "int") (reparse-symbol arg-sub-list) [151 159]))                  
+                :type "int")
+                nil [101 489])
+            ("array_comp" function
+               (:arguments 
+                  ( ("len" variable (:type "int") (reparse-symbol arg-sub-list) [506 514])
+                    ("a" variable
+                       (:dereference 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [515 524])
+                    ("b" variable
+                       (:dereference 1
+                        :type "char")
+                        (reparse-symbol arg-sub-list) [525 534]))                  
+                :type "int")
+                nil [491 629])
+            ("hash" function
+               (:arguments 
+                  ( ("s" variable (:type ("string" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [640 649]))                  
+                :type "int")
+                nil [631 687])
+            ("main" function (:type "int") nil [689 821]))          
+      :file "sort_indexes.cpp"
+      :pointmax 822
+      :fsize 821
+      :lastmodtime '(22957 14500 466617 184000)
+      :unmatched-syntax nil))
+  :file "!home!marcus!Documents!kth!adk!lab1!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

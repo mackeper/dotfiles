@@ -1,0 +1,240 @@
+;; Object semanticdb-project-database-file
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "semanticdb-project-database-file"
+  :tables
+  (list
+    (semanticdb-table "semanticdb-table"
+      :major-mode c++-mode
+      :tags 
+        '( ("string" include (:system-flag t) nil [53 70])
+            ("item.hpp" include nil nil [71 90])
+            ("Item" function
+               (:constructor-flag t
+                :parent "Item"
+                :arguments 
+                  ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [103 109])
+                    ("t" variable (:type ("Type" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [110 117])
+                    ("l" variable (:type "int") (reparse-symbol arg-sub-list) [118 124]))                  
+                :type ("Item" type (:type "class") nil nil))
+                nil [92 171])
+            ("getCost" function
+               (:parent "Item"
+                :type "int")
+                nil [173 213])
+            ("getType" function
+               (:parent "Item"
+                :type ("Type" type (:type "class") nil nil))
+                nil [215 256])
+            ("getLevel" function
+               (:parent "Item"
+                :type "int")
+                nil [258 300]))          
+      :file "item.cpp"
+      :pointmax 302
+      :fsize 301
+      :lastmodtime '(22950 59888 889938 838000)
+      :unmatched-syntax '((symbol 268 . 276) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (symbol 268 . 276) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (symbol 268 . 276) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (symbol 268 . 274) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (symbol 268 . 272) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (symbol 268 . 271) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (punctuation 267 . 268) (punctuation 266 . 267) (symbol 262 . 266) (INT 258 . 261) (symbol 226 . 233) (punctuation 225 . 226) (punctuation 224 . 225) (symbol 220 . 224) (symbol 215 . 219) (symbol 226 . 230) (punctuation 225 . 226) (punctuation 224 . 225) (symbol 220 . 224) (symbol 215 . 219) (symbol 226 . 229) (punctuation 225 . 226) (punctuation 224 . 225) (symbol 220 . 224) (symbol 215 . 219) (symbol 226 . 227) (punctuation 225 . 226) (punctuation 224 . 225) (symbol 220 . 224) (symbol 215 . 219) (punctuation 225 . 226) (punctuation 224 . 225) (symbol 220 . 224) (symbol 215 . 219) (symbol 215 . 219) (punctuation 182 . 183) (punctuation 181 . 182) (symbol 177 . 181) (INT 173 . 176) (punctuation 182 . 183) (punctuation 181 . 182) (symbol 177 . 181) (INT 173 . 176) (punctuation 178 . 179) (punctuation 177 . 178) (symbol 173 . 177) (punctuation 178 . 179) (punctuation 177 . 178) (symbol 173 . 177)))
+    (semanticdb-table "semanticdb-table"
+      :major-mode c++-mode
+      :tags 
+        '( ("ITEM_HPP" variable (:constant-flag t) nil [26 34])
+            ("Type" type
+               (:members 
+                  ( ("ARMOR" variable
+                       (:constant-flag t
+                        :default-value (55 56)
+                        :type "int")
+                        (reparse-symbol enumsubparts) [47 56])
+                    ("WEAPON" variable
+                       (:constant-flag t
+                        :default-value (67 68)
+                        :type "int")
+                        (reparse-symbol enumsubparts) [58 68])
+                    ("ACCESSORY" variable
+                       (:constant-flag t
+                        :default-value (82 83)
+                        :type "int")
+                        (reparse-symbol enumsubparts) [70 83]))                  
+                :type "enum")
+                nil [36 85])
+            ("Item" type
+               (:members 
+                  ( ("private" label nil (reparse-symbol classsubparts) [100 108])
+                    ("cost" variable (:type "int") (reparse-symbol classsubparts) [113 122])
+                    ("type" variable (:type ("Type" type (:type "class") nil nil)) (reparse-symbol classsubparts) [127 137])
+                    ("level" variable (:type "int") (reparse-symbol classsubparts) [142 152])
+                    ("public" label nil (reparse-symbol classsubparts) [153 160])
+                    ("Item" function
+                       (:prototype-flag t
+                        :constructor-flag t
+                        :arguments 
+                          ( ("c" variable (:type "int") (reparse-symbol arg-sub-list) [170 176])
+                            ("t" variable (:type ("Type" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [177 184])
+                            ("l" variable (:type "int") (reparse-symbol arg-sub-list) [185 191]))                          
+                        :type ("Item" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [165 192])
+                    ("getCost" function
+                       (:prototype-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [198 212])
+                    ("getType" function
+                       (:prototype-flag t
+                        :type ("Type" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [217 232])
+                    ("getLevel" function
+                       (:prototype-flag t
+                        :type "int")
+                        (reparse-symbol classsubparts) [237 252]))                  
+                :type "class")
+                nil [87 255]))          
+      :file "item.hpp"
+      :pointmax 264
+      :fsize 263
+      :lastmodtime '(22950 59861 829940 5000)
+      :unmatched-syntax nil
+      :lexical-table 
+        '(("ITEM_HPP")
+          )
+)
+    (semanticdb-table "semanticdb-table"
+      :major-mode c++-mode
+      :tags 
+        '( ("failstackbuilder.hpp" include nil nil [65 96])
+            ("FailstackBuilder" function
+               (:constructor-flag t
+                :parent "FailstackBuilder"
+                :arguments 
+                  ( ("buildItems_" variable
+                       (:pointer 1
+                        :type ("Item" type (:type "class") nil nil))
+                        (reparse-symbol arg-sub-list) [133 151])
+                    ("itemCount_" variable (:type "int") (reparse-symbol arg-sub-list) [152 167])
+                    ("currentFailstack_" variable (:type "int") (reparse-symbol arg-sub-list) [203 225]))                  
+                :type ("FailstackBuilder" type (:type "class") nil nil))
+                nil [98 329])
+            ("buildFailstacks" function
+               (:parent "FailstackBuilder"
+                :type "void")
+                nil [331 584])
+            ("costToBuildStack" function
+               (:parent "FailstackBuilder"
+                :arguments 
+                  ( ("i" variable (:type ("Item" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [625 632]))                  
+                :type "int")
+                nil [586 1069]))          
+      :file "failstackbuilder.cpp"
+      :pointmax 1070
+      :fsize 1069
+      :lastmodtime '(22951 53053 76580 830000)
+      :unmatched-syntax nil)
+    (semanticdb-table "semanticdb-table"
+      :major-mode c++-mode
+      :tags 
+        '( ("FAILSTACKBUILDER_HPP" variable (:constant-flag t) nil [38 58])
+            ("item.hpp" include nil nil [60 79])
+            ("string" include (:system-flag t) nil [80 97])
+            ("FailstackBuilder" type
+               (:members 
+                  ( ("private" label nil (reparse-symbol classsubparts) [124 132])
+                    ("accessoryChance" variable
+                       (:dereference 2
+                        :default-value "{{15.0, 1.5, 35.0},
+                                     {7.5,  0.75, 44.0},
+                                     {5.0,  0.5, 90.0},
+                                     {2.0,  0.2556, 13.0},
+                                     {1.5,  0.15, 124.0}}"
+                        :type "double")
+                        (reparse-symbol classsubparts) [137 419])
+                    ("weaponChance" variable
+                       (:dereference 2
+                        :default-value "{{20.0, 2.5, 13.0},
+                                   {17.5, 2.0, 14.0},
+                                   {15.0, 1.5, 15.0},
+                                   {12.5, 1.25, 16.0},
+                                   {10.0, 0.75, 18.0},
+                                   {7.5,  0.63, 20.0},
+                                   {5.0,  0.5, 25.0},
+                                   {2.5,  0.5, 25.0},
+                                   {15.0, 1.5, 35.0},
+                                   {7.5,  0.75, 44.0},
+                                   {5.0,  0.5, 90.0},
+                                   {2.0,  0.2556, 13.0},
+                                   {1.5,  0.15, 124.0}}"
+                        :type "double")
+                        (reparse-symbol classsubparts) [429 1136])
+                    ("bsaCost" variable
+                       (:default-value "210"
+                        :type "int")
+                        (reparse-symbol classsubparts) [1141 1159])
+                    ("bswCost" variable
+                       (:default-value "240"
+                        :type "int")
+                        (reparse-symbol classsubparts) [1192 1210])
+                    ("cbsaCost" variable
+                       (:default-value "2250"
+                        :type "int")
+                        (reparse-symbol classsubparts) [1244 1264])
+                    ("cbswCost" variable
+                       (:default-value "3600"
+                        :type "int")
+                        (reparse-symbol classsubparts) [1299 1319])
+                    ("fixedFailstackBuildCost" variable
+                       (:default-value "bsaCost*(currentFailstack * 1.025 +
+                                           0.05 * (currentFailstack *
+                                           (1+currentFailstack)/2)) +
+                                           50*0.4*currentFailstack"
+                        :type "int")
+                        (reparse-symbol classsubparts) [1421 1694])
+                    ("currentFailstack" variable
+                       (:default-value "0"
+                        :type "int")
+                        (reparse-symbol classsubparts) [1704 1729])
+                    ("totalFailstackCost" variable
+                       (:default-value "0"
+                        :type "double")
+                        (reparse-symbol classsubparts) [1734 1764])
+                    ("buildItems" variable
+                       (:pointer 1
+                        :type ("Item" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [1769 1786])
+                    ("itemCount" variable (:type "int") (reparse-symbol classsubparts) [1791 1805])
+                    ("costToBuildStack" function
+                       (:prototype-flag t
+                        :arguments 
+                          ( ("i" variable (:type ("Item" type (:type "class") nil nil)) (reparse-symbol arg-sub-list) [1836 1843]))                          
+                        :type "int")
+                        (reparse-symbol classsubparts) [1815 1844])
+                    ("public" label nil (reparse-symbol classsubparts) [1845 1852])
+                    ("FailstackBuilder" function
+                       (:prototype-flag t
+                        :constructor-flag t
+                        :arguments 
+                          ( ("buildItems_" variable
+                               (:pointer 1
+                                :type ("Item" type (:type "class") nil nil))
+                                (reparse-symbol arg-sub-list) [1874 1892])
+                            ("itemCount_" variable (:type "int") (reparse-symbol arg-sub-list) [1893 1908])
+                            ("currentFailstack_" variable
+                               (:default-value "0"
+                                :type "int")
+                                (reparse-symbol arg-sub-list) [1909 1934]))                          
+                        :type ("FailstackBuilder" type (:type "class") nil nil))
+                        (reparse-symbol classsubparts) [1857 1936])
+                    ("buildFailstacks" function
+                       (:prototype-flag t
+                        :type "void")
+                        (reparse-symbol classsubparts) [1941 1964]))                  
+                :type "class")
+                nil [99 1967]))          
+      :file "failstackbuilder.hpp"
+      :pointmax 1976
+      :fsize 1975
+      :lastmodtime '(22951 52473 469939 200000)
+      :unmatched-syntax nil
+      :lexical-table 
+        '(("FAILSTACKBUILDER_HPP")
+          )
+))
+  :file "!home!marcus!Documents!Development!bdoenchanter!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

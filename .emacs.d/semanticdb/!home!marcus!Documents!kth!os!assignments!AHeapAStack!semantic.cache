@@ -1,0 +1,26 @@
+;; Object semanticdb-project-database-file
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "semanticdb-project-database-file"
+  :tables
+  (list
+    (semanticdb-table "semanticdb-table"
+      :major-mode c-mode
+      :tags 
+        '( ("stdio.h" include (:system-flag t) nil [1 19])
+            ("sys/types.h" include (:system-flag t) nil [20 42])
+            ("stdlib.h" include (:system-flag t) nil [43 62])
+            ("unistd.h" include (:system-flag t) nil [63 82])
+            ("global" variable
+               (:dereference 1
+                :default-value "\"this is a global string\""
+                :type "char")
+                nil [84 126])
+            ("main" function (:type "int") nil [128 526]))          
+      :file "code.c"
+      :pointmax 527
+      :fsize 526
+      :lastmodtime '(22953 28242 229939 427000)
+      :unmatched-syntax nil))
+  :file "!home!marcus!Documents!kth!os!assignments!AHeapAStack!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

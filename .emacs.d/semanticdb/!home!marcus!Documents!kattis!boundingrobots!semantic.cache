@@ -1,0 +1,19 @@
+;; Object semanticdb-project-database-file
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "semanticdb-project-database-file"
+  :tables
+  (list
+    (semanticdb-table "semanticdb-table"
+      :major-mode c++-mode
+      :tags 
+        '( ("iostream" include (:system-flag t) nil [50 69])
+            ("cstdio" include (:system-flag t) nil [70 87])
+            ("main" function (:type "int") nil [89 1514]))          
+      :file "main.cpp"
+      :pointmax 1515
+      :fsize 1514
+      :lastmodtime '(22975 49645 553066 911000)
+      :unmatched-syntax nil))
+  :file "!home!marcus!Documents!kattis!boundingrobots!semantic.cache"
+  :semantic-tag-version "2.0"
+  :semanticdb-version "2.2")

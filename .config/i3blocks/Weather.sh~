@@ -1,0 +1,10 @@
+#!/bin/bash 
+$forecast=$(curl -s https://www.yr.no/place/sweden/stockholm/stockholm/forecast_hour_by_hour.xml)
+
+#my $sun = "";
+#my $cloud = "";
+#my $rain = "";
+#my $wind = "";
+#my $snow = "";
+
+echo $forecast
