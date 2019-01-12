@@ -6,12 +6,26 @@
 
 call plug#begin()
 
-" on-demand loading
+" Directory tree, navigate directories
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 
+" multiple cursors, usage below
 Plug 'terryma/vim-multiple-cursors'
 
+" Color schemes
 Plug 'chriskempson/base16-vim'
+
+" Git wrapper, :Gstatus (- to add/reset), :Gcommit
+Plug 'tpope/vim-fugitive'
+
+" Easier commenting, 
+" [count]<leader>cc  comment lines
+" [count]<leader> cu  uncomment
+Plug 'scrooloose/nerdcommenter'
+
+" Lean & mean status bar
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 
@@ -42,6 +56,37 @@ let g:multi_cursor_quit_key            = '<Esc>'
 " Terminal
 "
 :tnoremap <Esc> <C-\><C-n>
+
+"
+" NERD COMMENTER
+"
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+" Use compact syntax for prettified multi-line comments
+let g:NERDCompactSexyComs = 1
+" Align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
+" Set a language to use its alternate delimiters by default
+let g:NERDAltDelims_java = 1
+" Add your own custom formats or override the defaults
+let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
+ " Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+" Enable NERDCommenterToggle to check all selected lines is commented or not 
+let g:NERDToggleCheckAllLines = 1
+
+"
+" Mapping
+"
+
+:let mapleader = "\<space>"
+
+"
+" Airline
+"
+let g:airline_theme='papercolor'
 
 "
 " UI
@@ -84,6 +129,7 @@ set tm=500
 "
 " colorscheme base16-materia
 let base16colorspace=256
+set t_Co=256
 syntax enable
 
 "
