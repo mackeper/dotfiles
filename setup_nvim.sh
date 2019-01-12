@@ -8,5 +8,14 @@
 mkdir -p ~/.config/nvim
 cp .config/nvim/init.vim 
 
+# Install powerline font
+# https://github.com/powerline/fonts
+# Window: Download as ZIP
+# extract
+# Start powershell with admin
+# run: Set-ExecutionPolicy Bypass
+# Navigate to the folder
+# run: .\install.ps1
+# run: Set-ExecutionPolicy Default
 
 # Run :PlugInstall in nvim
