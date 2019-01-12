@@ -34,3 +34,7 @@ Ctrl + wv - split window vertically
 :terminal
 :ter
 <C-\> <c-n> to exit
+
+# Sessions
+:mks <path> - create new session
+:so <path> - restore session
