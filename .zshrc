@@ -23,3 +23,9 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 unsetopt BEEP
 # Turn off autocomplete beeps
 # unsetopt LIST_BEEP
+
+# Show current dir
+#
+#export PS1="%(5~|…/%3~|%~)"
+setopt PROMPT_SUBST
+PROMPT='%{$(pwd|grep --color=always /)%${#PWD}G%} %(!.%F{red}.%F{cyan})%n%f@%F{yellow}%m%f%(!.%F{red}.)%#%f '
