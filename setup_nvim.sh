@@ -24,4 +24,12 @@ cp .config/nvim/readme.txt ~/.config/nvim/readme.txt
 # run: .\install.ps1
 # run: Set-ExecutionPolicy Default
 
+# Or! In WSL right click top bar -> properties -> choose powerline font
+sudo apt install fonts-powerline
+
 # Run :PlugInstall in nvim
+vim +'PlugInstall --sync' +qa
+
+# Install youcompleteme for clang
+python3 ~/.config/nvim/plugged/youcompleteme/install.py --clang-completer
+
