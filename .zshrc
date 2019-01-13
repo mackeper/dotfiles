@@ -5,7 +5,7 @@ SAVEHIST=100
 bindkey -v
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
-zstyle :compinstall filename '/home/macke/.zshrc'
+#zstyle :compinstall filename '/home/macke/.zshrc'
 
 autoload -Uz compinit
 compinit
@@ -20,7 +20,6 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
                 eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 base16_ocean
-# base16_brewer
 
 # Turn off all beeps
 unsetopt BEEP
