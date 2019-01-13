@@ -12,12 +12,15 @@ sudo apt install build-essential cmake python3-dev
 
 mkdir -p ~/.config/nvim
 cp .config/nvim/init.vim ~/.config/nvim/init.vim
+cp .config/nvim/global_extra_conf.py ~/.config/nvim/global_extra_conf.py
 cp .config/nvim/readme.txt ~/.config/nvim/readme.txt
 
 # Install powerline font
 # https://github.com/powerline/fonts
 # Window: Download as ZIP
 # extract
+# Dubble click the font (DejaVu Sans Mono for Powerline)
+# OR
 # Start powershell with admin
 # run: Set-ExecutionPolicy Bypass
 # Navigate to the folder
@@ -25,11 +28,12 @@ cp .config/nvim/readme.txt ~/.config/nvim/readme.txt
 # run: Set-ExecutionPolicy Default
 
 # Or! In WSL right click top bar -> properties -> choose powerline font
-sudo apt install fonts-powerline
+# sudo apt install fonts-powerline
 
 # Run :PlugInstall in nvim
 vim +'PlugInstall --sync' +qa
 
 # Install youcompleteme for clang
-python3 ~/.config/nvim/plugged/youcompleteme/install.py --clang-completer
+cd ~/.config/nvim/plugged/youcompleteme
+python3 install.py --clang-completer
 
