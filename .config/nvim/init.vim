@@ -7,7 +7,10 @@
 call plug#begin()
 
 " Directory tree, navigate directories
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'scrooloose/nerdtree'
+" Just one nerd tree
+Plug 'jistr/vim-nerdtree-tabs'
+
 
 " multiple cursors, usage below
 Plug 'terryma/vim-multiple-cursors'
@@ -27,35 +30,25 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" MRU
+Plug 'vim-scripts/mru.vim'
+
+" Code completion
+" https://vimawesome.com/plugin/youcompleteme#quick-feature-summary
+" cd ~/.config/nvim/plugged/youcompleteme
+" python3 install.py --clang-completer
+" or
+" python3 install.py --all
+Plug 'valloric/youcompleteme'
+
 call plug#end()
 
 "
 " Nerdtree
 "
-map <C-t> :NERDTreeToggle<CR>
 " Close nerdtree if it is the only window left
 "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-"
-" Multiple-cursors
-" Usage: Press <C-n> to select, v to enter normal, then i to insert. (Or c to
-" change.)
-let g:multi_cursor_use_default_mapping=1
-
-" Default mapping
-let g:multi_cursor_start_word_key      = '<C-n>'
-let g:multi_cursor_select_all_word_key = '<A-n>'
-let g:multi_cursor_start_key           = 'g<C-n>'
-let g:multi_cursor_select_all_key      = 'g<A-n>'
-let g:multi_cursor_next_key            = '<C-n>'
-let g:multi_cursor_prev_key            = '<C-p>'
-let g:multi_cursor_skip_key            = '<C-x>'
-let g:multi_cursor_quit_key            = '<Esc>'
-
-"
-" Terminal
-"
-:tnoremap <Esc> <C-\><C-n>
 
 "
 " NERD COMMENTER
@@ -78,15 +71,46 @@ let g:NERDTrimTrailingWhitespace = 1
 let g:NERDToggleCheckAllLines = 1
 
 "
+" Airline
+"
+let g:airline_theme='papercolor'
+
+"
 " Mapping
 "
 
 :let mapleader = "\<space>"
 
-"
-" Airline
-"
-let g:airline_theme='papercolor'
+" Navigate windows
+nmap <silent> <A-Up> :wincmd k<CR>
+nmap <silent> <A-Down> :wincmd j<CR>
+nmap <silent> <A-Left> :wincmd h<CR>
+nmap <silent> <A-Right> :wincmd l<CR>
+
+" Nerd tree
+"map <C-t> :NERDTreeToggle<CR>
+map <C-t> :NERDTreeTabsToggle<CR>
+
+" Terminal
+:tnoremap <Esc> <C-\><C-n>
+
+" Multiple-cursors
+" Usage: Press <C-n> to select, v to enter normal, then i to insert. (Or c to
+" change.)
+let g:multi_cursor_use_default_mapping=1
+
+" Default mapping
+let g:multi_cursor_start_word_key      = '<C-n>'
+let g:multi_cursor_select_all_word_key = '<A-n>'
+let g:multi_cursor_start_key           = 'g<C-n>'
+let g:multi_cursor_select_all_key      = 'g<A-n>'
+let g:multi_cursor_next_key            = '<C-n>'
+let g:multi_cursor_prev_key            = '<C-p>'
+let g:multi_cursor_skip_key            = '<C-x>'
+let g:multi_cursor_quit_key            = '<Esc>'
+
+" MRU
+noremap <C-m> :MRU<CR>
 
 "
 " UI

@@ -2,6 +2,9 @@
 
 sudo apt install neovim
 
+# Needed by YouCompleteMe
+sudo apt install build-essential cmake python3-dev
+
 # NVim plugin manager
 # https://github.com/junegunn/vim-plug
  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
