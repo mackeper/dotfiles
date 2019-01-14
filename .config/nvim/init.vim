@@ -33,6 +33,14 @@ Plug 'vim-airline/vim-airline-themes'
 " MRU
 Plug 'vim-scripts/mru.vim'
 
+" Fzf, :FZF 
+" PlugInstall and PlugUpdate will clone fzf in ~/.fzf and run the install
+" script
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Both options are optional. You don't have to install fzf in ~/.fzf
+" and you don't have to run the install script if you use fzf only in
+" Vim.
+
 " Code completion
 " https://vimawesome.com/plugin/youcompleteme#quick-feature-summary
 " cd ~/.config/nvim/plugged/youcompleteme
@@ -141,6 +149,8 @@ let g:multi_cursor_quit_key            = '<Esc>'
 
 " MRU
 noremap <C-m> :MRU<CR>
+" FZF
+noremap <C-p> :FZF<CR>
 
 "
 " UI
