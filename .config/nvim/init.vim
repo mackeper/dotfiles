@@ -36,7 +36,7 @@ Plug 'vim-scripts/mru.vim'
 " Fzf, :FZF 
 " PlugInstall and PlugUpdate will clone fzf in ~/.fzf and run the install
 " script
-Plug 'junegunn/fzf', { 'dir': '~/.fzf'}
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " Both options are optional. You don't have to install fzf in ~/.fzf
 " and you don't have to run the install script if you use fzf only in
 " Vim.
