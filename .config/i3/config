@@ -214,7 +214,7 @@ bar {
               statusline $c15
 
               #                  Border  Bg      text
-              focused_workspace  $c4     $c5     $c15
+              focused_workspace  $c4     $c5     $c0
               active_workspace   $c4     $c0     $c15
               inactive_workspace $c4     $c0     $c15
               urgent_workspace   $c4     $c0     $c15
