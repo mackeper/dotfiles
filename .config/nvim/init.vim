@@ -1,25 +1,17 @@
 "Marcus Östling neo vimrc
 
-"
-" vim-plug section
-"
+"" vim-plug section
 
 call plug#begin()
 
 " Directory tree, navigate directories
 Plug 'scrooloose/nerdtree'
+
 " Just one nerd tree
 Plug 'jistr/vim-nerdtree-tabs'
 
-
-" multiple cursors, usage below
-Plug 'terryma/vim-multiple-cursors'
-
 " Color schemes
-Plug 'chriskempson/base16-vim'
-
-" Git wrapper, :Gstatus (- to add/reset), :Gcommit
-Plug 'tpope/vim-fugitive'
+" Plug 'chriskempson/base16-vim'
 
 " Easier commenting, 
 " [count]<leader>cc  comment lines
@@ -33,14 +25,6 @@ Plug 'vim-airline/vim-airline-themes'
 " MRU
 Plug 'vim-scripts/mru.vim'
 
-" Fzf, :FZF 
-" PlugInstall and PlugUpdate will clone fzf in ~/.fzf and run the install
-" script
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-" Both options are optional. You don't have to install fzf in ~/.fzf
-" and you don't have to run the install script if you use fzf only in
-" Vim.
-
 " Code completion
 " https://vimawesome.com/plugin/youcompleteme#quick-feature-summary
 " cd ~/.config/nvim/plugged/youcompleteme
@@ -51,16 +35,11 @@ Plug 'valloric/youcompleteme'
 
 call plug#end()
 
-"
-" Nerdtree
-"
+"" Nerdtree
 " Close nerdtree if it is the only window left
 "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-
-"
-" NERD COMMENTER
-"
+"" NERD COMMENTER
 " Add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
 " Use compact syntax for prettified multi-line comments
@@ -78,11 +57,9 @@ let g:NERDTrimTrailingWhitespace = 1
 " Enable NERDCommenterToggle to check all selected lines is commented or not 
 let g:NERDToggleCheckAllLines = 1
 
-"
-" Airline
-"
+"" Airline
 " air-line
- let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 1
  
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -113,10 +90,10 @@ let g:airline_symbols.linenr = ''
 
 let g:airline_theme='papercolor'
 
-"
-" Mapping
-"
+"" YouCompleteMe
+let g:ycm_global_ycm_extra_conf = "~/.ycm_extra_conf.py"
 
+"" Mapping
 :let mapleader = "\<space>"
 
 " Navigate windows
@@ -131,11 +108,6 @@ map <C-t> :NERDTreeTabsToggle<CR>
 
 " Terminal
 :tnoremap <Esc> <C-\><C-n>
-
-" Multiple-cursors
-" Usage: Press <C-n> to select, v to enter normal, then i to insert. (Or c to
-" change.)
-let g:multi_cursor_use_default_mapping=1
 
 " Default mapping
 let g:multi_cursor_start_word_key      = '<C-n>'
@@ -152,19 +124,15 @@ noremap <C-m> :MRU<CR>
 " FZF
 noremap <C-p> :FZF<CR>
 
-"
-" UI
-"
-set number
+"" UI
+"set number
 set so=7
 set ruler
 set showmatch
 set mat=2
 set foldcolumn=1
 
-"
-" Text/tabs
-"
+"" Text/tabs
 set expandtab
 set smarttab
 set shiftwidth=4
@@ -172,38 +140,38 @@ set tabstop=4
 set ai
 set si
 
-"
-" Searching
-"
+"" Searching
 set ignorecase
 set smartcase
 set hlsearch
 set incsearch
 
-"
-" Sounds (off)
-"
+"" Sounds (off)
 set noerrorbells
 set visualbell
 set t_vb=
 set tm=500
 
-"
-" Colors
-"
+"" Colors
 " colorscheme base16-materia
 let base16colorspace=256
 set t_Co=256
+"let $NVIM_TUI_ENABLE_TRUE_COLOR=1 
+"set termguicolors
 syntax enable
 
-"
-" Font
-"
+"" Mark column 81
+highlight OverLength ctermbg=blue ctermfg=white guibg=#592929
+match OverLength /\%81v./
+
+"" Font
 set encoding=utf8
 set ffs=unix,dos,mac
 
-"
-" Status line
-"
+"" Status line
 set laststatus=2
 
+"" Filetype specific
+filetype indent plugin on
+autocmd FileType c setlocal shiftwidth=8 softtabstop=8 expandtab
+autocmd FileType cpp setlocal shiftwidth=4 softtabstop=4 expandtab
