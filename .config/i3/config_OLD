@@ -237,7 +237,7 @@ gaps outer 5
 smart_gaps on
 
 # Transparency and screen tearc
-exec --no-startup-id compton -Cb --backend xrender
+exec --no-startup-id compton -Cb --backend xrender --config ~/.config/compton.conf
 #exec compton -Cb 
 
 #Background
