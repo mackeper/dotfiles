@@ -72,7 +72,7 @@ packages+=(aspell)
 
 # Window manager
 packages+=(i3-gaps)
-packages+=(i3-status)
+packages+=(i3status)
 packages+=(i3lock)       # lock screen
 
 # Browser
@@ -94,19 +94,19 @@ done
 
 # Other stuff
 # Yaourt
-# git clone https://aur.archlinux.org/yaourt.git
-# cd yaourt/
-# makepkg -si
+git clone https://aur.archlinux.org/yaourt.git
+cd yaourt/
+makepkg -si
 
 #OhMyZsh
-# sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 # base16 colors
 # https://github.com/chriskempson/base16-shell
 #git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
 
 #cp .bashrc_WSL ~/.bashrc
-#cp .zshrc ~/.zshrc
+cp .zshrc ~/.zshrc
 
 # Setup nvim
 ## NVim plugin manager
