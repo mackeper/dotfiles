@@ -139,7 +139,7 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Gaps
-gaps inner 20
+gaps inner 18
 gaps outer 0
 smart_gaps on
 
@@ -206,6 +206,7 @@ bindsym $mod+d exec dmenu_run -nb "$c0" -nf "$c15" -sb "$c5" -sf "$c0"
 
 # Start i3bar
 bar {
+    status_command i3status
     position bottom
     height 20
        colors {
