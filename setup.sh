@@ -141,6 +141,8 @@ xrdb ~/.Xresources # load Xresources
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
+pip install --user --upgrade pynvim
+
 mkdir -p ~/.config/nvim
 cp ~/dotfiles/.config/nvim/init.vim ~/.config/nvim/init.vim
 cp ~/dotfiles/.config/nvim/global_extra_conf.py ~/.config/nvim/global_extra_conf.py
