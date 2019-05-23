@@ -70,6 +70,7 @@ packages+=(lolcat)              # rainbow colors
 packages+=(neofetch)            # images of distro and specs
 packages+=(feh)                 # set wallpaper
 packages+=(powerline)           # cool font
+packages+=(python-pywal)        # colorchemes etc..
 
 ## Tools
 packages+=(tldr)        # shorter man
@@ -122,6 +123,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 #cp ~/dotfiles/.bashrc_WSL ~/.bashrc
 cp ~/dotfiles/.bashrc ~/.bashrc
 cp ~/dotfiles/.zshrc ~/.zshrc
+cp ~/dotfiles/.profile ~/.profile
 
 ## Setup nvim
 ### NVim plugin manager
