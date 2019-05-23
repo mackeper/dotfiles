@@ -5,6 +5,7 @@ yaourt_packages=()
 # Shell/terminal
 packages+=(zsh)
 packages+=(urxvt)
+yaourt_packages+=(urxvt-resize-font-git)
 
 # Video
 packages+=(xrandr)  # video output setting
