@@ -51,6 +51,7 @@ packages+=(man-db)
 packages+=(man-pages)
 
 packages+=(python3)
+packages+=(python-pip)
 packages+=(ghc)
 packages+=(nodejs)
 packages+=(npm)
