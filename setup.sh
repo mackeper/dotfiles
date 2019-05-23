@@ -116,9 +116,6 @@ yaourt -S $yaourt_packages_string --noconfirm
 
 # Other stuff
 
-## OhMyZsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
 ## base16 colors
 # https://github.com/chriskempson/base16-shell
 #git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
@@ -167,3 +164,6 @@ cd ~/tmp
 
 ## set colors and wallpaper
 wal -i ~/dotfiles/wallpapers/wallhaven-red-purple-pink.jpg
+
+## OhMyZsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
