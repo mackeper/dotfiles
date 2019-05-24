@@ -46,10 +46,12 @@ packages+=(nano)
 packages+=(git)
 
 packages+=(make)
+packages+=(cmake)
 packages+=(man-db)
 packages+=(man-pages)
 
 packages+=(python3)
+packages+=(python-pip)
 packages+=(ghc)
 packages+=(nodejs)
 packages+=(npm)
@@ -71,6 +73,7 @@ packages+=(neofetch)            # images of distro and specs
 packages+=(feh)                 # set wallpaper
 packages+=(powerline)           # cool font
 packages+=(python-pywal)        # colorchemes etc..
+packages+=(ttf-dejavu-sans-mono-powerline)
 
 ## Tools
 packages+=(tldr)        # shorter man
@@ -81,11 +84,12 @@ packages+=(aspell)
 
 ## Window manager
 packages+=(i3-gaps)
-packages+=(i3status)
+#packages+=(i3status)
+packages+=(i3status-manjaro)
 packages+=(i3lock)       # lock screen
 
 ## Browser
-packages+=(google-chrome)
+yaourt_packages+=(google-chrome)
 
 ## PDF
 packages+=(zathura)
@@ -100,9 +104,9 @@ sudo pacman -Syu
 sudo pacman -S $packages_string
 
 # Yaourt
-# git clone https://aur.archlinux.org/yaourt.git
-# cd yaourt/
-# makepkg -si
+git clone https://aur.archlinux.org/yaourt.git
+cd yaourt/
+makepkg -si
 
 yaourt_packages_string=""
 for i in "${yaourt_packages[@]}"; do
@@ -113,23 +117,31 @@ yaourt -S $yaourt_packages_string --noconfirm
 
 # Other stuff
 
-## OhMyZsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
 ## base16 colors
 # https://github.com/chriskempson/base16-shell
 #git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
 
+## cp configs
 #cp ~/dotfiles/.bashrc_WSL ~/.bashrc
 cp ~/dotfiles/.bashrc ~/.bashrc
 cp ~/dotfiles/.zshrc ~/.zshrc
 cp ~/dotfiles/.profile ~/.profile
+
+mkdir -p ~/.config/i3
+cp ~/dotfiles/.config/i3/config ~/.config/i3/config
+mkdir -p ~/.config/i3status
+cp ~/dotfiles/.config/i3status/config ~/.config/i3status/config
+
+cp ~/dotfiles/.Xresources ~/.Xresources
+xrdb ~/.Xresources # load Xresources
 
 ## Setup nvim
 ### NVim plugin manager
 ## https://github.com/junegunn/vim-plug
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+pip install --user --upgrade pynvim
 
 mkdir -p ~/.config/nvim
 cp ~/dotfiles/.config/nvim/init.vim ~/.config/nvim/init.vim
@@ -141,6 +153,7 @@ nvim +'PlugInstall --sync' +qa
 
 ## Install youcompleteme
 cd ~/.config/nvim/plugged/youcompleteme
+git submodule update --init --recursive
 python3 install.py --clang-completer
 python3 install.py --rust-completer
 python3 install.py --ts-completer
@@ -151,3 +164,9 @@ cd ~/tmp
 # xrandr --newmode "1920x1080"  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
 # xrandr --addmode Virtual1 1920x1080
 # xrandr --output Virtual1 --mode 1920x1080
+
+## set colors and wallpaper
+wal -i ~/dotfiles/wallpapers/wallhaven-red-purple-pink.jpg
+
+## OhMyZsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
