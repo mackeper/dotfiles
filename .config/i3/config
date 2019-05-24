@@ -194,11 +194,11 @@ set_from_resource $c14 i3wm.color14 #000000
 set_from_resource $c15 i3wm.color15 #000000
 
 # class                   border  backgr. text indicator child_border
-client.focused            $c5      $c0     $c15  $c0       $c5
-client.focused_inactive   $c15     $c0     $c15  $c0       $c15
-client.unfocused          $c15     $c0     $c15  $c0       $c15
-client.urgent             $c15     $c0     $c15  $c0       $c15
-client.placeholder        $c15     $c0     $c15  $c0       $c15
+client.focused            $c15    $c0     $c15  $c0       $c15
+client.focused_inactive   $c5     $c0     $c15  $c0       $c5
+client.unfocused          $c5     $c0     $c15  $c0       $c5
+client.urgent             $c5     $c0     $c15  $c0       $c5
+client.placeholder        $c5     $c0     $c15  $c0       $c5
 client.background         $c0
 
 # Bind dmenu and add colors
