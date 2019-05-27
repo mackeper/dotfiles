@@ -131,6 +131,7 @@ mkdir -p ~/.config/i3
 cp ~/dotfiles/.config/i3/config ~/.config/i3/config
 mkdir -p ~/.config/i3status
 cp ~/dotfiles/.config/i3status/config ~/.config/i3status/config
+cp ~/dotfiles/.config/i3status/open_terminal.sh ~/.config/i3status/open_terminal.sh
 
 cp ~/dotfiles/.Xresources ~/.Xresources
 xrdb ~/.Xresources # load Xresources
