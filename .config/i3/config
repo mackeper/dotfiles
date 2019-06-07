@@ -221,3 +221,7 @@ bar {
               urgent_workspace   $c4     $c0     $c15
       }
 }
+
+# Applets
+exec --no-startup-id blueman-applet
+exec --no-startup-id nm-applet
