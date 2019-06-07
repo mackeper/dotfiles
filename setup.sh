@@ -9,6 +9,7 @@ cd tmp
 # List all packages
 packages=()
 yaourt_packages=()
+pip_packages=()
 
 ## Shell/terminal
 packages+=(zsh)
@@ -93,6 +94,9 @@ yaourt_packages+=(google-chrome)
 
 ## PDF
 packages+=(zathura)
+
+## pip stuff
+pip_packages+=(Django)
 
 
 packages_string=""
