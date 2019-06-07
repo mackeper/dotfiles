@@ -38,3 +38,7 @@ Ctrl + wv - split window vertically
 # Sessions
 :mks <path> - create new session
 :so <path> - restore session
+
+# Movement
+f <symbol> - jump to next symbol
+% - standing on a bracket, will jump to the corresponding one
