@@ -33,6 +33,12 @@ Plug 'vim-scripts/mru.vim'
 " python3 install.py --all
 Plug 'valloric/youcompleteme'
 
+" Go between .h and .c
+Plug 'ericcurtin/CurtineIncSw.vim'
+
+" Colorscheme using pywal
+Plug 'dylanaraps/wal.vim'
+
 call plug#end()
 
 "" Nerdtree
@@ -114,6 +120,9 @@ noremap <C-m> :MRU<CR>
 " FZF
 noremap <C-p> :FZF<CR>
 
+" CurtineIncSw
+map <leader>s :call CurtineIncSw()<CR>
+
 "" UI
 "set number
 set so=7
@@ -147,7 +156,8 @@ set tm=500
 let base16colorspace=256
 set t_Co=256
 "let $NVIM_TUI_ENABLE_TRUE_COLOR=1 
-"set termguicolors
+"set termguicolors " messes up
+colorscheme wal
 syntax enable
 
 "" Mark column 81
