@@ -42,6 +42,7 @@ packages+=(htop)
 
 ## Development
 packages+=(neovim)
+packages+=(ctags)       # use "ctags -R" in dir
 packages+=(nano)
 
 packages+=(git)
@@ -97,6 +98,9 @@ packages+=(zathura)
 
 ## pip stuff
 pip_packages+=(Django)
+
+## Misc
+packages+=(tree)
 
 
 packages_string=""
