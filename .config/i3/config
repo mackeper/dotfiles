@@ -171,7 +171,7 @@ bindsym XF86MonBrightnessDown exec xbacklight -dec 20 # decrease screen brightne
 exec --no-startup-id xset b off
 
 # Background
-exec --no-startup-id feh --bg-scale ~/Pictures/Backgrounds/clouds_multicolor-wallpaper-1920x1080.jpg
+exec --no-startup-id wal --theme base16-materialer
 for_window [class="^.*"] border pixel 2
 new_window 1pixel
 
@@ -194,11 +194,11 @@ set_from_resource $c14 i3wm.color14 #000000
 set_from_resource $c15 i3wm.color15 #000000
 
 # class                   border  backgr. text indicator child_border
-client.focused            $c15    $c0     $c15  $c0       $c15
-client.focused_inactive   $c5     $c0     $c15  $c0       $c5
-client.unfocused          $c5     $c0     $c15  $c0       $c5
-client.urgent             $c5     $c0     $c15  $c0       $c5
-client.placeholder        $c5     $c0     $c15  $c0       $c5
+client.focused            $c15    $c0     $c15  $c15       $c15
+client.focused_inactive   $c0     $c0     $c15  $c0       $c0
+client.unfocused          $c0     $c0     $c15  $c0       $c0
+client.urgent             $c0     $c0     $c15  $c0       $c0
+client.placeholder        $c0     $c0     $c15  $c0       $c0
 client.background         $c0
 
 # Bind dmenu and add colors
