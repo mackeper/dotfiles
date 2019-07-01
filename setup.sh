@@ -42,7 +42,6 @@ packages+=(htop)
 
 ## Development
 packages+=(neovim)
-packages+=(ctags)       # use "ctags -R" in dir
 packages+=(nano)
 
 packages+=(git)
@@ -73,9 +72,13 @@ yaourt_packages+=(cava)         # Audio visualizer
 packages+=(lolcat)              # rainbow colors
 packages+=(neofetch)            # images of distro and specs
 packages+=(feh)                 # set wallpaper
-packages+=(powerline)           # cool font
 packages+=(python-pywal)        # colorchemes etc..
+
+## Fonts
+packages+=(powerline)           # cool font
 packages+=(ttf-dejavu-sans-mono-powerline)
+packages+=(ttf-dejavu)
+yaourt_packages+=(nerd-fonts-complete)
 
 ## Tools
 packages+=(tldr)        # shorter man
@@ -98,10 +101,9 @@ packages+=(zathura)
 
 ## pip stuff
 pip_packages+=(Django)
-
-## Misc
-packages+=(tree)
-
+pip_packages+=(matplotlib)
+pip_packages+=(numpy)
+pip_packages+=(pandas)
 
 packages_string=""
 for i in "${packages[@]}"; do
@@ -175,7 +177,7 @@ cd ~/tmp
 # xrandr --output Virtual1 --mode 1920x1080
 
 ## set colors and wallpaper
-wal -i ~/dotfiles/wallpapers/wallhaven-red-purple-pink.jpg
+# wal -i ~/dotfiles/wallpapers/wallhaven-red-purple-pink.jpg
 
 ## OhMyZsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
