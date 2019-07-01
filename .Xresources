@@ -1,11 +1,10 @@
 !reload: xrdb ~/.Xresources
 !Font
-!URxvt*font:xft:Monospace:size=10, xft:DejaVu Sans:size=8, xft:Terminess Powerline:size=12
-URxvt.font: xft:DejaVu Sans Mono for Powerline:autohint=true:size=10
-!URxvt*font: xft:Source\ Code\ Pro\ for\ Powerline,Source\ Code\ Pro\ Medium:size=11
-!urxvt*font: xft:Terminus:pixelsize=12,xft:Inconsolata\ for\ Powerline:pixelsize=12
+URxvt*font:     xft:DejaVu Sans Mono for Powerline:autohint=true:size=10, \
+                xft:DejaVuSansMono Nerd Font:size=10
+URxvt*boldFont: xft:DejaVu Sans Mono for Powerline:autohint=true:size=10
 URxvt*letterSpace: 0
-urxvt*imLocale:	"en_US.UTF-8"
+urxvt*imLocale: "en_US.UTF-8"
 
 !Scrollbar
 URxvt.scrollBar: false
@@ -18,7 +17,7 @@ URxvt*saveLines: 20000
 
 ! Color settings
 ! Transparency
-URxvt.transparent: true
+URxvt.transparent: false
 URxvt.shading: 10
 !URxvt.tintColor: white
 
