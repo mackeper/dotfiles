@@ -33,7 +33,18 @@ call plug#begin()
     " python3 install.py --clang-completer
     " or
     " python3 install.py --all
-    Plug 'valloric/youcompleteme'
+    " Plug 'valloric/youcompleteme'
+
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'zchee/deoplete-jedi'              " python completer
+    Plug 'sebastianmarkow/deoplete-rust'    " rust completer
+    Plug 'zchee/deoplete-clang'             " c/c++ completer
+    Plug 'wokalski/autocomplete-flow'       " js completer (needs neosnippet)
+    Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' } " nodejs
+
+    " Snippets for vim, also used by deoplete (I think?)
+    Plug 'Shougo/neosnippet.vim'
+    Plug 'Shougo/neosnippet-snippets'
 
     " Go between .h and .c
     Plug 'ericcurtin/CurtineIncSw.vim'
@@ -102,6 +113,30 @@ call plug#end()
 
 "" YouCompleteMe
     let g:ycm_global_ycm_extra_conf = "~/.ycm_extra_conf.py"
+
+"" Use deoplete.
+    let g:deoplete#enable_at_startup = 1
+    let g:neosnippet#enable_completed_snippet = 1
+    "let g:autocomplete_flow#insert_paren_after_function = 0 " js do not insert paren
+
+    " clang completer
+    " Change clang binary path
+    call deoplete#custom#var('clangx', 'clang_binary', '/usr/local/bin/clang')
+    " Change clang options
+    call deoplete#custom#var('clangx', 'default_c_options', '')
+    call deoplete#custom#var('clangx', 'default_cpp_options', '')
+     " path to directory where library can be found
+     " let g:clang_library_path='/usr/lib/llvm-3.8/lib'
+     " or path directly to the library file
+     let g:clang_library_path='/usr/lib64/libclang.so'
+
+	" js
+	"Add extra filetypes
+    let g:deoplete#sources#ternjs#filetypes = [
+				\ 'jsx',
+				\ 'javascript.jsx',
+				\ 'vue',
+				\]
 
 "" Mapping
     :let mapleader = "\<space>"

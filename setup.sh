@@ -59,6 +59,7 @@ packages+=(npm)
 packages+=(rust)
 
 packages+=(binutils) # gcc -pg -> ./a.out -> gprof ./a.out gmon.out
+packages+=(clang)
 
 ## Compression/Encryption
 packages+=(tar)
