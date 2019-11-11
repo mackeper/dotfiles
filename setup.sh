@@ -6,7 +6,7 @@ cd ~
 mkdir tmp
 cd tmp
 
-# List all packages
+# ============== List all packages ===================
 packages=()
 yaourt_packages=()
 pip_packages=()
@@ -16,12 +16,18 @@ packages+=(zsh)
 packages+=(rxvt-unicode)
 yaourt_packages+=(urxvt-resize-font-git)
 
+packages+=(fzf)         # Fuzzy finder (terminal navigation)
+
 ## Video
-packages+=(libxrandr)  # video output setting
-packages+=(mpv)     # video viewer
+packages+=(libxrandr)   # video output setting
+packages+=(mpv)         # video viewer
 
 ## audio
 packages+=(pavucontrol) # Audio settings
+
+# I/O packages
+
+packages+=(xinput)
 
 ## Download
 yaourt_packages+=(peerflix)        # Stream torrent
@@ -41,6 +47,8 @@ packages+=(networkmanager-openvpn)
 packages+=(htop)
 
 ## Development
+packages+=(base-devel)
+
 packages+=(neovim)
 packages+=(nano)
 
@@ -50,10 +58,13 @@ packages+=(make)
 packages+=(cmake)
 packages+=(man-db)
 packages+=(man-pages)
+packages+=(valgrind)
+packages+=(gdb)
 
 packages+=(python3)
 packages+=(python-pip)
 packages+=(ghc)
+packages+=(cabal)      # haskell package manager?
 packages+=(nodejs)
 packages+=(npm)
 packages+=(rust)
@@ -80,6 +91,10 @@ packages+=(powerline)           # cool font
 packages+=(ttf-dejavu-sans-mono-powerline)
 packages+=(ttf-dejavu)
 yaourt_packages+=(nerd-fonts-complete)
+packages+=(nerd-fonts-terminus)
+packages+=(noto-fonts)
+packages+=(terminus-font)
+packages+=(ttf-font-icons)
 
 ## Tools
 packages+=(tldr)        # shorter man
@@ -87,18 +102,28 @@ packages+=(scrot)       #screenshots
 packages+=(grep)
 packages+=(blueman)     # bluetooth
 packages+=(aspell)
+packages+=(cloc)        # count lines of code
+packages+=(ncdu)        # Disk uasge analyzer
+packages+=(gnuplot)
 
 ## Window manager
 packages+=(i3-gaps)
 #packages+=(i3status)
 packages+=(i3status-manjaro)
 packages+=(i3lock)       # lock screen
+packages+=(polybar)
+packages+=(rofi)
+packages+=(xmonad)      # Use later :)
+packages+=(xmonad-contrib)      # Use later :)
+packages+=(xmobar)      # Use later :)
 
 ## Browser
 yaourt_packages+=(google-chrome)
+packages+=(firefox)
 
 ## PDF
 packages+=(zathura)
+packages+=(marked)
 
 ## pip stuff
 pip_packages+=(Django)
@@ -107,11 +132,11 @@ pip_packages+=(numpy)
 pip_packages+=(pandas)
 pip_packages+=(flake8)
 
+# ============== Install packages ===================
 packages_string=""
 for i in "${packages[@]}"; do
     packages_string="$packages_string $i"
 done
-#echo $packages_string
 sudo pacman -Syu
 sudo pacman -S $packages_string
 
@@ -124,16 +149,22 @@ yaourt_packages_string=""
 for i in "${yaourt_packages[@]}"; do
     yaourt_packages_string="$yaourt_packages_string $i"
 done
-#echo $yaourt_packages_string
 yaourt -S $yaourt_packages_string --noconfirm
 
-# Other stuff
+# pip
+pip_packages_string=""
+for i in "${pip_packages[@]}"; do
+    pip_packages_string="$pip_packages_string $i"
+done
+pip install $pip_packages_string --user
+
+# ============== Other stuff ===================
 
 ## base16 colors
 # https://github.com/chriskempson/base16-shell
 #git clone https://github.com/chriskempson/base16-shell.git ~/.config/base16-shell
 
-## cp configs
+## ------------- cp configs --------------------
 #cp ~/dotfiles/.bashrc_WSL ~/.bashrc
 cp ~/dotfiles/.bashrc ~/.bashrc
 cp ~/dotfiles/.zshrc ~/.zshrc
@@ -148,7 +179,7 @@ cp ~/dotfiles/.config/i3status/open_terminal.sh ~/.config/i3status/open_terminal
 cp ~/dotfiles/.Xresources ~/.Xresources
 xrdb ~/.Xresources # load Xresources
 
-## Setup nvim
+## -------------  Setup nvim -------------------
 ### NVim plugin manager
 ## https://github.com/junegunn/vim-plug
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
@@ -164,7 +195,7 @@ cp ~/dotfiles/.config/nvim/readme.txt ~/.config/nvim/readme.txt
 ## Run :PlugInstall in nvim
 nvim +'PlugInstall --sync' +qa
 
-## Install youcompleteme
+## ------------- Install youcompleteme ---------
 cd ~/.config/nvim/plugged/youcompleteme
 git submodule update --init --recursive
 python3 install.py --clang-completer
@@ -178,10 +209,7 @@ cd ~/tmp
 # xrandr --addmode Virtual1 1920x1080
 # xrandr --output Virtual1 --mode 1920x1080
 
-## set colors and wallpaper
-# wal -i ~/dotfiles/wallpapers/wallhaven-red-purple-pink.jpg
-
-## OhMyZsh
+## --------------- OhMyZsh ------------------------
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
