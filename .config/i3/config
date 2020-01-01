@@ -205,22 +205,24 @@ client.background         $c0
 bindsym $mod+d exec dmenu_run -nb "$c0" -nf "$c15" -sb "$c5" -sf "$c0"
 
 # Start i3bar
-bar {
-    status_command i3status
-    position bottom
-    height 20
-       colors {
-              separator  $c15
-              background $c0
-              statusline $c15
-
-              #                  Border  Bg      text
-              focused_workspace  $c4     $c5     $c0
-              active_workspace   $c4     $c0     $c15
-              inactive_workspace $c4     $c0     $c15
-              urgent_workspace   $c4     $c0     $c15
-      }
-}
+# bar {
+#     status_command i3status
+#     position bottom
+#     height 20
+#        colors {
+#               separator  $c15
+#               background $c0
+#               statusline $c15
+#
+#               #                  Border  Bg      text
+#               focused_workspace  $c4     $c5     $c0
+#               active_workspace   $c4     $c0     $c15
+#               inactive_workspace $c4     $c0     $c15
+#               urgent_workspace   $c4     $c0     $c15
+#       }
+# }
+# start polybar
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 # Applets
 exec --no-startup-id blueman-applet

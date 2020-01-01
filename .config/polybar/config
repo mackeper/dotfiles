@@ -60,7 +60,7 @@ font-1 = DejaVuSansMono Nerd Font:pixelsize=10;3
 
 modules-left = manjaro-menu bspwm i3
 modules-center = date battery-warning
-modules-right = comptonctl manjaro-checkupdates filesystem xbacklight pulseaudio memory cpu wlan eth battery powermenu
+modules-right = manjaro-checkupdates filesystem xbacklight pulseaudio memory cpu wlan eth battery powermenu
 
 tray-position = right
 tray-padding = 2
