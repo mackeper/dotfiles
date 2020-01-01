@@ -23,7 +23,10 @@ packages+=(libxrandr)   # video output setting
 packages+=(mpv)         # video viewer
 
 ## audio
-packages+=(pavucontrol) # Audio settings
+packages+=(pavucontrol)             # Audio settings
+packages+=(pulseaudio-bluetooth)    # bluetooth
+packages+=(bluez)                   # bluetooth
+packages+=(bluez-utils)             # bluetooth
 
 # I/O packages
 
@@ -79,6 +82,7 @@ packages+=(unzip)
 packages+=(openssl)
 
 ## unixporn good looking
+pip install $i --user
 yaourt_packages+=(tty-clock)    # Clock in terminal
 yaourt_packages+=(cava)         # Audio visualizer
 packages+=(lolcat)              # rainbow colors
@@ -91,6 +95,7 @@ packages+=(powerline)           # cool font
 packages+=(ttf-dejavu-sans-mono-powerline)
 packages+=(ttf-dejavu)
 yaourt_packages+=(nerd-fonts-complete)
+yaourt_packages+=(nerd-fonts-dejavu-complete)
 packages+=(nerd-fonts-terminus)
 packages+=(noto-fonts)
 packages+=(terminus-font)
@@ -105,6 +110,7 @@ packages+=(aspell)
 packages+=(cloc)        # count lines of code
 packages+=(ncdu)        # Disk uasge analyzer
 packages+=(gnuplot)
+packages+=(cower)       # used in polybar to check for updates
 
 ## Window manager
 packages+=(i3-gaps)
@@ -131,14 +137,17 @@ pip_packages+=(matplotlib)
 pip_packages+=(numpy)
 pip_packages+=(pandas)
 pip_packages+=(flake8)
+pip_packages+=(neovim)
 
 # ============== Install packages ===================
+#sudo pacman-mirrors -g
+sudo pacman -Syu --noconfirm
 packages_string=""
 for i in "${packages[@]}"; do
     packages_string="$packages_string $i"
+    sudo pacman -S $i --noconfirm
 done
-sudo pacman -Syu
-sudo pacman -S $packages_string
+#sudo pacman -S $packages_string
 
 # Yaourt
 git clone https://aur.archlinux.org/yaourt.git
@@ -148,13 +157,15 @@ makepkg -si
 yaourt_packages_string=""
 for i in "${yaourt_packages[@]}"; do
     yaourt_packages_string="$yaourt_packages_string $i"
+    yaourt -S $i --noconfirm
 done
-yaourt -S $yaourt_packages_string --noconfirm
+#yaourt -S $yaourt_packages_string --noconfirm
 
 # pip
 pip_packages_string=""
 for i in "${pip_packages[@]}"; do
     pip_packages_string="$pip_packages_string $i"
+    # pip install $i --user
 done
 pip install $pip_packages_string --user
 
@@ -171,10 +182,13 @@ cp ~/dotfiles/.zshrc ~/.zshrc
 cp ~/dotfiles/.profile ~/.profile
 
 mkdir -p ~/.config/i3
-cp ~/dotfiles/.config/i3/config ~/.config/i3/config
+cp ~/dotfiles/.config/i3/* ~/.config/i3/
+
 mkdir -p ~/.config/i3status
-cp ~/dotfiles/.config/i3status/config ~/.config/i3status/config
-cp ~/dotfiles/.config/i3status/open_terminal.sh ~/.config/i3status/open_terminal.sh
+cp ~/dotfiles/.config/i3status/* ~/.config/i3status/
+
+mkdir -p ~/.config/polybar
+cp ~/dotfiles/.config/polybar/* ~/.config/polybar/
 
 cp ~/dotfiles/.Xresources ~/.Xresources
 xrdb ~/.Xresources # load Xresources
@@ -196,11 +210,11 @@ cp ~/dotfiles/.config/nvim/readme.txt ~/.config/nvim/readme.txt
 nvim +'PlugInstall --sync' +qa
 
 ## ------------- Install youcompleteme ---------
-cd ~/.config/nvim/plugged/youcompleteme
-git submodule update --init --recursive
-python3 install.py --clang-completer
-python3 install.py --rust-completer
-python3 install.py --ts-completer
+#cd ~/.config/nvim/plugged/youcompleteme
+#git submodule update --init --recursive
+#python3 install.py --clang-completer
+#python3 install.py --rust-completer
+#python3 install.py --ts-completer
 cd ~/tmp
 
 ## Virtualbox probably best manually because its kernel depended.
