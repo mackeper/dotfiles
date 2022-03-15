@@ -1,0 +1,118 @@
+# Better terminal
+choco install mingw -y
+choco install microsoft-windows-terminal -y
+choco install which -y
+choco install ag -y # Search like grep, but faster
+choco install cascadiacodepl -y
+
+choco install fd -y
+choco install grep -y
+choco install wget -y
+choco install make -y
+choco install nmap -y
+choco install sudo -y
+choco install sed -y
+choco install awk -y
+choco install fzf -y
+choco install less -y
+
+# Development
+## Editor
+choco install vscode -y
+choco install neovim -y
+# choco install emacs -y
+
+## Tools
+choco install git.install -y
+
+## Languages
+#choco install python2 -y  
+choco install python3 -y  
+# choco install pip -y # is it not installed with python3?
+#choco install nodejs.install -y
+#choco install yarn -y
+choco install dotnet-sdk -y
+# choco install wixtoolset -y
+#choco install ghc -y
+#choco install rust -y
+#choco install ruby -y
+#choco install ruby.devkit -y
+choco install mingw -y
+#choco install mono -y
+
+## Databases
+choco install sqlite -y
+choco install postgresql -y
+
+# Essential tools	
+## Browser
+choco install firefox -y
+choco install googlechrome -y
+
+## Quality of life
+choco install powertoys -y
+# Non-essential tools and fun
+choco install postman -y
+choco install docker-desktop -y
+choco install gpg4win -y
+choco install vlc -y
+choco install 7zip.install -y
+choco install windirstat -y
+choco install rufus -y
+choco install procmon -y
+choco install keepass.install -y
+choco install screentogif -y
+choco install f.lux -y
+choco install speccy -y
+# choco install autohotkey.install -y # Don't install on a gaming PC
+
+# NSFW
+choco install steam-client -y
+choco install epicgameslauncher -y
+choco install spotify -y
+choco install discord.install -y
+choco install utorrent -y
+choco install geforce-experience -y
+choco install nordvpn -y
+
+# Make powershell looks nice
+Install-Module posh-git -Scope CurrentUser
+Install-Module oh-my-posh -Scope CurrentUser
+Install-Module -Name PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck
+
+New-Item $PROFILE
+Set-Content $PROFILE "Import-Module posh-git"
+Add-Content $PROFILE "Import-Module oh-my-posh"
+Add-Content $PROFILE "Set-PoshPrompt -Theme paradox"
+
+<#
+Add the font to windows terminal settings.json
+
+{
+    // Make changes here to the powershell.exe profile.
+    "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+    "name": "Windows PowerShell",
+    "commandline": "powershell.exe",
+    "fontFace": "Cascadia Code PL",
+    "hidden": false
+},
+#>
+
+# package managers
+$env:PYTHONIOENCODING = "UTF-8"
+#pip2 install neovim
+pip3 install neovim
+gem install neovim # might need to run ridk install
+npm install -g neovim
+npm install -g typescript # needed for ale support in neovim
+
+# Setup vim
+# install vim plug
+iwr -useb https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim |`
+    ni "$(@($env:XDG_DATA_HOME, $env:LOCALAPPDATA)[$null -eq $env:XDG_DATA_HOME])/nvim-data/site/autoload/plug.vim" -Force
+
+# automate copy of vimrc, :PlugInstall, :OmniSharpInstall :LspInstall py :TSInstall [language] 
+# :TSPlaygroudToggle
+
+mkdir $env:LOCALAPPDATA\nvim
+New-Item $env:LOCALAPPDATA\nvim\init.vim

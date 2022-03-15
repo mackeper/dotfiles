@@ -1,0 +1,12 @@
+Disable shadows, animations and visual effects
+sysdm.cpl and press Enter. That launches the System Properties dialog box.
+Click the Advanced tab and click Settings in the Performance section.
+
+Turn off search indexing
+services.msc
+Indexing Service or Windows Search
+
+Graphic Settings (search for it)
+Hardware-accelerated GPU scheduling on
+
+Optimize drives
