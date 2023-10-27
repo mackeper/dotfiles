@@ -1,4 +1,0 @@
-surfingkeys
-Simple Tab Groups
-Tabliss
-uBlock Origin
