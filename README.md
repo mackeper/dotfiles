@@ -1,8 +1,5 @@
 # Dotfiles
 
-## Setup zsh
-```
-sudo apt install zsh
-```
+![](.images/README/README_1698151885106.png)
 
-and copy .bashrc and .zshrc to ~/ 
+- [Windows](Windows/README.md)
