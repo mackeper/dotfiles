@@ -34,18 +34,21 @@ return {
         })
 
         lsp.on_attach(function(client, bufnr)
-            local opts = { buffer = bufnr, remap = false, }
+            local function opts(desc)
+                return { buffer = bufnr, remap = true, desc = desc, }
+            end
 
-            vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-            vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts)
-            vim.keymap.set("n", "gu", function() vim.lsp.buf.references() end, opts)
-            vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-            vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-            vim.keymap.set("n", "[", function() vim.diagnostic.goto_next() end, opts)
-            vim.keymap.set("n", "]", function() vim.diagnostic.goto_prev() end, opts)
-            vim.keymap.set("n", "<leader>.", function() vim.lsp.buf.code_action() end, opts)
-            vim.keymap.set("n", "<leader>r", function() vim.lsp.buf.rename() end, opts)
-            vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true, }) end, opts)
+            vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts("Definition"))
+            vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts("Implementation"))
+            vim.keymap.set("n", "gu", function() vim.lsp.buf.references() end, opts("Usages"))
+            vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts("Hover"))
+            vim.keymap.set("n", "<C-t>", function() vim.lsp.buf.workspace_symbol() end, opts("Workspace symbols"))
+            vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts("Diagnostic float"))
+            vim.keymap.set("n", "[", function() vim.diagnostic.goto_next() end, opts("Next"))
+            vim.keymap.set("n", "]", function() vim.diagnostic.goto_prev() end, opts("Previous"))
+            vim.keymap.set("n", "<leader>.", function() vim.lsp.buf.code_action() end, opts("Code action"))
+            vim.keymap.set("n", "<leader>r", function() vim.lsp.buf.rename() end, opts("Rename"))
+            vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true, }) end, opts("Format"))
         end)
 
         require("mason").setup({})
@@ -78,8 +81,25 @@ return {
             },
         })
 
-        require("lspconfig").lua_ls.setup({})
-        require("lspconfig").pylsp.setup({
+        local lspconfig = require("lspconfig")
+
+        lspconfig.bashls.setup({})
+        lspconfig.clangd.setup({})
+        lspconfig.cssls.setup({})
+        lspconfig.dockerls.setup({})
+        lspconfig.elmls.setup({})
+        lspconfig.eslint.setup({})
+        lspconfig.fsautocomplete.setup({})
+        lspconfig.hls.setup({})
+        lspconfig.html.setup({})
+        lspconfig.jsonls.setup({})
+        lspconfig.lua_ls.setup({})
+        lspconfig.marksman.setup({})
+        lspconfig.omnisharp.setup({
+            -- enable_roslyn_analyzers = true,
+        })
+        lspconfig.powershell_es.setup({})
+        lspconfig.pylsp.setup({
             settings = {
                 pylsp = {
                     plugins = {
@@ -90,5 +110,9 @@ return {
                 }
             }
         })
+        lspconfig.rust_analyzer.setup({})
+        lspconfig.sqlls.setup({})
+        lspconfig.tsserver.setup({})
+        lspconfig.yamlls.setup({})
     end
 }

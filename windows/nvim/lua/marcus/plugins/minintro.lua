@@ -1,5 +1,6 @@
 return {
     "eoh-bse/minintro.nvim",
     config = true,
-    lazy = false
+    lazy = false,
+    enabled = false,
 }
