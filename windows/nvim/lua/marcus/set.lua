@@ -31,5 +31,5 @@ vim.opt.clipboard = "unnamedplus"
 
 
 -- Spellcheck (z=) for suggestions
-vim.opt.spell = true
+vim.opt.spell = false
 vim.opt.spelllang = "en_us"

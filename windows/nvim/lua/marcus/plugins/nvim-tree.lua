@@ -18,7 +18,7 @@ return {
             api.config.mappings.default_on_attach(bufnr)
 
             -- custom mappings
-            vim.keymap.set('n', '?',     api.tree.toggle_help,                  opts('Help'))
+            vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
         end
 
         require("nvim-tree").setup {
@@ -35,13 +35,13 @@ return {
         }
 
         local api = require("nvim-tree.api")
+        vim.keymap.set("n", "<leader>s", function() api.tree.open({ find_file = true, focus = true, }) end,
+            { desc = "Open nvim tree" })
 
-        vim.keymap.set("n", "<leader>je", function()
-            api.tree.toggle()
-        end)
-        vim.keymap.set("n", "<leader>s", function()
-            api.tree.toggle({ find_file = true, focus = true, })
-        end)
+        -- auto open
+        vim.api.nvim_create_autocmd("VimEnter", {
+            callback = function() api.tree.toggle({ find_file = true, focus = false, }) end
+        })
 
         -- auto close
         vim.api.nvim_create_autocmd("BufEnter", {

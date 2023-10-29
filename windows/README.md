@@ -37,11 +37,16 @@ choco install -y dotnet-sdk
 3. Install modules:
 
 ```powershell
+# looks
 winget upgrade JanDeDobbeleer.OhMyPosh -s winget
 Install-Module -Name Terminal-Icons -Repository PSGallery -Force
 Install-Module -Name posh-git -Scope CurrentUser
 Install-Module -Name PSReadLine -AllowPrerelease -Scope CurrentUser -Force -SkipPublisherCheck
 Install-Script winfetch # optional
+
+# fzf
+choco install -y fzf
+Install-Module -Name PSFzf -Scope CurrentUser -Force
 ```
 
 ### Browsers
@@ -91,6 +96,7 @@ choco install -y f.lux
 choco install -y powertoys
 choco install -y bottom # htop for windows. Usage: btm
 choco install -y ripgrep # grep for windows. Used by NeoVim. Usage: rg <text>
+choco install -y autohotkey # Put file in startup folder
 
 choco install -y protonvpn
 choco install -y openvpn-connect
