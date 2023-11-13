@@ -21,6 +21,7 @@ choco install -y neovim
 choco install -y git
 choco install -y mingw
 choco install -y microsoft-windows-terminal
+choco install act-cli # Run GitHub actions locally
 choco install -y docker-desktop
 choco install -y docker-compose
 

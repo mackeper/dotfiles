@@ -1,0 +1,97 @@
+{
+    "valorant-template": {
+        "prefix": "valorant-template",
+        "body": [
+            "# $TM_FILENAME_BASE",
+            "",
+            "<!-- Insert table here -->",
+            "",
+            "## Attacking",
+            "### A",
+            "",
+            "### B",
+            "",
+            "## Defending",
+            "### A",
+            "",
+            "### B",
+            ""
+        ]
+    },
+    "readme-template": {
+        "prefix": "readme-template",
+        "body": [
+            "[Back](../README.md)",
+            "",
+            "# ${TM_DIRECTORY/^.*[\\\\\\/](\\w+)$/$1/}",
+            "",
+            "## Notes"
+        ]
+    },
+    "note-template": {
+        "prefix": "note-template",
+        "body": [
+            "[Back](./README.md)",
+            "",
+            "# ${TM_FILENAME_BASE/((^.)|([-_.]+))/${2:/upcase}${3:+ }/g}",
+            "",
+            "## Notes"
+        ]
+    },
+    "checkboxes": {
+        "prefix": "checkboxes",
+        "body": [
+            "- [x] a",
+            "- [ ] b"
+        ]
+    },
+    "title": {
+        "prefix": "title",
+        "body": [
+            "# ${TM_FILENAME_BASE/((^.)|([-_.]+))/${2:/upcase}${3:+ }/g}"
+        ]
+    },
+    "titleDate": {
+        "prefix": "titleDate",
+        "body": [
+            "# ${TM_FILENAME_BASE/((^.)|([-_.]+))/${2:/upcase}${3:+ }/g} ($CURRENT_DATE-$CURRENT_MONTH-$CURRENT_YEAR $CURRENT_HOUR:$CURRENT_MINUTE)"
+        ]
+    },
+    "math": {
+        "prefix": "math",
+        "body": [
+            "$BLOCK_COMMENT_START $$\\int_\\Omega \\nabla u \\cdot \\nabla v~dx = \\int_\\Omega fv~dx$$ $BLOCK_COMMENT_END"
+        ]
+    },
+    "href": {
+        "prefix": "href",
+        "body": [
+            "[href]($RELATIVE_FILEPATH)"
+        ]
+    },
+    "table22": {
+        "prefix": "table22",
+        "body": [
+            "| | |",
+            ":-------------------------:|:-------------------------:",
+            "a | b",
+            "c | d"
+        ]
+    },
+    "table12": {
+        "prefix": "table12",
+        "body": [
+            "| | |",
+            ":-------------------------:|:-------------------------:",
+            "a | b"
+        ]
+    },
+    "table13": {
+        "prefix": "table13",
+        "body": [
+            "| | | |",
+            ":-------------------------:|:-------------------------:|:-------------------------:",
+            "a | b | c"
+        ]
+    }
+}
