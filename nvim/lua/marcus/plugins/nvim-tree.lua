@@ -1,5 +1,7 @@
 return {
     "nvim-tree/nvim-tree.lua",
+    lazy = true,
+    event = "VeryLazy",
     dependencies = {
         "nvim-tree/nvim-web-devicons",
     },
@@ -25,13 +27,19 @@ return {
             open_on_tab = false,
             on_attach = my_on_attach,
             view = {
-                width = 30,
+                width = {
+                    min = 30,
+                    max = -1, -- dynamic width
+                },
                 side = "left",
             },
             update_focused_file = {
                 enable = true,
                 update_root = false,
             },
+            diagnostics = {
+                enable = true,
+            }
         }
 
         local api = require("nvim-tree.api")

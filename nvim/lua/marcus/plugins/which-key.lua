@@ -1,6 +1,8 @@
+-- Show keybindings when typing commands
 return {
     "folke/which-key.nvim",
     enabled = true,
+    lazy = true,
     event = "VeryLazy",
     init = function()
         vim.o.timeout = true

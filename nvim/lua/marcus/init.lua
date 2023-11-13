@@ -1,6 +1,7 @@
 require("marcus.set")
 require("marcus.lazy")
 require("marcus.remap")
+require("marcus.markdown2pdf")
 
 -- highlight yank (https://stackoverflow.com/a/73365602)
 vim.api.nvim_create_autocmd('TextYankPost', {

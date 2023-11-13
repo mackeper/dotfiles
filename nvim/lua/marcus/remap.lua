@@ -1,5 +1,8 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
+vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
+vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
+
 -- Move selected line / block up or down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line/block down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line/block up" })
@@ -20,4 +23,13 @@ vim.keymap.set("v", "<leader>d", "\"_d", { desc = "Delete without overwriting de
 vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Substitute word under cursor" })
 
 -- Open, Windows specific
-vim.keymap.set("n", "<leader>oe", [[<CMD>!start explorer /select,%:p<CR>]], { desc = "Open in explorer", silent = true })
+vim.keymap.set("n", "<leader>oe", [[<CMD>!start explorer /select,"%":p<CR>]], { desc = "Open in explorer", silent = true })
+
+-- Window navigation
+vim.keymap.set("n", "<C-left>", "<C-w>h", { desc = "Move to left window" })
+vim.keymap.set("n", "<C-down>", "<C-w>j", { desc = "Move to bottom window" })
+vim.keymap.set("n", "<C-up>", "<C-w>k", { desc = "Move to top window" })
+vim.keymap.set("n", "<C-right>", "<C-w>l", { desc = "Move to right window" })
+
+-- Terminal
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })

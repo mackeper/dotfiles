@@ -1,6 +1,8 @@
 return {
     'nvim-treesitter/nvim-treesitter',
     build = ":TSUpdate",
+    lazy = true,
+    event = { "BufRead", "BufNewFile" },
     config = function()
         local configs = require("nvim-treesitter.configs")
 
@@ -18,8 +20,11 @@ return {
                 "javascript",
                 "json",
                 "lua",
+                "markdown",
+                "markdown_inline",
                 "python",
                 "query",
+                "regex",
                 "rust",
                 "scss",
                 "vim",
@@ -30,6 +35,15 @@ return {
             highlight = { enable = true },
             indent = { enable = true },
             additional_vim_regex_highlightning = false,
+            incremental_selection = {
+                enable = true,
+                keymaps = {
+                    init_selection = "<C-j>",
+                    node_incremental = "<C-j>",
+                    scope_incremental = false,
+                    node_decremental = "<bs>",
+                },
+            },
         })
     end
 }
