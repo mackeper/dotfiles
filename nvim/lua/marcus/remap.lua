@@ -15,15 +15,45 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
 
 -- Paste / delete without overwriting the default register
-vim.keymap.set("x", "<leader>p", "\"_dP", { desc = "Paste without overwriting default register" })
-vim.keymap.set("n", "<leader>d", "\"_d", { desc = "Delete without overwriting default register" })
-vim.keymap.set("v", "<leader>d", "\"_d", { desc = "Delete without overwriting default register" })
+vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without overwriting default register" })
+vim.keymap.set("n", "<leader>d", '"_d', { desc = "Delete without overwriting default register" })
+vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without overwriting default register" })
 
 -- Start substitute with the word under cursor
-vim.keymap.set("n", "<leader>rw", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Substitute word under cursor" })
+vim.keymap.set(
+	"n",
+	"<leader>rw",
+	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+	{ desc = "Substitute word under cursor" }
+)
 
 -- Open, Windows specific
-vim.keymap.set("n", "<leader>oe", [[<CMD>!start explorer /select,"%":p<CR>]], { desc = "Open in explorer", silent = true })
+vim.keymap.set(
+	"n",
+	"<leader>oe",
+	[[<CMD>!start explorer /select,"%":p<CR>]],
+	{ desc = "Open in explorer", silent = true }
+)
+
+-- File
+vim.keymap.set("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], { desc = "Copy file path to clipboard" })
+
+-- Tabs
+vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "New tab" })
+vim.keymap.set("n", "<leader>tc", ":tabclose<CR>", { desc = "Close tab" })
+vim.keymap.set("n", "<leader>to", ":tabonly<CR>", { desc = "Close other tabs" })
+vim.keymap.set("n", "<leader>tl", ":tabnext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "<leader>th", ":tabprevious<CR>", { desc = "Previous tab" })
+-- vim.keymap.set("n", "<tab>", ":tabnext<CR>", { desc = "Next tab" })
+-- vim.keymap.set("n", "<S-tab>", ":tabprevious<CR>", { desc = "Previous tab" })
+
+-- Buffers
+vim.keymap.set("n", "<leader>bl", ":bnext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<leader>bh", ":bprevious<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
+vim.keymap.set("n", "<leader>bo", ":bufdo bd<CR>", { desc = "Delete all buffers" })
+vim.keymap.set("n", "<tab>", ":bnext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<S-tab>", ":bprevious<CR>", { desc = "Previous buffer" })
 
 -- Window navigation
 vim.keymap.set("n", "<C-left>", "<C-w>h", { desc = "Move to left window" })
