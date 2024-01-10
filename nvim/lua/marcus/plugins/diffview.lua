@@ -1,7 +1,14 @@
 return {
-    "sindrets/diffview.nvim",
-    lazy = true,
-    event = "VeryLazy",
-    config = function()
-    end,
+	"sindrets/diffview.nvim",
+	lazy = true,
+	event = "BufRead",
+	config = function()
+		vim.keymap.set("n", "<leader>gd", function()
+			vim.cmd(":DiffviewOpen")
+		end, { desc = "Open Diff" })
+
+		vim.keymap.set("n", "<leader>gc", function()
+			vim.cmd(":DiffviewClose")
+		end, { desc = "Close Diff" })
+	end,
 }

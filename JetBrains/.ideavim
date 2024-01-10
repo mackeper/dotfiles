@@ -1,0 +1,195 @@
+
+" .ideavimrc is a configuration file for IdeaVim plugin.
+" * List of commands: https://jb.gg/h38q75
+" * Examples: https://jb.gg/share-ideavimrc
+
+"" Vim settings
+    let mapleader="\<space>"
+    set clipboard+=unnamed
+
+    " Visuals
+    set scrolloff=5
+    set sidescrolloff=5
+    set showmode
+    set showcmd
+    set number
+    " set relativenumber
+
+    " Sound
+    set belloff=all
+    set noerrorbells
+    set vb t_vb=
+
+    " Search
+    set nohls " Disable highlighting after search
+    set incsearch
+    set ignorecase
+    set smartcase
+
+"" IdeaVim
+    " Smart join for <C-J>
+    set ideajoin
+
+    " Map vim marks to IDEA global marks
+    set ideamarks
+    set ideastatusicon=enabled
+
+"" Plugins (Enable IdeaVim plugins https://jb.gg/ideavim-plugins)
+    Plug 'vim-scripts/argtextobj.vim'
+    Plug 'easymotion/vim-easymotion'
+    map s <Plug>(easymotion-s2)
+
+    "" Highlight copied text
+    Plug 'machakann/vim-highlightedyank'
+    let g:highlightedyank_highlight_duration = "1000"
+    let g:highlightedyank_highlight_color = "rgba(100, 100, 0, 155)"
+
+    "" Commentary plugin
+    Plug 'tpope/vim-commentary'
+
+    "" Surround plugin
+    " let surround_no_mappings = 0
+    Plug 'tpope/vim-surround'
+    nmap <leader>sa <Plug>YSurround
+    nmap <leader>sd <Plug>DSurround
+    nmap <leader>sr <Plug>CSurround
+
+    "" Which-key plugin
+    set which-key
+    let g:WhichKey_FontSize = 16
+    let g:WhichKey_CommandColor = "#41ead4"
+    let g:WhichKey_PrefixColor = "#f335b2"
+    let g:WhichKey_SortOrder = "by_key_prefix_first"
+    let g:WhichKey_CommandStyle = "bold"
+    set notimeout
+
+    let g:WhichKeyDesc_goto = "g Go to X"
+    let g:WhichKeyDesc_goto_declaration = "gd Go to Definition"
+    let g:WhichKeyDesc_goto_implementation = "gi Go to Implementation"
+    let g:WhichKeyDesc_goto_usages = "gu Go to Usages"
+    let g:WhichKeyDesc_goto_test = "gt Go to Test"
+    let g:WhichKeyDesc_goto_hint = "gh Show Hint"
+
+    let g:WhichKeyDesc_git = "<leader>g Git"
+    let g:WhichKeyDesc_git_blame = "<leader>gb Git Blame"
+
+    let g:WhichKeyDesc_test = "<leader>t Test"
+    let g:WhichKeyDesc_test_context = "<leader>tr Test current context"
+    let g:WhichKeyDesc_test_debug = "<leader>td Debug current context"
+    let g:WhichKeyDesc_test_all = "<leader>ta Test all"
+
+    let g:WhichKeyDesc_build = "<leader>b Build"
+    let g:WhichKeyDesc_build_solution = "<leader>bs Build solution"
+    let g:WhichKeyDesc_build_rebuild = "<leader>br Rebuild solution"
+    let g:WhichKeyDesc_build_project = "<leader>bp Build current project"
+    let g:WhichKeyDesc_build_cancel = "<leader>bc Cancel build"
+
+    let g:WhichKeyDesc_refactor = "<leader>r Refactor"
+    let g:WhichKeyDesc_refactor_rename = "<leader>rn Rename"
+    let g:WhichKeyDesc_refactor_reformat = "<leader>rf Reformat"
+
+    let g:WhichKeyDesc_ide = "<leader>j IDE"
+    let g:WhichKeyDesc_ide_project = "<leader>jp Project"
+    let g:WhichKeyDesc_ide_recent_files = "<leader>jm Recent files"
+    let g:WhichKeyDesc_ide_find = "<leader>jf Find"
+    let g:WhichKeyDesc_ide_find_in_file = "<leader>jg Find in file"
+
+    let g:WhichKeyDesc_explorer = "<leader>e Explorer"
+    let g:WhichKeyDesc_explorer_sync = "<leader>es Sync explorer"
+    let g:WhichKeyDesc_explorer_new = "<leader>ea New element"
+
+    let g:WhichKeyDesc_mode = "<leader>z Mode"
+    let g:WhichKeyDesc_mode_zen = "<leader>zm Zen mode"
+    let g:WhichKeyDesc_mode_center = "zz Center cursor"
+
+    let g:WhichKeyDesc_code = "<leader>c Code / Copy"
+    let g:WhichKeyDesc_code_copy_path = "<leader>cp Copy path"
+    let g:WhichKeyDesc_code_breakpoint = "<leader>cb Toggle Breakpoint"
+    let g:WhichKeyDesc_code_next_error = "<leader>ce Next error"
+    let g:WhichKeyDesc_code_prev_error = "<leader>cE Previous error"
+
+    let g:WhichKeyDesc_surround = "<leader>s Surround"
+    let g:WhichKeyDesc_surround_add = "<leader>sa Add surrounding"
+    let g:WhichKeyDesc_surround_delete = "<leader>sd Delete surrounding"
+    let g:WhichKeyDesc_surround_replace = "<leader>sr Replace surrounding"
+
+"" Remaps
+    nmap <leader>n :noh<CR>
+
+    " Refactor
+    nmap <leader>rn <Action>(RenameElement)
+    nmap <leader>rf <Action>(ReformatCode)
+    " xnoremap p pgv"@=v:register.'y'<cr>
+
+    " Move selected line / block up or down
+    vmap J :m '>+1<CR>gv=gv
+    vmap K :m '<-2<CR>gv=gv
+
+    " Keep cursor in the middle when moving around
+    nmap n nzz
+    nmap N Nzz
+    nmap J mzJ`z
+    nmap <C-d> <C-d>zz
+    nmap <C-u> <C-u>zz
+
+    " Paste / delete without overwriting the default register
+    xmap <leader>p "_dP
+    nmap <leader>d "_d
+    vmap <leader>d "_d
+
+    " Start substitute with the word under cursor
+    nmap <leader>rw :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
+
+    " Build
+    nmap <leader>bs <Action>(BuildSolutionAction)
+    nmap <leader>br <Action>(RebuildSolutionAction)
+    nmap <leader>bp <Action>(BuildCurrentProject)
+    nmap <leader>bc <Action>(StopBuild)
+ 
+    " Testing
+    nmap <leader>tr <Action>(RiderUnitTestRunContextAction)
+    nmap <leader>td <Action>(RiderUnitTestDebugContextAction)
+    nmap <leader>ta <Action>(RiderUnitTestRunSolutionAction)
+
+    " IDE Navigation
+    " map <leader>p <Action>(PinActiveTabToggle)
+    nmap <C-\> <Action>(ActivateTerminalToolWindow)
+    nmap <leader>jm <Action>(RecentFiles)
+    nmap <leader>jf <Action>(SearchEverywhere)
+    nmap <leader>jg <Action>(FindInPath)
+   
+    " Explorer
+    nmap <leader>es <Action>(SelectInProjectView)<Action>(CollapseAll)
+    nmap <leader>ea <Action>(NewElementSamePlace)
+    " nmap <leader>er <Action>(RenameFile)
+
+    " IDE Utils
+    " Show documentation under cursor
+    nmap gh <Action>(QuickJavaDoc)
+    
+    nmap <leader>cp <Action>(CopyAbsolutePath)
+    nmap <leader>cb <Action>(ToggleLineBreakpoint)
+    nmap <leader>ce <Action>(GotoNextErrorInSolution)
+    nmap <leader>cE <Action>(GotoPrevErrorInSolution)
+    
+    nmap <leader>zm <Action>(ToggleDistractionFreeMode)
+    nmap <leader>. <Action>(ShowIntentionActions)
+
+    " Code Navigation
+    nmap gc <Action>(GotoDeclaration)
+    nmap gi <Action>(GotoImplementation)
+    nmap gu <Action>(FindUsages)
+    nmap gt <Action>(GotoTest)
+
+    nmap [[ <Action>(MethodUp)
+    nmap ]] <Action>(MethodDown)
+    nmap ]e <Action>(GotoNextErrorInSolution)
+    nmap [e <Action>(GotoPrevErrorInSolution)
+
+    nmap zz zz100z<Left>
+
+    " Git blame annotate file
+    nmap <leader>gb <Action>(Annotate)
+
+    " Source file
+    nmap zl :source ~/.ideavimrc<CR>

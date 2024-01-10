@@ -8,6 +8,10 @@
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 ```
 
+```powershell
+Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+```
+
 [Packages](https://chocolatey.org/packages)
 
 ## Apps
@@ -26,6 +30,8 @@ choco install -y docker-desktop
 choco install -y docker-compose
 
 choco install -y nodejs
+choco install -y sass
+choco install -y elm-platform
 choco install -y python
 choco install -y rustup.install
 choco install -y dotnet-sdk
@@ -33,7 +39,7 @@ choco install -y dotnet-sdk
 
 #### Setup microsoft-windows-terminal
 
-1. https://www.nerdfonts.com/font-downloads - Install Caskaydia Cove Nerd Font
+1. <https://www.nerdfonts.com/font-downloads> - Install Caskaydia Cove Nerd Font
 2. Copy Microsoft.PowerShell_profile.ps1 to $PROFILE
 3. Install modules:
 
