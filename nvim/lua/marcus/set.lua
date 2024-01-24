@@ -3,6 +3,8 @@ vim.g.mapleader = " "
 
 -- statusline
 vim.opt.laststatus = 3
+vim.opt.showtabline = 2
+vim.opt.showcmd = true
 
 -- Line numbers
 vim.opt.nu = true

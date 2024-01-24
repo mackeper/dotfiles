@@ -43,6 +43,8 @@ return {
 			},
 		}
 
+		local cyberdream = require("lualine.themes.cyberdream")
+
 		local function copilot_indicator()
 			local client = vim.lsp.get_active_clients({ name = "copilot" })[1]
 			if client == nil then
@@ -71,7 +73,7 @@ return {
 			options = {
 				icons_enabled = true,
 				-- theme = 'codedark',
-				theme = vscode_theme,
+				theme = cyberdream,
 				-- component_separators = { left = '', right = '' },
 				-- section_separators = { left = '', right = '' },
 				component_separators = "|",
