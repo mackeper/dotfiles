@@ -243,6 +243,9 @@ return {
 					diagnostics = {
 						enable = false,
 					},
+					checkOnSave = {
+						command = "clippy",
+					},
 				},
 			},
 		})

@@ -1,5 +1,6 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
+vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
 vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
 vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
 
@@ -52,6 +53,7 @@ vim.keymap.set("n", "<leader>bl", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bh", ":bprevious<CR>", { desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
 vim.keymap.set("n", "<leader>bo", ":bufdo bd<CR>", { desc = "Delete all buffers" })
+vim.keymap.set("n", "<leader>bn", ":enew<CR>", { desc = "New buffer" })
 vim.keymap.set("n", "<tab>", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<S-tab>", ":bprevious<CR>", { desc = "Previous buffer" })
 
@@ -60,6 +62,12 @@ vim.keymap.set("n", "<C-left>", "<C-w>h", { desc = "Move to left window" })
 vim.keymap.set("n", "<C-down>", "<C-w>j", { desc = "Move to bottom window" })
 vim.keymap.set("n", "<C-up>", "<C-w>k", { desc = "Move to top window" })
 vim.keymap.set("n", "<C-right>", "<C-w>l", { desc = "Move to right window" })
+vim.keymap.set("n", "<leader>ws", "<C-w>s", { desc = "Split window horizontally" })
+vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split window vertically" })
+vim.keymap.set("n", "<leader>wc", "<C-w>c", { desc = "Close window" })
+vim.keymap.set("n", "<leader>wo", "<C-w>o", { desc = "Close other windows" })
+vim.keymap.set("n", "<leader>wd", ":windo diffthis", { desc = "Diff windows" })
+vim.keymap.set("n", "<leader>wu", ":windo diffoff", { desc = "Undo diff windows" })
 
 -- Terminal
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
