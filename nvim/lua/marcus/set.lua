@@ -80,5 +80,5 @@ vim.opt.spell = false
 vim.opt.spelllang = "en_us"
 
 -- Terminal
-vim.g.terminal_emulator = "powershell"
-vim.opt.shell = "powershell"
+-- vim.g.terminal_emulator = "powershell"
+-- vim.opt.shell = "powershell"
