@@ -46,5 +46,7 @@ sudo apt install python3-pip
 pip3 install --upgrade pip
 pip3 install pynvim
 
-
+# Node https://github.com/nodesource/distributions?tab=readme-ov-file#ubuntu-versions
+curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs
 ```
