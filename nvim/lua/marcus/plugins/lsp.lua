@@ -148,6 +148,7 @@ return {
 		require("mason-tool-installer").setup({
 			ensure_installed = {
 				"elm-format", -- elm
+                "black", -- python
 			},
 		})
 
