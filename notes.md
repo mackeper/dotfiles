@@ -50,7 +50,7 @@ sudo install lazygit /usr/local/bin
 
 ### go install
 
-* scc
+* github.com/boyter/scc/v3@latests
 
 ### cargo install
 
