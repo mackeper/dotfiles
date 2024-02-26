@@ -7,6 +7,6 @@ return {
 		scrollview_base = "right",
 		current_only = true,
 		signs_on_startup = { "all" },
-		diagnostics_severities = { vim.diagnostic.severity.ERROR },
+		-- diagnostics_severities = { vim.diagnostic.severity.ERROR },
 	},
 }
