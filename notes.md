@@ -25,11 +25,9 @@ rm lazygit lazygit.tar.gz
 ### apt
 * [fzf](
 * [fd](
-* [delta](
 * [procs](
-* [bottom](
 * [hyperfine](
-* * ripgrep
+* ripgrep
 * neofetch
 * btop
 * zoxide
