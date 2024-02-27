@@ -3,7 +3,7 @@ return {
 	version = false,
 	build = ":TSUpdate",
 	lazy = true,
-	event = { "BufRead", },
+	event = { "BufReadPost", "BufNewFile" },
 	config = function()
 		local configs = require("nvim-treesitter.configs")
 

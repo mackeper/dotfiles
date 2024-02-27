@@ -1,7 +1,7 @@
 return {
 	"neovim/nvim-lspconfig",
 	lazy = true,
-	event = "BufRead",
+	event = { "BufReadPost", "BufNewFile" },
 	dependencies = {
 		{ "williamboman/mason.nvim" },
 		{ "williamboman/mason-lspconfig.nvim" },
@@ -69,34 +69,20 @@ return {
 
                 local builtin = require("telescope.builtin")
 
-                -- vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts("Definition"))
                 vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
-                -- vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, opts("Implementation"))
                 vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
-                -- vim.keymap.set("n", "gu", function() vim.lsp.buf.references() end, opts("Usages"))
                 vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
-                vim.keymap.set("n", "gh", function()
-                    vim.lsp.buf.hover()
-                end, opts("Hover / Quick info"))
-                -- vim.keymap.set("n", "<C-t>", function() vim.lsp.buf.workspace_symbol() end, opts("Workspace symbols"))
+                vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts("Hover / Quick info"))
                 vim.keymap.set("n", "<C-t>", builtin.lsp_workspace_symbols, opts("Workspace symbols"))
-                -- vim.keymap.set("n", "<leader>jk", function() vim.diagnostic.open_float() end, opts("Diagnostic float"))
                 vim.keymap.set("n", "<leader>jd", builtin.diagnostics, opts("Diagnostic"))
                 vim.keymap.set("n", "<leader>je", function()
                     builtin.diagnostics({ severity = vim.diagnostic.severity.ERROR })
                 end, opts("Diagnostic (errors)"))
-                vim.keymap.set("n", "[e", function()
-                    vim.diagnostic.goto_next()
-                end, opts("Next"))
-                vim.keymap.set("n", "]e", function()
-                    vim.diagnostic.goto_prev()
-                end, opts("Previous"))
-                vim.keymap.set("n", "<leader>.", function()
-                    vim.lsp.buf.code_action()
-                end, opts("Code action"))
-                vim.keymap.set("n", "<leader>rn", function()
-                    vim.lsp.buf.rename()
-                end, opts("Rename"))
+                vim.keymap.set("n", "[e", vim.diagnostic.goto_next, opts("Next"))
+                vim.keymap.set("n", "]e", vim.diagnostic.goto_prev, opts("Previous"))
+                vim.keymap.set("n", "<leader>.", vim.lsp.buf.code_action, opts("Code action"))
+                vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename"))
+                -- vim.keymap.set("n", "<C-h>", vim.lsp.signature_help, opts("Signature help"))
             end
         })
 
@@ -122,7 +108,7 @@ return {
 				"clangd", -- c
 				"cssls", -- css
 				"dockerls", -- docker
-				"elmls", -- elm
+				"elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
 				"eslint",
 				-- "fsautocomplete", -- F#
 				-- "hls", -- Haskell
@@ -148,18 +134,9 @@ return {
 		require("mason-tool-installer").setup({
 			ensure_installed = {
 				"elm-format", -- elm
-                "black", -- python
 			},
 		})
 
-
-		require('lspconfig').bashls.setup({})
-		require('lspconfig').clangd.setup({})
-		require('lspconfig').cssls.setup({})
-		require('lspconfig').dockerls.setup({})
-		require('lspconfig').elmls.setup({}) -- npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
-		require('lspconfig').eslint.setup({})
-		require('lspconfig').fsautocomplete.setup({})
 		require('lspconfig').hls.setup({
 			settings = {
 				haskell = {
@@ -167,8 +144,7 @@ return {
 				},
 			},
 		})
-		require('lspconfig').html.setup({})
-		require('lspconfig').jsonls.setup({})
+
 		require('lspconfig').lua_ls.setup({
 			settings = {
 				Lua = {
@@ -193,7 +169,7 @@ return {
 				},
 			},
 		})
-		require('lspconfig').marksman.setup({})
+
 		require('lspconfig').omnisharp.setup({
 			cmd = {
 				"dotnet",
@@ -208,11 +184,13 @@ return {
 				["textDocument/definition"] = require("omnisharp_extended").handler,
 			},
 		})
+
 		-- require('lspconfig').powershell_es.setup({
 		-- 	bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
 		-- 	-- shell = "powershell.exe",
 		-- 	-- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
 		-- })
+
         require('lspconfig').pylsp.setup({
             settings = {
                 pylsp = {
@@ -225,23 +203,20 @@ return {
                 },
             },
         })
+
         vim.api.nvim_create_autocmd('BufWritePre', {
             desc = 'Format python on write using black',
             pattern = '*.py',
             group = vim.api.nvim_create_augroup('black_on_save', { clear = true }),
             callback = function()
                 local format_command = { "black", vim.api.nvim_buf_get_name(0) }
-                local format_job_id = vim.fn.jobstart(format_command, {
+                vim.fn.jobstart(format_command, {
                     on_exit = function(_, code, _)
                         if code == 0 then
                             vim.api.nvim_command('e!')
                         end
                     end,
                 })
-                -- vim.api.nvim_create_autocmd('BufWritePre', {
-                --     buffer = options.buf,
-                --     command = '!black %'
-                -- })
             end,
         })
 
@@ -254,8 +229,5 @@ return {
 				},
 			},
 		})
-		require('lspconfig').sqlls.setup({})
-		require('lspconfig').tsserver.setup({})
-		require('lspconfig').yamlls.setup({})
 	end,
 }

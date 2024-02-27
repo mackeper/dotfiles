@@ -1,7 +1,7 @@
 return {
 	"folke/zen-mode.nvim",
 	lazy = true,
-	event = "BufRead",
+	event = { "BufReadPost", "BufNewFile" },
 	opts = {
 		window = {
 			backdrop = 1.0, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal

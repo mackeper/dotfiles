@@ -2,7 +2,7 @@ return {
 	"echasnovski/mini.nvim",
 	version = "*",
 	lazy = true,
-	event = "BufRead",
+	event = { "BufReadPost", "BufNewFile" },
 	config = function()
 		require("mini.comment").setup({
 			mappings = {
@@ -12,6 +12,8 @@ return {
 				textobject = "",
 			},
 		})
+
+        require("mini.cursorword").setup()
 
 		require("mini.surround").setup({
 			mappings = {

@@ -2,7 +2,7 @@ return {
 	"akinsho/toggleterm.nvim",
 	enabled = true,
 	lazy = true,
-	event = "BufRead",
+	event = { "BufReadPost", "BufNewFile" },
 	-- version = "v2.8.*",
 	config = function()
 		-- Setup shell for windows
