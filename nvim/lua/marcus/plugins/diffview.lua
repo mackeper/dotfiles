@@ -1,7 +1,7 @@
 return {
 	"sindrets/diffview.nvim",
 	lazy = true,
-	event = "BufRead",
+	event = { "BufReadPost", "BufNewFile" },
 	config = function()
 		vim.keymap.set("n", "<leader>gd", function()
 			vim.cmd(":DiffviewOpen")

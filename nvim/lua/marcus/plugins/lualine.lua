@@ -1,7 +1,7 @@
 return {
 	"nvim-lualine/lualine.nvim",
 	lazy = true,
-	event = "BufRead",
+	event = { "BufReadPost", "BufNewFile" },
 	requires = {
 		"nvim-tree/nvim-web-devicons",
 		opt = true,

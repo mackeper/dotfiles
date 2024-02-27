@@ -39,7 +39,7 @@ rm lazygit lazygit.tar.gz
 * hexyl
 * steghide
 * exiftool
-*
+* cmake
 
 ### npm
 * wikit
