@@ -6,7 +6,15 @@ function echo_title() {
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-echo_title "Copying config files"
-echo "cp $SCRIPT_DIR/.tmux.conf ~/.tmux.conf"
-echo "cp $SCRIPT_DIR/.zshrc ~/.zshrc"
-echo "cp -r $SCRIPT_DIR/../../nvim ~/.config"
+commands=(
+    'cp $SCRIPT_DIR/.tmux.conf ~/.tmux.conf'
+    'cp $SCRIPT_DIR/.zshrc ~/.zshrc'
+    'cp -r $SCRIPT_DIR/../../nvim ~/.config/nvim'
+    'cp $SCRIPT_DIR/../../.gitconfig ~/.gitconfig'
+)
+
+echo_title "Copying configs"
+for command in "${commands[@]}"; do
+    echo "$command"
+    eval $command
+done

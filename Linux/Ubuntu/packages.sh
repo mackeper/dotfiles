@@ -81,6 +81,9 @@ cargo_packages=(
 )
 
 custom_packages=(
+    # Nvim
+    'mkdir ~/bin && wget -O ~/bin/nvim https://github.com/neovim/neovim/releases/download/v0.9.5/nvim.appimage && chmod u+x ~/bin/nvim'
+
     # Zoxide
     "curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash"
 
