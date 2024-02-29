@@ -16,6 +16,7 @@ apt_packages=(
     "wget"
     "openssl"
     "tmux"
+    "xclip"
 
     # Terminal
     "zsh"
@@ -23,6 +24,7 @@ apt_packages=(
     # Terminal tools
     "bat" # Alternative to cat, alias bat="batcat"
     "btop" # Resource monitor
+    "duf" # Disk usage
     "ddgr" # DuckDuckGo from the terminal
     "fd-find" # Alternative to find, alias fd="fdfind"
     "fzf" # Fuzzy finder
@@ -38,6 +40,7 @@ apt_packages=(
     "python3-pip"
     "python3-venv"
     "dotnet-sdk-8.0"
+    "golang"
 
     # CTF / Security
     "exiftool" # Read and write meta information in files
@@ -56,7 +59,7 @@ npm_packages=(
 pip_packages=(
     # Terminal tools
     # "thefuck"
-    # "youtube-dl"
+    # "yt-dlp" # Youtube downloader
 
     # CTF / Security
     "flask-unsign"
