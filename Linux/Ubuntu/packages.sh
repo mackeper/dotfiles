@@ -7,14 +7,15 @@ function echo_title() {
 # List of packages for apt
 apt_packages=(
     # Essential
-    "build-essential" # Build tools
-    "git" # Version control
-    "unzip" # Unzip files
+    "build-essential"
+    "git"
+    "unzip"
     "fuse"
     "libfuse2"
     "curl"
     "wget"
     "openssl"
+    "tmux"
 
     # Terminal
     "zsh"
@@ -36,6 +37,7 @@ apt_packages=(
     "python3"
     "python3-pip"
     "python3-venv"
+    "dotnet-sdk-8.0"
 
     # CTF / Security
     "exiftool" # Read and write meta information in files
