@@ -100,6 +100,7 @@ custom_packages=(
 
     # Rust
     'curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh'
+    'source "$HOME/.cargo/env"'
 
     # Node https://github.com/nodesource/distributions?tab=readme-ov-file#ubuntu-versions
     'curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs'
