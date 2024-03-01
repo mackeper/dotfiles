@@ -1,4 +1,4 @@
-# Created by Zap installer
+# ---- Created by Zap installer ----
 [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 plug "zsh-users/zsh-autosuggestions"
 plug "zap-zsh/supercharge"
@@ -7,15 +7,16 @@ plug "zsh-users/zsh-syntax-highlighting"
 plug "Aloxaf/fzf-tab"
 plug "zap-zsh/fzf"
 
-# Load and initialise completion system
+# ---- Load and initialise completion system ----
 autoload -Uz compinit
 compinit
 
-# Add local bin
+# ---- Add local bin ----
 export PATH=$PATH:~/bin
 export PATH=$PATH:~/go/bin
+export PATH=$PATH:/usr/local/go/bin
 
-# Tools
+# ---- Tools ----
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh)"
 fi
@@ -24,6 +25,7 @@ fi
 eval "$(zoxide init zsh)"
 
 # FZF
+# export FZF_DEFAULT_OPTS="--preview 'batcat -n --color=always {}'"
 export FZF_DEFAULT_OPTS="--preview '[[ -f {} ]] && batcat -n --color=always {} || eza --icons --color=always --tree --level=1 {}'"
 
 # aliases
@@ -37,14 +39,14 @@ alias ls='eza --icons'
 alias ll='eza -la --icons'
 alias lt='eza --tree --level=3 --icons'
 
-# Turn off all beeps
+# ---- Turn off all beeps ----
 unsetopt BEEP
 
-# Keymaps
+# ---- Keymaps ----
 # setxkbmap -option ctrl:nocaps
 # setxkbmap -layout us -variant altgr-intl
 
-# History
+# ---- History ----
 setopt HIST_FIND_NO_DUPS    # Don't find duplicates on ctrl-r
 setopt HIST_IGNORE_DUPS     # Don't add to hist if same as last one
 setopt INC_APPEND_HISTORY   # Add lines to hist as soon as they are entered
@@ -53,7 +55,7 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 
-# Git aliases
+# ---- Git aliases ----
 alias g='git'
 alias ga='git add'
 alias gaa='git add -A'

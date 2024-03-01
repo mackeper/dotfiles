@@ -40,7 +40,6 @@ apt_packages=(
     "python3-pip"
     "python3-venv"
     "dotnet-sdk-8.0"
-    "golang"
 
     # CTF / Security
     "exiftool" # Read and write meta information in files
@@ -110,6 +109,12 @@ custom_packages=(
 
     # Node https://github.com/nodesource/distributions?tab=readme-ov-file#ubuntu-versions
     'curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs'
+
+    # Golang
+    'wget -O ~/go.tar.gz https://go.dev/dl/go1.22.0.linux-amd64.tar.gz'
+    'sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf ~/go.tar.gz'
+    'rm ~/go.tar.gz'
+    'export PATH=$PATH:/usr/local/go/bin'
 )
 
 # Function to concatenate packages into strings
