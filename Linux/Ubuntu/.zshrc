@@ -23,6 +23,9 @@ fi
 # eval $(thefuck --alias)
 eval "$(zoxide init zsh)"
 
+# FZF
+export FZF_DEFAULT_OPTS="--preview '[[ -f {} ]] && batcat -n --color=always {} || eza --icons --color=always --tree --level=1 {}'"
+
 # aliases
 function wttr() { curl "wttr.in/$1"; }
 alias wttrs='curl wttr.in/stockholm'
