@@ -11,7 +11,43 @@ return {
 		local telescope = require("telescope")
 		telescope.load_extension("projects")
 
-		telescope.setup({})
+		telescope.setup({
+            pickers = {
+                find_files = {
+                    hidden = true,
+                },
+                live_grep = {
+                    hidden = true,
+                },
+                git_files = {
+                    hidden = true,
+                },
+                git_bcommits = {
+                    hidden = true,
+                },
+                git_commits = {
+                    hidden = true,
+                },
+                git_status = {
+                    hidden = true,
+                },
+                git_branches = {
+                    hidden = true,
+                },
+                git_stash = {
+                    hidden = true,
+                },
+                help_tags = {
+                    hidden = true,
+                },
+                oldfiles = {
+                    hidden = true,
+                },
+                projects = {
+                    hidden = true,
+                },
+            },
+        })
 
 		vim.keymap.set("n", "<leader>jt", builtin.builtin, { desc = "Telescope" })
 		vim.keymap.set("n", "<leader>jb", builtin.buffers, { desc = "Buffers" })
