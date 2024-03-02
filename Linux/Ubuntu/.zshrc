@@ -27,6 +27,7 @@ eval "$(zoxide init zsh)"
 # FZF
 # export FZF_DEFAULT_OPTS="--preview 'batcat -n --color=always {}'"
 export FZF_DEFAULT_OPTS="--preview '[[ -f {} ]] && batcat -n --color=always {} || eza --icons --color=always --tree --level=1 {}'"
+export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window up:3:wrap"
 
 # aliases
 function wttr() { curl "wttr.in/$1"; }
