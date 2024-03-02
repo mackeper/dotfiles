@@ -9,7 +9,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 commands=(
     'cp $SCRIPT_DIR/.tmux.conf ~/.tmux.conf'
     'cp $SCRIPT_DIR/.zshrc ~/.zshrc'
-    'cp -r $SCRIPT_DIR/../../nvim ~/.config/nvim'
+    'cp -r $SCRIPT_DIR/../../nvim ~/.config/'
     'cp $SCRIPT_DIR/../../.gitconfig ~/.gitconfig'
 )
 

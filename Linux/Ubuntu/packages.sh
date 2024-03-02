@@ -118,7 +118,7 @@ custom_packages=(
 )
 
 # Function to concatenate packages into strings
-concatenate_packages() {
+install_packages() {
     local packages=("$@")
     local concatenated="$1"
     for package in "${packages[@]:1}"; do
@@ -132,7 +132,7 @@ concatenate_packages() {
 echo_title "APT"
 sudo apt update
 sudo apt upgrade -y
-concatenate_packages "sudo apt install" "${apt_packages[@]}" # Required before installing other packages
+install_packages "sudo apt install" "${apt_packages[@]}" # Required before installing other packages
 
 # Custom commands
 echo_title "Custom commands"
@@ -145,7 +145,7 @@ echo_title "pip"
 pip install --upgrade pip
 
 # Install packages for each package manager
-concatenate_packages "sudo npm -g install" "${npm_packages[@]}"
-concatenate_packages "pip install" "${pip_packages[@]}"
-concatenate_packages "go install" "${go_packages[@]}"
-concatenate_packages "cargo install" "${cargo_packages[@]}"
+install_packages "sudo npm -g install" "${npm_packages[@]}"
+install_packages "pip install" "${pip_packages[@]}"
+install_packages "go install" "${go_packages[@]}"
+install_packages "cargo install" "${cargo_packages[@]}"
