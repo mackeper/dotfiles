@@ -101,6 +101,18 @@ return {
             })
         end
 
+        -- Add border to lsp handlers
+        local border = "rounded"
+        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+            border = border
+          })
+        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+            border = border
+          })
+        vim.diagnostic.config{
+          float = { border = border }
+        }
+
 		-- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 		require("mason-lspconfig").setup({
 			ensure_installed = {
@@ -111,6 +123,7 @@ return {
 				"elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
 				"eslint",
 				-- "fsautocomplete", -- F#
+                "gopls", -- Go
 				-- "hls", -- Haskell
 				"html", -- HTML
 				"jsonls", -- Json
