@@ -93,12 +93,38 @@ return {
 			},
 			sections = {
 				lualine_a = { "mode" },
-				lualine_b = { "branch", "diff", "diagnostics" },
+				lualine_b = {
+                    { 'branch', icon = '', color = { fg = colors.violet, gui = 'bold' },},
+                    {
+                        'diff',
+                        symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
+                        diff_color = {
+                            added = { fg = colors.green },
+                            modified = { fg = colors.orange },
+                            removed = { fg = colors.red },
+                        },
+                    },
+                    "diagnostics"
+                },
 				lualine_c = { "filename" },
-				lualine_x = { copilot_indicator, "encoding", "fileformat", "filetype" },
+				lualine_x = {
+                    {
+                        copilot_indicator,
+                        color = { fg = colors.blue, gui = 'bold' },
+                    },
+                    {
+                        'encoding',
+                        fmt = string.upper,
+                        color = { fg = colors.green, gui = 'bold' },
+                        icons_enabled = true,
+                        icon = '󰉢',
+                    },
+                    "fileformat",
+                    "filetype"
+                },
 				lualine_y = { "progress" },
 				lualine_z = { "location" },
-			},
+            },
 			inactive_sections = {
 				lualine_a = {},
 				lualine_b = {},
