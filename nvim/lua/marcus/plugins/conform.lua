@@ -22,7 +22,7 @@ return {
 			csharp = { "csharpier" },
 			elm = { "elm-format" },
 			haskell = { "fourmolu" },
-			python = { "isort" },
+			python = { "isort", "black" },
 			javascript = { { "prettierd", "prettier" } },
 			rust = { "rustfmt" },
 			sh = { "shfmt" },

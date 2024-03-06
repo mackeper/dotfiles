@@ -1,66 +1,66 @@
 return {
-	"neovim/nvim-lspconfig",
-	lazy = true,
-	event = { "BufReadPost", "BufNewFile" },
-	dependencies = {
-		{ "williamboman/mason.nvim" },
-		{ "williamboman/mason-lspconfig.nvim" },
-		{ "hrsh7th/nvim-cmp" },
-		{ "onsails/lspkind.nvim" }, -- Icons
-		{ "hrsh7th/cmp-nvim-lsp" },
+    "neovim/nvim-lspconfig",
+    lazy = true,
+    event = { "BufReadPost", "BufNewFile" },
+    dependencies = {
+        { "williamboman/mason.nvim" },
+        { "williamboman/mason-lspconfig.nvim" },
+        { "hrsh7th/nvim-cmp" },
+        { "onsails/lspkind.nvim" }, -- Icons
+        { "hrsh7th/cmp-nvim-lsp" },
         { "hrsh7th/cmp-buffer", },
         { "hrsh7th/cmp-path", },
         { "hrsh7th/cmp-cmdline", },
-		{ "saadparwaiz1/cmp_luasnip" },
-		{
-			"L3MON4D3/LuaSnip",
-			dependencies = {
-				"rafamadriz/friendly-snippets",
-			},
-		},
-		{ "folke/neodev.nvim" },
-		{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
-		{ "Hoffs/omnisharp-extended-lsp.nvim" },
-	},
-	config = function()
-		local cmp = require("cmp")
+        { "saadparwaiz1/cmp_luasnip" },
+        {
+            "L3MON4D3/LuaSnip",
+            dependencies = {
+                "rafamadriz/friendly-snippets",
+            },
+        },
+        { "folke/neodev.nvim" },
+        { "WhoIsSethDaniel/mason-tool-installer.nvim" },
+        { "Hoffs/omnisharp-extended-lsp.nvim" },
+    },
+    config = function()
+        local cmp = require("cmp")
         local cmp_lsp = require("cmp_nvim_lsp")
-		require("neodev").setup() -- Before lspconfig
+        require("neodev").setup() -- Before lspconfig
 
-		local ls = require("luasnip")
-		local ls_vs_loader = require("luasnip.loaders.from_vscode")
-		ls_vs_loader.lazy_load()
-		ls_vs_loader.lazy_load({ paths = { "./lua/marcus/snippets" } })
+        local ls = require("luasnip")
+        local ls_vs_loader = require("luasnip.loaders.from_vscode")
+        ls_vs_loader.lazy_load()
+        ls_vs_loader.lazy_load({ paths = { "./lua/marcus/snippets" } })
 
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
-		cmp.setup({
+        cmp.setup({
             mapping = cmp.mapping.preset.insert({
                 ['<S-Tab>'] = cmp.mapping.select_prev_item(cmp_select),
                 ['<Tab>'] = cmp.mapping.select_next_item(cmp_select),
-				["<CR>"] = cmp.mapping.confirm({ select = true }),
-				["<C-Space>"] = cmp.mapping.complete(),
+                ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                ["<C-Space>"] = cmp.mapping.complete(),
             }),
-			formatting = {
-				format = require("lspkind").cmp_format({ with_text = true, maxwidth = 50 }),
-			},
-			window = {
-				completion = cmp.config.window.bordered(),
-			},
-			snippet = {
-				expand = function(args)
-					ls.lsp_expand(args.body)
-				end,
-			},
-			sources = {
-				{ name = "nvim_lsp" },
-				{ name = "luasnip" },
-				{ name = "path" },
+            formatting = {
+                format = require("lspkind").cmp_format({ with_text = true, maxwidth = 50 }),
+            },
+            window = {
+                completion = cmp.config.window.bordered(),
+            },
+            snippet = {
+                expand = function(args)
+                    ls.lsp_expand(args.body)
+                end,
+            },
+            sources = {
+                { name = "nvim_lsp" },
+                { name = "luasnip" },
+                { name = "path" },
                 { name = "buffer" },
-			},
-		})
+            },
+        })
 
         -- Setup keybindings
-		vim.api.nvim_create_autocmd('LspAttach', {
+        vim.api.nvim_create_autocmd('LspAttach', {
             desc = "LSP keybindings",
             callback = function(event)
                 local function opts(desc)
@@ -86,7 +86,7 @@ return {
             end
         })
 
-		require("mason").setup({})
+        require("mason").setup({})
 
         -- Setup defaults
         local capabilities = vim.tbl_deep_extend(
@@ -105,104 +105,105 @@ return {
         local border = "rounded"
         vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
             border = border
-          })
+        })
         vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
             border = border
-          })
+        })
         vim.diagnostic.config{
-          float = { border = border }
+            float = { border = border }
         }
 
-		-- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
-		require("mason-lspconfig").setup({
-			ensure_installed = {
-				"bashls", -- bash
-				"clangd", -- c
-				"cssls", -- css
-				"dockerls", -- docker
-				"elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
-				"eslint",
-				-- "fsautocomplete", -- F#
+        -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
+        require("mason-lspconfig").setup({
+            ensure_installed = {
+                "bashls", -- bash
+                "clangd", -- c
+                "cssls", -- css
+                "dockerls", -- docker
+                "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
+                "eslint",
+                -- "fsautocomplete", -- F#
                 "gopls", -- Go
-				-- "hls", -- Haskell
-				"html", -- HTML
-				"jsonls", -- Json
-				"lua_ls", -- Lua
-				"marksman", -- Markdown
-				"omnisharp", -- C# change to csharp_ls?
-				-- "powershell_es", -- PowerShell
-				"pylsp", -- Python
-				-- "pyright", -- Python
-				"rust_analyzer", -- Rust
-				"sqlls", -- SQL
-				"svelte", -- Svelte
-				"tsserver", -- JavaScript / TypeScript
-				"yamlls", -- yaml
-			},
-			handlers = {
+                -- "hls", -- Haskell
+                "html", -- HTML
+                "jsonls", -- Json
+                "lua_ls", -- Lua
+                "marksman", -- Markdown
+                "omnisharp", -- C# change to csharp_ls?
+                -- "powershell_es", -- PowerShell
+                "pylsp", -- Python
+                -- "pyright", -- Python
+                "rust_analyzer", -- Rust
+                "sqlls", -- SQL
+                "svelte", -- Svelte
+                "tsserver", -- JavaScript / TypeScript
+                "yamlls", -- yaml
+            },
+            handlers = {
                 default_setup,
-			},
-		})
+            },
+        })
 
-		require("mason-tool-installer").setup({
-			ensure_installed = {
-				"elm-format", -- elm
-			},
-		})
+        require("mason-tool-installer").setup({
+            ensure_installed = {
+                "elm-format", -- elm
+                "stylua", -- lua
+            },
+        })
 
-		require('lspconfig').hls.setup({
-			settings = {
-				haskell = {
-					formattingProvider = "fourmolu",
-				},
-			},
-		})
+        require('lspconfig').hls.setup({
+            settings = {
+                haskell = {
+                    formattingProvider = "fourmolu",
+                },
+            },
+        })
 
-		require('lspconfig').lua_ls.setup({
-			settings = {
-				Lua = {
-					runtime = {
-						version = "LuaJIT",
-					},
-					diagnostics = {
-						globals = {
-							"vim",
-							"require",
-						},
-					},
-					workspace = {
-						checkThirdParty = false,
-						library = {
-							vim.env.VIMRUNTIME,
-						},
-					},
-					telemetry = {
-						enable = false,
-					},
-				},
-			},
-		})
+        require('lspconfig').lua_ls.setup({
+            settings = {
+                Lua = {
+                    runtime = {
+                        version = "LuaJIT",
+                    },
+                    diagnostics = {
+                        globals = {
+                            "vim",
+                            "require",
+                        },
+                    },
+                    workspace = {
+                        checkThirdParty = false,
+                        library = {
+                            vim.env.VIMRUNTIME,
+                        },
+                    },
+                    telemetry = {
+                        enable = false,
+                    },
+                },
+            },
+        })
 
-		require('lspconfig').omnisharp.setup({
-			cmd = {
-				"dotnet",
-				vim.fn.stdpath("data") .. "/mason/packages/omnisharp/libexec/OmniSharp.dll",
-			},
-			sdk_include_prereleases = true,
-			enable_editorconfig_support = true,
-			enable_roslyn_analyzers = true,
-			organize_imports_on_format = true,
-			enable_import_completion = true,
-			handlers = {
-				["textDocument/definition"] = require("omnisharp_extended").handler,
-			},
-		})
+        require('lspconfig').omnisharp.setup({
+            cmd = {
+                "dotnet",
+                vim.fn.stdpath("data") .. "/mason/packages/omnisharp/libexec/OmniSharp.dll",
+            },
+            sdk_include_prereleases = true,
+            enable_editorconfig_support = true,
+            enable_roslyn_analyzers = true,
+            organize_imports_on_format = true,
+            enable_import_completion = true,
+            handlers = {
+                ["textDocument/definition"] = require("omnisharp_extended").handler,
+            },
+        })
 
-		-- require('lspconfig').powershell_es.setup({
-		-- 	bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
-		-- 	-- shell = "powershell.exe",
-		-- 	-- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
-		-- })
+        -- require('lspconfig').powershell_es.setup({
+        -- 	bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
+        -- 	-- shell = "powershell.exe",
+        -- 	-- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
+        -- })
 
         require('lspconfig').pylsp.setup({
             settings = {
@@ -233,14 +234,14 @@ return {
             end,
         })
 
-		require('lspconfig').rust_analyzer.setup({
-			settings = {
-				["rust-analyzer"] = {
-					diagnostics = {
-						enable = false,
-					},
-				},
-			},
-		})
-	end,
+        require('lspconfig').rust_analyzer.setup({
+            settings = {
+                ["rust-analyzer"] = {
+                    diagnostics = {
+                        enable = false,
+                    },
+                },
+            },
+        })
+    end,
 }
