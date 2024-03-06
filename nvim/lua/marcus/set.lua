@@ -26,7 +26,7 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
-vim.opt.inccommand = 'split'
+vim.opt.inccommand = "split"
 
 -- Colors
 vim.opt.termguicolors = true
@@ -38,7 +38,7 @@ vim.opt.sidescrolloff = 5
 vim.opt.breakindent = true
 
 vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 vim.api.nvim_create_autocmd("WinEnter", {
     callback = function()

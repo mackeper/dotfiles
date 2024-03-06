@@ -1,7 +1,7 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
 -- Auto clear highlights
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
 vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
@@ -25,18 +25,18 @@ vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without overwriting def
 
 -- Start substitute with the word under cursor
 vim.keymap.set(
-	"n",
-	"<leader>rw",
-	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-	{ desc = "Substitute word under cursor" }
+    "n",
+    "<leader>rw",
+    [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+    { desc = "Substitute word under cursor" }
 )
 
 -- Open, Windows specific
 vim.keymap.set(
-	"n",
-	"<leader>oe",
-	[[<CMD>!start explorer /select,"%":p<CR>]],
-	{ desc = "Open in explorer", silent = true }
+    "n",
+    "<leader>oe",
+    [[<CMD>!start explorer /select,"%":p<CR>]],
+    { desc = "Open in explorer", silent = true }
 )
 
 -- File

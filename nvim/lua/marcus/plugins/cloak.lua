@@ -1,11 +1,11 @@
 return {
-	"laytan/cloak.nvim",
-	enable = false,
-	config = function()
-		require("cloak").setup({
-			-- your configuration comes here
-			-- or leave it empty to use the default settings
-			-- refer to the configuration section below
-		})
-	end,
+    "laytan/cloak.nvim",
+    enable = false,
+    config = function()
+        require("cloak").setup({
+            -- your configuration comes here
+            -- or leave it empty to use the default settings
+            -- refer to the configuration section below
+        })
+    end,
 }
