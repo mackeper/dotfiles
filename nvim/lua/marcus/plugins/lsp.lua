@@ -8,9 +8,9 @@ return {
         { "hrsh7th/nvim-cmp" },
         { "onsails/lspkind.nvim" }, -- Icons
         { "hrsh7th/cmp-nvim-lsp" },
-        { "hrsh7th/cmp-buffer", },
-        { "hrsh7th/cmp-path", },
-        { "hrsh7th/cmp-cmdline", },
+        { "hrsh7th/cmp-buffer" },
+        { "hrsh7th/cmp-path" },
+        { "hrsh7th/cmp-cmdline" },
         { "saadparwaiz1/cmp_luasnip" },
         {
             "L3MON4D3/LuaSnip",
@@ -35,8 +35,8 @@ return {
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
         cmp.setup({
             mapping = cmp.mapping.preset.insert({
-                ['<S-Tab>'] = cmp.mapping.select_prev_item(cmp_select),
-                ['<Tab>'] = cmp.mapping.select_next_item(cmp_select),
+                ["<S-Tab>"] = cmp.mapping.select_prev_item(cmp_select),
+                ["<Tab>"] = cmp.mapping.select_next_item(cmp_select),
                 ["<CR>"] = cmp.mapping.confirm({ select = true }),
                 ["<C-Space>"] = cmp.mapping.complete(),
             }),
@@ -60,7 +60,7 @@ return {
         })
 
         -- Setup keybindings
-        vim.api.nvim_create_autocmd('LspAttach', {
+        vim.api.nvim_create_autocmd("LspAttach", {
             desc = "LSP keybindings",
             callback = function(event)
                 local function opts(desc)
@@ -83,7 +83,7 @@ return {
                 vim.keymap.set("n", "<leader>.", vim.lsp.buf.code_action, opts("Code action"))
                 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename"))
                 -- vim.keymap.set("n", "<C-h>", vim.lsp.signature_help, opts("Signature help"))
-            end
+            end,
         })
 
         require("mason").setup({})
@@ -93,10 +93,11 @@ return {
             "force",
             {},
             vim.lsp.protocol.make_client_capabilities(),
-            cmp_lsp.default_capabilities())
+            cmp_lsp.default_capabilities()
+        )
 
         local default_setup = function(server)
-            require('lspconfig')[server].setup({
+            require("lspconfig")[server].setup({
                 capabilities = capabilities,
             })
         end
@@ -104,14 +105,14 @@ return {
         -- Add border to lsp handlers
         local border = "rounded"
         vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-            border = border
+            border = border,
         })
         vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-            border = border
+            border = border,
         })
-        vim.diagnostic.config{
-            float = { border = border }
-        }
+        vim.diagnostic.config({
+            float = { border = border },
+        })
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         require("mason-lspconfig").setup({
@@ -151,7 +152,7 @@ return {
             },
         })
 
-        require('lspconfig').hls.setup({
+        require("lspconfig").hls.setup({
             settings = {
                 haskell = {
                     formattingProvider = "fourmolu",
@@ -159,7 +160,7 @@ return {
             },
         })
 
-        require('lspconfig').lua_ls.setup({
+        require("lspconfig").lua_ls.setup({
             settings = {
                 Lua = {
                     runtime = {
@@ -184,7 +185,7 @@ return {
             },
         })
 
-        require('lspconfig').omnisharp.setup({
+        require("lspconfig").omnisharp.setup({
             cmd = {
                 "dotnet",
                 vim.fn.stdpath("data") .. "/mason/packages/omnisharp/libexec/OmniSharp.dll",
@@ -205,36 +206,36 @@ return {
         -- 	-- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
         -- })
 
-        require('lspconfig').pylsp.setup({
+        require("lspconfig").pylsp.setup({
             settings = {
                 pylsp = {
                     plugins = {
                         pycodestyle = {
                             enabled = true,
-                            maxLineLength = 100
+                            maxLineLength = 100,
                         },
                     },
                 },
             },
         })
 
-        vim.api.nvim_create_autocmd('BufWritePre', {
-            desc = 'Format python on write using black',
-            pattern = '*.py',
-            group = vim.api.nvim_create_augroup('black_on_save', { clear = true }),
-            callback = function()
-                local format_command = { "black", vim.api.nvim_buf_get_name(0) }
-                vim.fn.jobstart(format_command, {
-                    on_exit = function(_, code, _)
-                        if code == 0 then
-                            vim.api.nvim_command('e!')
-                        end
-                    end,
-                })
-            end,
-        })
+        -- vim.api.nvim_create_autocmd('BufWritePre', {
+        --     desc = 'Format python on write using black',
+        --     pattern = '*.py',
+        --     group = vim.api.nvim_create_augroup('black_on_save', { clear = true }),
+        --     callback = function()
+        --         local format_command = { "black", vim.api.nvim_buf_get_name(0) }
+        --         vim.fn.jobstart(format_command, {
+        --             on_exit = function(_, code, _)
+        --                 if code == 0 then
+        --                     vim.api.nvim_command('e!')
+        --                 end
+        --             end,
+        --         })
+        --     end,
+        -- })
 
-        require('lspconfig').rust_analyzer.setup({
+        require("lspconfig").rust_analyzer.setup({
             settings = {
                 ["rust-analyzer"] = {
                     diagnostics = {

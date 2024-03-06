@@ -18,4 +18,3 @@ local opts = {
 }
 
 require("lazy").setup("marcus.plugins", opts)
-

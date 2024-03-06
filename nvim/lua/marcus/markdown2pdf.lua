@@ -16,11 +16,11 @@ function MP()
     local current_file = vim.fn.expand("%:p")
     local output_file = vim.fn.expand("%:p:r") .. ".html"
     local pandoc_cmd = "pandoc " .. current_file .. " -f markdown -t html -s -o " .. output_file
-    
+
     local pandoc_job = vim.fn.jobstart(pandoc_cmd, {
         on_exit = on_exit,
         on_stdout = on_stdout,
-        on_stderr = on_stderr
+        on_stderr = on_stderr,
     })
 
     if pandoc_job <= 0 then

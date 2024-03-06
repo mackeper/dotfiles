@@ -1,14 +1,14 @@
 return {
-    'gelguy/wilder.nvim',
+    "gelguy/wilder.nvim",
     lazy = true,
-    event = 'CmdlineEnter',
+    event = "CmdlineEnter",
     enabled = true,
     config = function()
-        local wilder = require('wilder')
-        wilder.setup({modes = {':', '/', '?'}})
-        wilder.set_option('use_python_remote_plugin', 0)
+        local wilder = require("wilder")
+        wilder.setup({ modes = { ":", "/", "?" } })
+        wilder.set_option("use_python_remote_plugin", 0)
 
-        wilder.set_option('pipeline', {
+        wilder.set_option("pipeline", {
             wilder.branch(
                 wilder.cmdline_pipeline({
                     language = "vim",
@@ -22,13 +22,14 @@ return {
             ),
         })
 
-        wilder.set_option('renderer', wilder.popupmenu_renderer(
-            wilder.popupmenu_border_theme({
+        wilder.set_option(
+            "renderer",
+            wilder.popupmenu_renderer(wilder.popupmenu_border_theme({
                 highlighter = wilder.basic_highlighter(),
                 border = "rounded",
-                left = {' ', wilder.popupmenu_devicons()},
-                right = {' ', wilder.popupmenu_scrollbar()},
-            })
-        ))
+                left = { " ", wilder.popupmenu_devicons() },
+                right = { " ", wilder.popupmenu_scrollbar() },
+            }))
+        )
     end,
 }
