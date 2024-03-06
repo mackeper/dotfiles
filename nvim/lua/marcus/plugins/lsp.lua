@@ -149,6 +149,15 @@ return {
             ensure_installed = {
                 "elm-format", -- elm
                 "stylua", -- lua
+                "csharpier", -- csharp
+                "fourmolu", -- Haskell
+                "isort", -- Python
+                "black", -- Python
+                "prettierd", -- JavaScript / TypeScript
+                "prettier", -- JavaScript / TypeScript
+                "shfmt", -- bash
+                "markdownlint", -- Markdown
+                "markdownlint-cli2", -- Markdown
             },
         })
 
