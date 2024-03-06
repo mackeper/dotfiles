@@ -7,15 +7,23 @@ return {
 		opt = true,
 	},
 	config = function()
-		local colors = {
-			gray = "#373737",
-			lightred = "#D16969",
-			blue = "#0a7aca",
-			pink = "#DDB6F2",
-			black = "#262626",
-			white = "#ffffff",
-			green = "#85b670",
-		}
+        local colors = {
+            bg = "#202328",
+            fg = "#bbc2cf",
+            gray = "#373737",
+            red = "#D16969",
+            blue = "#0a7aca",
+            pink = "#DDB6F2",
+            black = "#262626",
+            white = "#ffffff",
+            green = "#85b670",
+            orange = "#FF8800",
+            violet = "#a9a1e1",
+            magenta = "#c678dd",
+            darkblue = "#081633",
+            cyan = "#008080",
+            yellow = "#ECBE7B",
+        }
 
 		local vscode_theme = {
 			normal = {
@@ -32,8 +40,8 @@ return {
 				b = { fg = colors.black, bg = colors.blue },
 			},
 			replace = {
-				a = { fg = colors.black, bg = colors.lightred, gui = "bold" },
-				b = { fg = colors.lightred, bg = colors.black },
+				a = { fg = colors.black, bg = colors.red, gui = "bold" },
+				b = { fg = colors.red, bg = colors.black },
 				c = { fg = colors.white, bg = colors.black },
 			},
 			insert = {
@@ -69,6 +77,22 @@ return {
 			return spinners[frame + 1]
 		end
 
+        local function lsp_name()
+            local msg = "No Active Lsp"
+            local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
+            local clients = vim.lsp.get_active_clients()
+            if next(clients) == nil then
+                return msg
+            end
+            for _, client in ipairs(clients) do
+                local filetypes = client.config.filetypes
+                if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
+                    return client.name
+                end
+            end
+            return msg
+        end
+
 		require("lualine").setup({
 			options = {
 				icons_enabled = true,
@@ -76,8 +100,10 @@ return {
 				theme = cyberdream,
 				-- component_separators = { left = '', right = '' },
 				-- section_separators = { left = '', right = '' },
-				component_separators = "|",
-				section_separators = { left = "", right = "" },
+				-- component_separators = "|",
+				-- section_separators = { left = "", right = "" },
+				component_separators = "",
+				section_separators = { left = "", right = "" },
 				disabled_filetypes = {
 					statusline = {},
 					winbar = {},
@@ -92,9 +118,23 @@ return {
 				},
 			},
 			sections = {
-				lualine_a = { "mode" },
-				lualine_b = {
-                    { 'branch', icon = '', color = { fg = colors.violet, gui = 'bold' },},
+				lualine_a = {},
+				lualine_b = {},
+                lualine_c = {
+                    {
+                        "mode",
+                        fmt = string.upper,
+                    },
+                    {
+                        "filename",
+                        color = { fg = colors.magenta, gui = "bold" },
+                    },
+                    {
+                        'branch',
+                        icon = '',
+                        color = { fg = colors.violet,
+                        gui = 'bold' },
+                    },
                     {
                         'diff',
                         symbols = { added = ' ', modified = '󰝤 ', removed = ' ' },
@@ -104,9 +144,22 @@ return {
                             removed = { fg = colors.red },
                         },
                     },
-                    "diagnostics"
+                    {
+                        "diagnostics",
+                        sources = { "nvim_diagnostic" },
+                        symbols = { error = " ", warn = " ", info = " " },
+                        diagnostics_color = {
+                            color_error = { fg = colors.red },
+                            color_warn = { fg = colors.yellow },
+                            color_info = { fg = colors.cyan },
+                        },
+                    },
+                    {
+                        lsp_name,
+                        icon = " ",
+                        color = { fg = colors.cyan, gui = "bold" },
+                    },
                 },
-				lualine_c = { "filename" },
 				lualine_x = {
                     {
                         copilot_indicator,
@@ -119,11 +172,37 @@ return {
                         icons_enabled = true,
                         icon = '󰉢',
                     },
-                    "fileformat",
-                    "filetype"
+                    {
+                        'fileformat',
+                        fmt = string.upper,
+                        symbols = {
+                            unix = '',
+                            dos = '',
+                            mac = '',
+                        },
+                        icons_enabled = true,
+                        color = { fg = colors.blue, gui = 'bold' },
+                    },
+                    "filetype",
+                    {
+                        'filesize',
+                        icons_enabled = true,
+                        icon = '󰉉',
+                        color = { fg = colors.orange, gui = 'bold' },
+                    },
+                    {
+                        "progress",
+                        color = { fg = colors.fg, gui = "bold" }
+                    },
+                    {
+                        'location',
+                        icons_enabled = true,
+                        icon = '';
+                        color = { fg = colors.red, gui = 'bold' },
+                    },
                 },
-				lualine_y = { "progress" },
-				lualine_z = { "location" },
+				lualine_y = {},
+				lualine_z = {},
             },
 			inactive_sections = {
 				lualine_a = {},
