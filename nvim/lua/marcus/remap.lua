@@ -1,5 +1,8 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
+-- Auto clear highlights
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
 vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
 vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
 vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
