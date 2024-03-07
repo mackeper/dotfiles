@@ -3,6 +3,8 @@ return {
     -- "Mofiqul/vscode.nvim",
     -- "marko-cerovac/material.nvim",
     "scottmckendry/cyberdream.nvim",
+    -- "catppuccin/nvim",
+    -- name = "catppuccin",
     lazy = true,
     event = "VeryLazy",
     priority = 1000,
@@ -23,6 +25,8 @@ return {
             borderless_telescope = false,
         })
         vim.cmd("colorscheme cyberdream")
+
+        -- vim.cmd.colorscheme("catppuccin")
 
         -- vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
         -- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })

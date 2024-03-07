@@ -98,6 +98,7 @@ return {
                 icons_enabled = true,
                 -- theme = 'codedark',
                 theme = cyberdream,
+                -- theme = auto,
                 -- component_separators = { left = '', right = '' },
                 -- section_separators = { left = '', right = '' },
                 -- component_separators = "|",
