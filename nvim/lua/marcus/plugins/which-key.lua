@@ -18,17 +18,19 @@ return {
 
         wk.register({
             ["<leader>a"] = { name = "+ Autolist" },
+            ["<leader>b"] = { name = "+ Buffers" },
+            ["<leader>c"] = { name = "+ Copy" },
             ["<leader>e"] = { name = "+ Explorer" },
             ["<leader>g"] = { name = "+ Goto / Git" },
             ["<leader>j"] = { name = "+ Telescope" },
+            ["<leader>l"] = { name = "+ LSP" },
+            ["<leader>lt"] = { name = "+ Tools" },
             ["<leader>o"] = { name = "+ Open" },
             ["<leader>r"] = { name = "+ Refactor" },
             ["<leader>s"] = { name = "+ Surround" },
+            ["<leader>t"] = { name = "+ Tabs" },
             ["<leader>w"] = { name = "+ Window" },
             ["<leader>z"] = { name = "+ Mode" },
-            ["<leader>c"] = { name = "+ Copy" },
-            ["<leader>t"] = { name = "+ Tabs" },
-            ["<leader>b"] = { name = "+ Buffers" },
         })
 
         wk.register({
