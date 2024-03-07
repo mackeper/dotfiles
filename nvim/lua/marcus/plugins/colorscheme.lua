@@ -3,7 +3,8 @@ return {
     -- "Mofiqul/vscode.nvim",
     -- "marko-cerovac/material.nvim",
     "scottmckendry/cyberdream.nvim",
-    lazy = false,
+    lazy = true,
+    event = "VeryLazy",
     priority = 1000,
     opts = {},
     config = function()

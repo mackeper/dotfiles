@@ -2,7 +2,7 @@ return {
     "phaazon/hop.nvim",
     branch = "v2", -- optional but strongly recommended
     lazy = true,
-    event = "BufRead",
+    event = { "BufReadPost", "BufNewFile" },
     config = function()
         local hop = require("hop")
         hop.setup({
