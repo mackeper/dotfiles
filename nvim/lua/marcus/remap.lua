@@ -3,10 +3,6 @@
 -- Auto clear highlights
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
-vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
-vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
-vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
-
 -- Move selected line / block up or down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line/block down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line/block up" })
@@ -41,6 +37,9 @@ vim.keymap.set(
 
 -- File
 vim.keymap.set("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], { desc = "Copy file path to clipboard" })
+vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
+vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
+vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
 
 -- Tabs
 vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "New tab" })
