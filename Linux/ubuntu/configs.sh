@@ -7,10 +7,10 @@ function echo_title() {
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 commands=(
-    'ln -s $SCRIPT_DIR/.tmux.conf ~/.tmux.conf'
-    'ln -s $SCRIPT_DIR/.zshrc ~/.zshrc'
-    'ln -s $SCRIPT_DIR/../../nvim ~/.config/nvim'
-    'ln -s $SCRIPT_DIR/../../.gitconfig ~/.gitconfig'
+    'ln -sf $SCRIPT_DIR/.tmux.conf ~/.tmux.conf'
+    'ln -sf $SCRIPT_DIR/.zshrc ~/.zshrc'
+    'ln -sf $SCRIPT_DIR/../../nvim ~/.config/nvim'
+    'ln -sf $SCRIPT_DIR/../../.gitconfig ~/.gitconfig'
 )
 
 echo_title "Copying configs"
