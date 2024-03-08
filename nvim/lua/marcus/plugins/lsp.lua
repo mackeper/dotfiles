@@ -125,31 +125,36 @@ return {
         })
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
+        local ensure_installed = {
+            "bashls", -- bash
+            "clangd", -- c
+            "cssls", -- css
+            "dockerls", -- docker
+            "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
+            "eslint",
+            -- "fsautocomplete", -- F#
+            "gopls", -- Go
+            -- "hls", -- Haskell
+            "html", -- HTML
+            "jsonls", -- Json
+            "lua_ls", -- Lua
+            "marksman", -- Markdown
+            "omnisharp", -- C# change to csharp_ls?
+            "pylsp", -- Python
+            -- "pyright", -- Python
+            "rust_analyzer", -- Rust
+            "sqlls", -- SQL
+            "svelte", -- Svelte
+            "tsserver", -- JavaScript / TypeScript
+            "yamlls", -- yaml
+        }
+
+        if jit.os == "Windows" then
+            table.insert(ensure_installed, "powershell_es")
+        end
+
         require("mason-lspconfig").setup({
-            ensure_installed = {
-                "bashls", -- bash
-                "clangd", -- c
-                "cssls", -- css
-                "dockerls", -- docker
-                "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
-                "eslint",
-                -- "fsautocomplete", -- F#
-                "gopls", -- Go
-                -- "hls", -- Haskell
-                "html", -- HTML
-                "jsonls", -- Json
-                "lua_ls", -- Lua
-                "marksman", -- Markdown
-                "omnisharp", -- C# change to csharp_ls?
-                -- "powershell_es", -- PowerShell
-                "pylsp", -- Python
-                -- "pyright", -- Python
-                "rust_analyzer", -- Rust
-                "sqlls", -- SQL
-                "svelte", -- Svelte
-                "tsserver", -- JavaScript / TypeScript
-                "yamlls", -- yaml
-            },
+            ensure_installed = ensure_installed,
             handlers = {
                 default_setup,
             },
@@ -219,11 +224,13 @@ return {
             },
         })
 
-        -- require('lspconfig').powershell_es.setup({
-        -- 	bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
-        -- 	-- shell = "powershell.exe",
-        -- 	-- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
-        -- })
+        if jit.os == "Windows" then
+            require("lspconfig").powershell_es.setup({
+                bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
+                -- shell = "powershell.exe",
+                -- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
+            })
+        end
 
         require("lspconfig").pylsp.setup({
             settings = {
