@@ -1,7 +1,7 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
 -- Auto clear highlights
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
 -- Move selected line / block up or down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line/block down" })

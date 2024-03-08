@@ -63,5 +63,8 @@ return {
         vim.keymap.set("n", "<leader>jm", builtin.oldfiles, { desc = "Recent files" })
         vim.keymap.set("n", "<leader>jr", builtin.git_files, { desc = "Git files" })
         vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
+        vim.keymap.set("n", "<leader>jn", function()
+            builtin.find_files({ cwd = vim.fn.stdpath("config") })
+        end, { desc = "Neovim files" })
     end,
 }
