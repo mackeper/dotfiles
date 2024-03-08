@@ -13,7 +13,8 @@ return {
             },
         })
 
-        require("mini.cursorword").setup()
+        -- Auto highlight text under cursor
+        require("mini.cursorword").setup({})
 
         require("mini.surround").setup({
             mappings = {
@@ -36,6 +37,7 @@ return {
         hipatterns.setup({
             highlighters = {
                 fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
+                bug = { pattern = "%f[%w]()BUG()%f[%W]", group = "MiniHipatternsFixme" },
                 hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
                 todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
                 note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
@@ -51,7 +53,8 @@ return {
             },
         })
 
-        require("mini.ai").setup()
+        -- Extend a/i text objects
+        require("mini.ai").setup({})
     end,
     init = function()
         vim.api.nvim_create_autocmd("FileType", {

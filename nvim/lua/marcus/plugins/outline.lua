@@ -14,7 +14,7 @@ return {
     opts = {
         outline_window = {
             width = 15,
-            auto_close = true,
+            auto_close = false,
             focus_on_open = false,
         },
         outline_items = {
