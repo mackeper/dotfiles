@@ -87,7 +87,7 @@ return {
                 vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
                 vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
                 vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts("Hover / Quick info"))
-                vim.keymap.set("n", "<C-t>", builtin.lsp_workspace_symbols, opts("Workspace symbols"))
+                vim.keymap.set("n", "gs", builtin.lsp_workspace_symbols, opts("Workspace symbols"))
                 vim.keymap.set("n", "<leader>jd", builtin.diagnostics, opts("Diagnostic"))
                 vim.keymap.set("n", "<leader>je", function()
                     builtin.diagnostics({ severity = vim.diagnostic.severity.ERROR })
