@@ -31,6 +31,7 @@ return {
             ["<leader>s"] = { name = "+ Surround" },
             ["<leader>t"] = { name = "+ Tabs" },
             ["<leader>w"] = { name = "+ Window" },
+            ["<leader>x"] = { name = "+ Trouble" },
             ["<leader>z"] = { name = "+ Mode" },
         })
 
