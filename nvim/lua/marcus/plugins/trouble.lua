@@ -6,42 +6,42 @@ return {
         {
             "<leader>xx",
             function()
-                require("trouble").toggle()
+                require("trouble").open()
             end,
-            desc = "Trouble: Toggle",
+            desc = "Trouble: open",
         },
         {
             "<leader>xw",
             function()
-                require("trouble").toggle("workspace_diagnostics")
+                require("trouble").open("workspace_diagnostics")
             end,
             desc = "Trouble: Workspace diagnostics",
         },
         {
             "<leader>xd",
             function()
-                require("trouble").toggle("document_diagnostics")
+                require("trouble").open("document_diagnostics")
             end,
             desc = "Trouble: Document diagnostics",
         },
         {
             "<leader>xq",
             function()
-                require("trouble").toggle("quickfix")
+                require("trouble").open("quickfix")
             end,
             desc = "Trouble: Quickfix",
         },
         {
             "<leader>xl",
             function()
-                require("trouble").toggle("loclist")
+                require("trouble").open("loclist")
             end,
             desc = "Trouble: Location list",
         },
         {
             "gR",
             function()
-                require("trouble").toggle("lsp_references")
+                require("trouble").open("lsp_references")
             end,
             desc = "Trouble: LSP references",
         },
