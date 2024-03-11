@@ -17,6 +17,13 @@ apt_packages=(
     "openssl"
     "tmux"
     "xclip"
+    "libffi-dev"
+    "libffi8ubuntu1"
+    "libgmp-dev"
+    "libgmp10"
+    "libncurses-dev"
+    "libncurses5"
+    "libtinfo5"
 
     # Terminal
     "zsh"
@@ -115,6 +122,9 @@ custom_packages=(
     'sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf ~/go.tar.gz'
     'rm ~/go.tar.gz'
     'export PATH=$PATH:/usr/local/go/bin'
+
+    # Haskell GHCup https://www.haskell.org/ghcup/
+    'curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh'
 )
 
 # Function to concatenate packages into strings
