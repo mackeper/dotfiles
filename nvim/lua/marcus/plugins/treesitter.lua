@@ -7,6 +7,7 @@ return {
     config = function()
         local configs = require("nvim-treesitter.configs")
 
+        ---@diagnostic disable-next-line: missing-fields
         configs.setup({
             -- https://github.com/nvim-treesitter/nvim-treesitter#supported-languages
             ensure_installed = {
