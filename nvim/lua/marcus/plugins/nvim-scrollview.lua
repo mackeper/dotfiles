@@ -3,7 +3,7 @@ return {
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
     opts = {
-        excluded_filetypes = { "nerdtree" },
+        excluded_filetypes = { "nerdtree", "NvimTree" },
         scrollview_always_show = true,
         scrollview_base = "right",
         current_only = true,
