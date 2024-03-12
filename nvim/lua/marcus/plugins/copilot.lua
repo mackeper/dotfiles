@@ -25,6 +25,7 @@ return {
             markdown = true,
             help = true,
             yaml = true,
+            gitcommit = true,
         },
     },
     config = function(_, opts)

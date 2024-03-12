@@ -161,6 +161,10 @@ return {
                     },
                 },
                 lualine_x = {
+                    -- { -- auto-session
+                    --     require("auto-session.lib").current_session_name,
+                    --     color = { fg = colors.orange, gui = "bold" },
+                    -- },
                     {
                         copilot_indicator,
                         color = { fg = colors.blue, gui = "bold" },

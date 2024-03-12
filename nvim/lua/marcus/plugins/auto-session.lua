@@ -1,5 +1,6 @@
 return {
     "rmagatti/auto-session",
+    enabled = false,
     config = function()
         ---@diagnostic disable-next-line: missing-fields
         require("auto-session").setup({
