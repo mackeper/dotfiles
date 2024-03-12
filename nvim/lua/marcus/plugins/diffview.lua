@@ -2,13 +2,39 @@ return {
     "sindrets/diffview.nvim",
     lazy = true,
     event = { "BufReadPost", "BufNewFile" },
-    config = function()
-        vim.keymap.set("n", "<leader>gd", function()
-            vim.cmd(":DiffviewOpen")
-        end, { desc = "Open Diff" })
+    keys = {
+        { "<leader>gd", "<CMD>DiffviewOpen<CR>", mode = { "n" }, desc = "Toggle diff view" },
+    },
+    config = {
+        keymaps = {
+            view = {
+                ["<leader>gd"] = "<CMD>DiffviewClose<CR>",
+            },
+            file_panel = {
+                ["<leader>gd"] = "<CMD>DiffviewClose<CR>",
+            },
+        },
+    },
 
-        vim.keymap.set("n", "<leader>gc", function()
-            vim.cmd(":DiffviewClose")
-        end, { desc = "Close Diff" })
-    end,
+    -- https://www.reddit.com/r/neovim/comments/n2vww8/comment/gwnahs3/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+    -- Telescope to specific commit
+    -- local action_state = require("telescope.actions.state")
+    --
+    -- local open_dif = function()
+    --     local selected_entry = action_state.get_selected_entry()
+    --     local value = selected_entry["value"]
+    --     -- close Telescope window properly prior to switching windows
+    --     vim.api.nvim_win_close(0, true)
+    --     local cmd = "DiffviewOpen " .. value
+    --     vim.cmd(cmd)
+    -- end
+    --
+    -- local git_commit = function()
+    --     require("telescope.builtin").git_commits({
+    --         attach_mappings = function(_, map)
+    --             map("n", "<c-o>", open_dif)
+    --             return true
+    --         end,
+    --     })
+    -- end
 }
