@@ -40,6 +40,7 @@ return {
                 ["<CR>"] = cmp.mapping.confirm({ select = true }),
                 ["<C-Space>"] = cmp.mapping.complete(),
             }),
+            ---@diagnostic disable-next-line: missing-fields
             formatting = {
                 format = require("lspkind").cmp_format({ with_text = true, maxwidth = 50 }),
             },
