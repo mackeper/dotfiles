@@ -8,6 +8,10 @@ function Get_encoded_cwd()
     return vim.fn.substitute(vim.fn.getcwd(), "/", Config.session_name_delimiter, "g")
 end
 
+function Get_decoded_session_file_path(encoded_cwd)
+    return vim.fn.substitute(encoded_cwd, Config.session_name_delimiter, "/", "g")
+end
+
 function Get_session_file()
     return Config.session_dir .. "/" .. Get_encoded_cwd() .. ".vim"
 end
@@ -31,9 +35,10 @@ vim.keymap.set("n", "<leader>js", function()
     local opts = {
         prompt_title = "Sessions",
         cwd = Config.session_dir,
+        previewer = false,
     }
     local finders = require("telescope.finders")
-    local conf = require("telescope.config").values
+    local config = require("telescope.config").values
     local actions = require("telescope.actions")
     local entry_display = require("telescope.pickers.entry_display")
     local make_entry = require("telescope.make_entry")
@@ -41,13 +46,13 @@ vim.keymap.set("n", "<leader>js", function()
     local displayer = entry_display.create({
         separator = "   ",
         items = {
-            { width = 40 },
-            { width = 40 },
+            { width = 60 },
+            {},
         },
     })
 
     local make_display = function(entry)
-        return displayer({ { entry.name }, { entry.readable_time } })
+        return displayer({ { Get_decoded_session_file_path(entry.name) }, { entry.readable_time } })
     end
 
     require("telescope.pickers")
@@ -61,8 +66,8 @@ vim.keymap.set("n", "<leader>js", function()
                     return make_entry.set_default_entry_mt(entry, opts)
                 end,
             }),
-            previewer = conf.grep_previewer(opts),
-            sorter = conf.file_sorter(opts),
+            previewer = config.grep_previewer(opts),
+            sorter = config.file_sorter(opts),
             attach_mappings = function(prompt_bufnr, map)
                 local load_session = function()
                     local selection = require("telescope.actions.state").get_selected_entry()
@@ -79,8 +84,7 @@ end, {
     desc = "Sessions",
 })
 
--- vim.api.nvim_create_autocmd("ExitPre", {
-vim.api.nvim_create_autocmd("BufWrite", {
+vim.api.nvim_create_autocmd("ExitPre", {
     desc = "Save session on exit",
     group = vim.api.nvim_create_augroup("session-plugin", { clear = true }),
     callback = function()
@@ -88,10 +92,7 @@ vim.api.nvim_create_autocmd("BufWrite", {
             return
         end
 
-        print(Config.session_dir)
-        print(vim.fn.isdirectory(Config.session_dir))
         if vim.fn.isdirectory(Config.session_dir) == 0 then
-            print("Directory does not exist")
             vim.fn.mkdir(Config.session_dir, "p")
         end
 
