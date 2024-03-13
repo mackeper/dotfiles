@@ -30,8 +30,15 @@ return {
                         icon = " ",
                     },
                     {
+                        desc = "Last session",
+                        group = "Label",
+                        action = "SessionLoadLast",
+                        key = "s",
+                        icon = "♻️ ",
+                    },
+                    {
                         desc = "Projects",
-                        group = "DiagnosticHint",
+                        group = "Label",
                         action = "Telescope projects",
                         key = "p",
                         icon = " ",
