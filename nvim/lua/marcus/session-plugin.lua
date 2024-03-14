@@ -1,26 +1,47 @@
-Config = {
+local config = {
     session_dir = vim.fn.stdpath("data") .. "/sessions",
     session_name_delimiter = "_-_",
     autosave = true,
 }
 
+local actions = {
+    load = function(session_file_path)
+        vim.cmd("source " .. session_file_path)
+    end,
+    save = function(session_file_name)
+        if vim.fn.isdirectory(SessionPlugin.config.session_dir) == 0 then
+            vim.fn.mkdir(SessionPlugin.config.session_dir, "p")
+        end
+
+        vim.cmd("mksession! " .. session_file_name)
+    end,
+    delete = function(session_file_path)
+        vim.fn.delete(session_file_path)
+    end,
+}
+
+SessionPlugin = {
+    config = config,
+    actions = actions,
+}
+
 function Get_encoded_cwd()
-    return vim.fn.substitute(vim.fn.getcwd(), "/", Config.session_name_delimiter, "g")
+    return vim.fn.substitute(vim.fn.getcwd(), "/", SessionPlugin.config.session_name_delimiter, "g")
 end
 
 function Get_decoded_session_file_path(encoded_cwd)
-    return vim.fn.substitute(encoded_cwd, Config.session_name_delimiter, "/", "g")
+    return vim.fn.substitute(encoded_cwd, SessionPlugin.config.session_name_delimiter, "/", "g")
 end
 
 function Get_session_file()
-    return Config.session_dir .. "/" .. Get_encoded_cwd() .. ".vim"
+    return SessionPlugin.config.session_dir .. "/" .. Get_encoded_cwd() .. ".vim"
 end
 
 function Get_sessions()
-    local session_files = vim.fn.readdir(Config.session_dir)
+    local session_files = vim.fn.readdir(SessionPlugin.config.session_dir)
     local sessions = {}
     for _, session_file in ipairs(session_files) do
-        local session_file_path = Config.session_dir .. "/" .. session_file
+        local session_file_path = SessionPlugin.config.session_dir .. "/" .. session_file
         table.insert(sessions, {
             name = session_file,
             path = session_file_path,
@@ -34,11 +55,11 @@ end
 vim.keymap.set("n", "<leader>js", function()
     local opts = {
         prompt_title = "Sessions",
-        cwd = Config.session_dir,
+        cwd = SessionPlugin.config.session_dir,
         previewer = false,
     }
     local finders = require("telescope.finders")
-    local config = require("telescope.config").values
+    local telescope_config = require("telescope.config").values
     local actions = require("telescope.actions")
     local entry_display = require("telescope.pickers.entry_display")
     local make_entry = require("telescope.make_entry")
@@ -46,8 +67,8 @@ vim.keymap.set("n", "<leader>js", function()
     local displayer = entry_display.create({
         separator = "   ",
         items = {
-            { width = 60 },
-            {},
+            { width = 0.7 },
+            { width = 0.25, right_justify = true },
         },
     })
 
@@ -66,8 +87,8 @@ vim.keymap.set("n", "<leader>js", function()
                     return make_entry.set_default_entry_mt(entry, opts)
                 end,
             }),
-            previewer = config.grep_previewer(opts),
-            sorter = config.file_sorter(opts),
+            previewer = telescope_config.grep_previewer(opts),
+            sorter = telescope_config.file_sorter(opts),
             attach_mappings = function(prompt_bufnr, map)
                 local load_session = function()
                     local selection = require("telescope.actions.state").get_selected_entry()
@@ -88,28 +109,24 @@ vim.api.nvim_create_autocmd("ExitPre", {
     desc = "Save session on exit",
     group = vim.api.nvim_create_augroup("session-plugin", { clear = true }),
     callback = function()
-        if not Config.autosave then
+        if not SessionPlugin.config.autosave then
             return
         end
 
-        if vim.fn.isdirectory(Config.session_dir) == 0 then
-            vim.fn.mkdir(Config.session_dir, "p")
-        end
-
-        vim.cmd("mksession! " .. Get_session_file())
+        SessionPlugin.actions.save(Get_session_file())
     end,
 })
 
 vim.api.nvim_create_user_command("SessionSave", function()
-    vim.cmd("mksession! " .. Get_session_file())
+    SessionPlugin.actions.save(Get_session_file())
 end, { nargs = 0 })
 
 vim.api.nvim_create_user_command("SessionLoad", function()
-    vim.cmd("source " .. Get_session_file())
+    SessionPlugin.actions.load(Get_session_file())
 end, { nargs = 0 })
 
 vim.api.nvim_create_user_command("SessionDelete", function()
-    vim.fn.delete(Get_session_file())
+    SessionPlugin.actions.delete(Get_session_file())
 end, { nargs = 0 })
 
 vim.api.nvim_create_user_command("SessionList", function()
@@ -133,9 +150,6 @@ vim.api.nvim_create_user_command("SessionLoadLast", function()
     end
 
     if last_session then
-        print("Loading last session " .. last_session.name)
-        vim.cmd("source " .. last_session.path)
-    else
-        print("No sessions found")
+        SessionPlugin.actions.load(last_session.path)
     end
 end, { nargs = 0 })
