@@ -1,4 +1,8 @@
 return {
     dir = "~/git/session-plugin",
-    opts = {},
+    opts = {
+        telescope = {
+            enabled = true,
+        },
+    },
 }
