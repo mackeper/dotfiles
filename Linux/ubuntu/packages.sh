@@ -87,6 +87,7 @@ cargo_packages=(
     "git-delta" # Better git diffs
     "procs" # Alternative to ps
     "eza" # Easy alias, alias ls="eza --icons"; alias ll="eza --icons -la", etc.
+    "cargo-nextest" # Rust test runner used by neotest-rust
 )
 
 custom_packages=(
