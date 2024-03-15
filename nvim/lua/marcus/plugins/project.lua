@@ -15,6 +15,7 @@ return {
                 "Cargo.toml",
                 "Stack.yaml",
                 ".cabal",
+                "*.sln",
             },
         })
     end,
