@@ -1,5 +1,5 @@
 return {
-    dir = "~/git/session-plugin",
+    dir = "~/git/seshmgr.nvim",
     opts = {
         telescope = {
             enabled = true,

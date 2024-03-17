@@ -3,6 +3,9 @@
 -- Auto clear highlights
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
+-- Toggle spell check
+vim.keymap.set("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spell check" })
+
 -- Move selected line / block up or down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line/block down" })
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line/block up" })
