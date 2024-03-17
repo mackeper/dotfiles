@@ -45,5 +45,19 @@ return {
             end,
             desc = "Trouble: LSP references",
         },
+        {
+            "[q",
+            function()
+                require("trouble").previous()
+            end,
+            desc = "Trouble: Previous",
+        },
+        {
+            "]q",
+            function()
+                require("trouble").next()
+            end,
+            desc = "Trouble: Next",
+        },
     },
 }
