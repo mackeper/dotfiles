@@ -1,5 +1,6 @@
 return {
     dir = "~/git/seshmgr.nvim",
+    event = "VeryLazy",
     opts = {
         telescope = {
             enabled = true,
