@@ -55,6 +55,28 @@ return {
             -- },
         })
 
+        local actions = require("telescope.actions")
+        telescope.setup({
+            defaults = {
+                mappings = {
+                    i = {
+                        ["<c-t>"] = require("trouble.providers.telescope").open_with_trouble,
+                        ["<C-q>"] = function(prompt_bufnr)
+                            actions.send_to_qflist(prompt_bufnr)
+                            require("trouble").open("quickfix")
+                        end,
+                    },
+                    n = {
+                        ["<c-t>"] = require("trouble.providers.telescope").open_with_trouble,
+                        ["<C-q>"] = function(prompt_bufnr)
+                            actions.send_to_qflist(prompt_bufnr)
+                            require("trouble").open("quickfix")
+                        end,
+                    },
+                },
+            },
+        })
+
         vim.keymap.set("n", "<leader>jt", builtin.builtin, { desc = "Telescope" })
         vim.keymap.set("n", "<leader>jb", builtin.buffers, { desc = "Buffers" })
         vim.keymap.set("n", "<leader>jf", builtin.find_files, { desc = "Find files" })
