@@ -48,14 +48,14 @@ return {
         {
             "[q",
             function()
-                require("trouble").previous()
+                require("trouble").previous({ skip_groups = true, jump = true })
             end,
             desc = "Trouble: Previous",
         },
         {
             "]q",
             function()
-                require("trouble").next()
+                require("trouble").next({ skip_groups = true, jump = true })
             end,
             desc = "Trouble: Next",
         },
