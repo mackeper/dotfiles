@@ -17,6 +17,7 @@ return {
         require("mini.cursorword").setup({})
 
         -- Generate help files from Lua docstrings
+        -- :lua MiniDoc.generate()
         require("mini.doc").setup({})
 
         require("mini.surround").setup({
