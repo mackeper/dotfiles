@@ -16,6 +16,9 @@ return {
         -- Auto highlight text under cursor
         require("mini.cursorword").setup({})
 
+        -- Generate help files from Lua docstrings
+        require("mini.doc").setup({})
+
         require("mini.surround").setup({
             mappings = {
                 add = "<leader>sa", -- Add surrounding in Normal and Visual modes
