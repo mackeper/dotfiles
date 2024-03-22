@@ -1,24 +1,21 @@
-#Persistent ; Keep this script running until the user explicitly exits it.
+Persistent ; Keep this script running until the user explicitly exits it.
 
 RemapKey(key, modifier) {
-    hold_duration := 300
-    StartTime := A_TickCount
-    KeyWait, %key%, T0.%hold_duration%
-    ElapsedTime := A_TickCount - StartTime
-    if (ElapsedTime >= hold_duration) {
-        SendInput, {%modifier% down}{%key%}
-        KeyWait, %key%
-        SendInput, {%modifier% up}
+    res := KeyWait(key, "T0.3")
+    if (!res) {
+        SendInput("{" modifier " down}{" key "}")
+        KeyWait(key)
+        SendInput("{" modifier " up}")
     } else {
-        SendInput, %key%
+        SendInput(key)
     }
 }
 
-*f::RemapKey("r", "lshift")
-*d::RemapKey("e", "lctrl")
-*s::RemapKey("w", "latl")
-*a::RemapKey("q", "lwin")
-*x::RemapKey("w", "ratl")
+*f::RemapKey("f", "lshift")
+*d::RemapKey("d", "lctrl")
+*s::RemapKey("s", "latl")
+*a::RemapKey("a", "lwin")
+*x::RemapKey("x", "ratl")
 
 *j::RemapKey("j", "rshift")
 *k::RemapKey("k", "rctrl")
