@@ -102,6 +102,8 @@ choco install -y ubisoft-connect
 ### Other
 
 ```powershell
+choco install -y gsudo
+
 choco install -y 7zip.install
 choco install -y keepass.install
 choco install -y f.lux
