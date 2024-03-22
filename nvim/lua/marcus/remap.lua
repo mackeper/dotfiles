@@ -1,8 +1,10 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
-vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
-vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
-vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
+-- Auto clear highlights
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
+
+-- Toggle spell check
+vim.keymap.set("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spell check" })
 
 -- Move selected line / block up or down
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line/block down" })
@@ -22,22 +24,25 @@ vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without overwriting def
 
 -- Start substitute with the word under cursor
 vim.keymap.set(
-	"n",
-	"<leader>rw",
-	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-	{ desc = "Substitute word under cursor" }
+    "n",
+    "<leader>rw",
+    [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+    { desc = "Substitute word under cursor" }
 )
 
 -- Open, Windows specific
 vim.keymap.set(
-	"n",
-	"<leader>oe",
-	[[<CMD>!start explorer /select,"%":p<CR>]],
-	{ desc = "Open in explorer", silent = true }
+    "n",
+    "<leader>oe",
+    [[<CMD>!start explorer /select,"%":p<CR>]],
+    { desc = "Open in explorer", silent = true }
 )
 
 -- File
 vim.keymap.set("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], { desc = "Copy file path to clipboard" })
+vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
+vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
+vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
 
 -- Tabs
 vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "New tab" })

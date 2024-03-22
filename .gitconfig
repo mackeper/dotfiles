@@ -1,0 +1,35 @@
+[user]
+    email = mpt.ostling@gmail.com
+    name = Marcus Östling
+
+[core]
+    pager = delta
+    editor = nvim
+
+[color "grep"]
+        linenumber = bold blue
+        filename = bold green
+        match = bold red
+        context = white
+
+[grep]
+        linenumber = true
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true         # use n and N to move between diff sections
+    light = false           # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+    line-numbers = true
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+
+[pull]
+    rebase = false
+[init]
+	defaultBranch = main
