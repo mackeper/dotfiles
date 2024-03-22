@@ -2,6 +2,12 @@
 
 ![](.images/README/README_1698152733223.png)
 
+## Install powershell
+
+```powershell
+winget install --id Microsoft.Powershell --source winget
+```
+
 ## Install Chocolatey
 
 ```powershell
