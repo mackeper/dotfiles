@@ -39,6 +39,7 @@ apt_packages=(
     "neofetch" # System info
     "ripgrep" # Alternative to grep, command rg
     "zoxide" # Alternative to cd, alias z="zoxide"
+    "jq" # JSON processor
 
     # Development
     "cmake" # Build system
@@ -126,6 +127,8 @@ custom_packages=(
 
     # Haskell GHCup https://www.haskell.org/ghcup/
     'curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh'
+
+    # gh https://cli.github.com/
 )
 
 # Function to concatenate packages into strings
