@@ -33,7 +33,6 @@ return {
                 mode = "v",
             },
             {
-            {
                 "<leader>pf",
                 "ggVG<CMD>CopilotChatFix<CR>",
                 desc = "Co[p]ilot: Fix selection",
