@@ -58,8 +58,8 @@ vim.keymap.set("n", "<leader>bh", ":bprevious<CR>", { desc = "Previous buffer" }
 vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
 vim.keymap.set("n", "<leader>bo", ":bufdo bd<CR>", { desc = "Delete all buffers" })
 vim.keymap.set("n", "<leader>bn", ":enew<CR>", { desc = "New buffer" })
-vim.keymap.set("n", "<tab>", ":bnext<CR>", { desc = "Next buffer" })
-vim.keymap.set("n", "<S-tab>", ":bprevious<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<tab>", ":silent bnext<CR>", { desc = "Next buffer" })
+vim.keymap.set("n", "<S-tab>", ":silent bprevious<CR>", { desc = "Previous buffer" })
 
 -- Window navigation
 vim.keymap.set("n", "<C-left>", "<C-w>h", { desc = "Move to left window" })

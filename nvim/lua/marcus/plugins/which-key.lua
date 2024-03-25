@@ -27,6 +27,7 @@ return {
             ["<leader>l"] = { name = "+ LSP" },
             ["<leader>lt"] = { name = "+ Tools" },
             ["<leader>o"] = { name = "+ Open" },
+            ["<leader>p"] = { name = "+ Co[p]ilot" },
             ["<leader>r"] = { name = "+ Refactor" },
             ["<leader>s"] = { name = "+ Surround" },
             ["<leader>t"] = { name = "+ Tabs" },
