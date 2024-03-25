@@ -2,6 +2,12 @@
 
 ![](.images/README/README_1698152733223.png)
 
+## Install powershell
+
+```powershell
+winget install --id Microsoft.Powershell --source winget
+```
+
 ## Install Chocolatey
 
 ```powershell
@@ -96,6 +102,8 @@ choco install -y ubisoft-connect
 ### Other
 
 ```powershell
+choco install -y gsudo
+
 choco install -y 7zip.install
 choco install -y keepass.install
 choco install -y f.lux

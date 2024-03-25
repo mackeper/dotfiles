@@ -18,7 +18,6 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
 
 -- Paste / delete without overwriting the default register
-vim.keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without overwriting default register" })
 vim.keymap.set("n", "<leader>d", '"_d', { desc = "Delete without overwriting default register" })
 vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without overwriting default register" })
 
