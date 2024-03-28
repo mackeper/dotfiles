@@ -1,6 +1,6 @@
 return {
     -- dir = "~/git/SeshMgr.nvim",
-    "mackeper/seshmgr.nvim",
+    "mackeper/SeshMgr.nvim",
     event = "VeryLazy",
     opts = {
         telescope = {
