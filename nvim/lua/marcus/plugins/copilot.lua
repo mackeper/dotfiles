@@ -1,13 +1,5 @@
--- return {
---     -- :Copilot setup
---     "github/copilot.vim",
---     lazy = true,
---     event = "VeryLazy",
--- }
-
 return {
     "zbirenbaum/copilot.lua",
-    lazy = true,
     event = "InsertEnter",
     cmd = "Copilot",
     build = ":Copilot auth",
@@ -28,7 +20,4 @@ return {
             gitcommit = true,
         },
     },
-    config = function(_, opts)
-        require("copilot").setup(opts)
-    end,
 }
