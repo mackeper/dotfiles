@@ -18,6 +18,7 @@ return {
             ["<leader>a"] = { name = "+ Autolist" },
             ["<leader>b"] = { name = "+ Buffers" },
             ["<leader>c"] = { name = "+ Copy" },
+            ["<leader>d"] = { name = "+debug" },
             ["<leader>e"] = { name = "+ Explorer" },
             ["<leader>g"] = { name = "+ Git" },
             ["<leader>j"] = { name = "+ Telescope" },
