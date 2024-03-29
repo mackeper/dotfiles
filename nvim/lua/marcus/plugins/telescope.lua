@@ -1,7 +1,6 @@
 return {
     "nvim-telescope/telescope.nvim",
     tag = "0.1.4",
-    lazy = true,
     event = "VeryLazy",
     dependencies = {
         "nvim-lua/plenary.nvim",
@@ -10,7 +9,6 @@ return {
         local builtin = require("telescope.builtin")
         local telescope = require("telescope")
         telescope.load_extension("projects")
-        -- telescope.load_extension("persisted")
 
         telescope.setup({
             pickers = {
@@ -91,7 +89,6 @@ return {
         vim.keymap.set("n", "<leader>jm", builtin.oldfiles, { desc = "Recent files" })
         vim.keymap.set("n", "<leader>jr", builtin.git_files, { desc = "Git files" })
         vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
-        -- vim.keymap.set("n", "<leader>js", telescope.extensions.persisted.persisted, { desc = "Sessions" })
         vim.keymap.set("n", "<leader>jn", function()
             builtin.find_files({ cwd = vim.fn.stdpath("config") })
         end, { desc = "Neovim files" })

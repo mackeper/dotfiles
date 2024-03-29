@@ -1,6 +1,5 @@
 return {
     "dstein64/nvim-scrollview",
-    lazy = true,
     event = { "BufReadPost", "BufNewFile" },
     opts = {
         excluded_filetypes = { "nerdtree", "NvimTree" },

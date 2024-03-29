@@ -1,7 +1,5 @@
 return {
     "akinsho/toggleterm.nvim",
-    enabled = true,
-    lazy = true,
     event = { "BufReadPost", "BufNewFile" },
     -- version = "v2.8.*",
     config = function()
@@ -28,9 +26,6 @@ return {
             },
         })
 
-        -- vim.keymap.set("n", "<C-z>", toggleterm.toggleterm, { noremap = true, silent = true })
-        -- vim.keymap.set("i", "<C-z>", toggleterm.toggleterm, { noremap = true, silent = true })
-        --
         local Terminal = require("toggleterm.terminal").Terminal
         local lazygit = Terminal:new({
             cmd = "lazygit",
