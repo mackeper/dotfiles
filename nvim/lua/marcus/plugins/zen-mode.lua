@@ -1,7 +1,8 @@
 return {
     "folke/zen-mode.nvim",
-    lazy = true,
-    event = { "BufReadPost", "BufNewFile" },
+    keys = {
+        { "<leader>zm", "<CMD>ZenMode<CR>", desc = "Toggle Zen Mode" },
+    },
     opts = {
         window = {
             backdrop = 1.0, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
@@ -26,13 +27,4 @@ return {
             },
         },
     },
-    config = function(_, opts)
-        vim.keymap.set("n", "<leader>zm", function()
-            require("zen-mode").toggle(opts)
-        end, {
-            noremap = true,
-            silent = true,
-            desc = "Toggle Zen Mode",
-        })
-    end,
 }
