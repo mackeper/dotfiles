@@ -17,9 +17,9 @@ export PATH=$PATH:~/go/bin
 export PATH=$PATH:/usr/local/go/bin
 
 # ---- Auto tmux ----
-if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-  exec tmux
-fi
+# if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+#   exec tmux
+# fi
 
 # ---- Tools ----
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
