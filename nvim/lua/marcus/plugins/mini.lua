@@ -1,7 +1,6 @@
 return {
     "echasnovski/mini.nvim",
     version = "*",
-    lazy = true,
     event = { "BufReadPost", "BufNewFile" },
     config = function()
         require("mini.comment").setup({
