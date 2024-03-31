@@ -1,8 +1,6 @@
 return {
     "gelguy/wilder.nvim",
-    lazy = true,
     event = "CmdlineEnter",
-    enabled = true,
     config = function()
         local wilder = require("wilder")
         wilder.setup({ modes = { ":", "/", "?" } })

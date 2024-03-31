@@ -1,18 +1,17 @@
 return {
     "phaazon/hop.nvim",
     branch = "v2", -- optional but strongly recommended
-    lazy = true,
-    event = { "BufReadPost", "BufNewFile" },
-    config = function()
-        local hop = require("hop")
-        hop.setup({
-            keys = "qwertasdfgzxcvbyuiophjklmn",
-            case_insensitive = true,
-            uppercase_labels = true,
-            multi_windows = true,
-        })
-
-        vim.keymap.set("n", "s", hop.hint_char1, {})
+    opts = {
+        keys = "qwertasdfgzxcvbyuiophjklmn",
+        case_insensitive = true,
+        uppercase_labels = true,
+        multi_windows = true,
+    },
+    keys = {
+        { "s", "<CMD>lua require('hop').hint_char1()<CR>", desc = "Hop to char" },
+    },
+    config = function(_, opts)
+        require("hop").setup(opts)
 
         local color = "#ffff00"
         vim.api.nvim_set_hl(0, "HopNextKey", { fg = color })
