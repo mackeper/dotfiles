@@ -70,6 +70,10 @@ return {
         vim.keymap.set("n", "<leader>ltc", "<Cmd>MasonToolsClean<CR>", { noremap = true, desc = "LSP clean" })
         vim.keymap.set("n", "<leader>ltu", "<Cmd>MasonToolsUpdate<CR>", { noremap = true, desc = "LSP update" })
 
+        vim.keymap.set("n", "ge", vim.diagnostic.open_float, { noremap = true, desc = "Diagnostic float" })
+        vim.keymap.set("n", "[e", vim.diagnostic.goto_next, { noremap = true, desc = "Next" })
+        vim.keymap.set("n", "]e", vim.diagnostic.goto_prev, { noremap = true, desc = "Previous" })
+
         vim.api.nvim_create_autocmd("LspAttach", {
             desc = "LSP keybindings",
             callback = function(event)
@@ -87,16 +91,14 @@ return {
                 vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
                 vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
                 vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts("Hover / Quick info"))
+                vim.keymap.set("n", "gH", vim.lsp.buf.signature_help, opts("Signature help"))
                 vim.keymap.set("n", "gs", builtin.lsp_workspace_symbols, opts("Workspace symbols"))
                 vim.keymap.set("n", "<leader>jd", builtin.diagnostics, opts("Diagnostic"))
                 vim.keymap.set("n", "<leader>je", function()
                     builtin.diagnostics({ severity = vim.diagnostic.severity.ERROR })
                 end, opts("Diagnostic (errors)"))
-                vim.keymap.set("n", "[e", vim.diagnostic.goto_next, opts("Next"))
-                vim.keymap.set("n", "]e", vim.diagnostic.goto_prev, opts("Previous"))
                 vim.keymap.set("n", "<leader>.", vim.lsp.buf.code_action, opts("Code action"))
                 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename"))
-                -- vim.keymap.set("n", "<C-h>", vim.lsp.signature_help, opts("Signature help"))
 
                 if client.name == "omnisharp" then
                     client.server_capabilities.semanticTokensProvider = {
