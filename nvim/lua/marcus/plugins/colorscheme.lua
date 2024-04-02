@@ -1,9 +1,9 @@
 return {
-    { "folke/tokyonight.nvim", lazy = true },
-    { "Mofiqul/vscode.nvim", lazy = true },
-    { "marko-cerovac/material.nvim", lazy = true },
-    { "catppuccin/nvim", name = "catppuccin", lazy = true },
-    { "EdenEast/nightfox.nvim", lazy = true },
+    { "folke/tokyonight.nvim" },
+    { "Mofiqul/vscode.nvim" },
+    { "marko-cerovac/material.nvim" },
+    { "catppuccin/nvim", name = "catppuccin" },
+    { "EdenEast/nightfox.nvim" },
     { "rose-pine/neovim", name = "rose-pine" },
     {
         "scottmckendry/cyberdream.nvim",
