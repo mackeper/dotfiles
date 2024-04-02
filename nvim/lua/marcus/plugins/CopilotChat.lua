@@ -18,8 +18,14 @@ return {
         keys = {
             {
                 "<leader>pc",
+                "ggVG<CMD>CopilotChatToggle<CR>",
+                desc = "Co[p]ilot: Chat",
+            },
+            {
+                "<leader>pc",
                 "<CMD>CopilotChatToggle<CR>",
                 desc = "Co[p]ilot: Chat",
+                mode = "v",
             },
             {
                 "<leader>pe",

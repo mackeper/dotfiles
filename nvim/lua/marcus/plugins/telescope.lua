@@ -10,49 +10,24 @@ return {
         local telescope = require("telescope")
         telescope.load_extension("projects")
 
+        -- stylua: ignore
         telescope.setup({
             pickers = {
-                find_files = {
-                    hidden = true,
-                },
-                live_grep = {
-                    hidden = true,
-                },
-                git_files = {
-                    hidden = true,
-                },
-                git_bcommits = {
-                    hidden = true,
-                },
-                git_commits = {
-                    hidden = true,
-                },
-                git_status = {
-                    hidden = true,
-                },
-                git_branches = {
-                    hidden = true,
-                },
-                git_stash = {
-                    hidden = true,
-                },
-                help_tags = {
-                    hidden = true,
-                },
-                oldfiles = {
-                    hidden = true,
-                },
-                projects = {
-                    hidden = true,
-                },
+                find_files = { hidden = true, },
+                live_grep = { hidden = true, },
+                git_files = { hidden = true, },
+                git_bcommits = { hidden = true, },
+                git_commits = { hidden = true, },
+                git_status = { hidden = true, },
+                git_branches = { hidden = true, },
+                git_stash = { hidden = true, },
+                help_tags = { hidden = true, },
+                oldfiles = { hidden = true, },
+                projects = { hidden = true, },
             },
-            -- extensions = {
-            --     persisted = {
-            --         layout_config = { width = 0.55, height = 0.55 },
-            --     },
-            -- },
         })
 
+        -- Setup trouble.nvim integration
         local actions = require("telescope.actions")
         telescope.setup({
             defaults = {
@@ -75,6 +50,8 @@ return {
             },
         })
 
+        -- stylua: ignore start
+        -- Keymaps
         vim.keymap.set("n", "<leader>jt", builtin.builtin, { desc = "Telescope" })
         vim.keymap.set("n", "<leader>jb", builtin.buffers, { desc = "Buffers" })
         vim.keymap.set("n", "<leader>jf", builtin.find_files, { desc = "Find files" })
@@ -88,9 +65,9 @@ return {
         vim.keymap.set("n", "<leader>jh", builtin.help_tags, { desc = "Help" })
         vim.keymap.set("n", "<leader>jm", builtin.oldfiles, { desc = "Recent files" })
         vim.keymap.set("n", "<leader>jr", builtin.git_files, { desc = "Git files" })
+        vim.keymap.set("n", "<leader>jc", function() builtin.colorscheme({ enable_preview = true }) end, { desc = "Colorschemes" })
         vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
-        vim.keymap.set("n", "<leader>jn", function()
-            builtin.find_files({ cwd = vim.fn.stdpath("config") })
-        end, { desc = "Neovim files" })
+        vim.keymap.set("n", "<leader>jn", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Neovim files" })
+        -- stylua: ignore end
     end,
 }
