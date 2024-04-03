@@ -5,6 +5,8 @@ return {
     { "catppuccin/nvim", name = "catppuccin" },
     { "EdenEast/nightfox.nvim" },
     { "rose-pine/neovim", name = "rose-pine" },
+    { "Shatur/neovim-ayu" },
+    { "projekt0n/github-nvim-theme" },
     {
         "scottmckendry/cyberdream.nvim",
         priority = 1000,
@@ -42,7 +44,7 @@ return {
                 rose_pine = { "rose-pine", nil },
             }
 
-            load_colorscheme(unpack(colorschemes.rose_pine))
+            load_colorscheme(unpack(colorschemes.catppuccin))
         end,
     },
 }
