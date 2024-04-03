@@ -51,7 +51,7 @@ choco install -y dotnet-sdk
 
 ```powershell
 # looks
-winget upgrade JanDeDobbeleer.OhMyPosh -s winget
+winget install JanDeDobbeleer.OhMyPosh -s winget
 Install-Module -Name Terminal-Icons -Repository PSGallery -Force
 Install-Module -Name posh-git -Scope CurrentUser
 Install-Module -Name PSReadLine -AllowPrerelease -Scope CurrentUser -Force -SkipPublisherCheck
