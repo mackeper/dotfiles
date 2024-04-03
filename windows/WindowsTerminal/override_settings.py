@@ -55,6 +55,7 @@ if __name__ == "__main__":
     #         exit(1)
     # finally:
     #     pass
+    print("This script is for Windows only")
 
     settings_file = (
         Path.home()
