@@ -61,10 +61,11 @@ vim.keymap.set("n", "<tab>", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<S-tab>", ":bprevious<CR>", { desc = "Previous buffer" })
 
 -- Window navigation
-vim.keymap.set("n", "<C-left>", "<C-w>h", { desc = "Move to left window" })
-vim.keymap.set("n", "<C-down>", "<C-w>j", { desc = "Move to bottom window" })
-vim.keymap.set("n", "<C-up>", "<C-w>k", { desc = "Move to top window" })
-vim.keymap.set("n", "<C-right>", "<C-w>l", { desc = "Move to right window" })
+-- Disable because it's already mapped in vim-tmux-navigator
+-- vim.keymap.set("n", "<C-left>", "<C-w>h", { desc = "Move to left window" })
+-- vim.keymap.set("n", "<C-down>", "<C-w>j", { desc = "Move to bottom window" })
+-- vim.keymap.set("n", "<C-up>", "<C-w>k", { desc = "Move to top window" })
+-- vim.keymap.set("n", "<C-right>", "<C-w>l", { desc = "Move to right window" })
 vim.keymap.set("n", "<leader>ws", "<C-w>s", { desc = "Split window horizontally" })
 vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split window vertically" })
 vim.keymap.set("n", "<leader>wc", "<C-w>c", { desc = "Close window" })
