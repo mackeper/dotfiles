@@ -24,7 +24,12 @@ return {
     config = function()
         local cmp = require("cmp")
         local cmp_lsp = require("cmp_nvim_lsp")
-        require("neodev").setup() -- Before lspconfig
+        require("neodev").setup({ -- Before lspconfig
+            override = function(_, library)
+                library.enabled = true
+                library.plugins = true
+            end,
+        })
 
         local ls = require("luasnip")
         local ls_vs_loader = require("luasnip.loaders.from_vscode")
