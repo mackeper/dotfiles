@@ -95,7 +95,7 @@ custom_packages=(
     'curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/bin'
 
     # Rust
-    'curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh'
+    'curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y'
     'source "$HOME/.cargo/env"'
 
     # Node https://github.com/nodesource/distributions?tab=readme-ov-file#ubuntu-versions
@@ -108,7 +108,7 @@ custom_packages=(
     'export PATH=$PATH:/usr/local/go/bin'
 
     # Haskell GHCup https://www.haskell.org/ghcup/
-    'curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh'
+    'curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | BOOTSTRAP_HASKELL_NONINTERACTIVE=1 sh'
 
     # gh https://cli.github.com/
     # BROWSER=false gh auth login

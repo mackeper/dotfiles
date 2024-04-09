@@ -1,22 +1,22 @@
-function echo_title() {
+echo_title() {
     echo -e "\n\033[30;44m $1 \033[0m"
 }
 
-function echo_error() {
+echo_error() {
     echo -e "\033[31m[ error ] $1\033[0m"
 }
 
-function echo_warning() {
+echo_warning() {
     echo -e "\033[33m[ warning ] $1\033[0m"
 }
 
-function echo_info() {
+echo_info() {
     echo -e "\033[32m[ info ] $1\033[0m"
 }
 
 # Check if requirements are installed
 # Usage: check_requirements $check_requirements
-function check_requirements() {
+check_requirements() {
     echo_title "Checking requirements"
     if [ -z "$1" ]; then
         echo_error "Missing requirements argument"
@@ -61,4 +61,37 @@ install_packages() {
     done
     echo_info "$concatenated"
     $concatenated
+}
+
+install_packages_from_source() {
+
+    if [ ! -z "$1" ]; then
+        return 1
+    fi
+
+    source <(curl -s "$1")
+
+    # Update and upgrade
+    echo_title "APT"
+    sudo apt update
+    sudo apt upgrade -y
+    install_packages "sudo apt install" "${apt_packages[@]}" # Required before installing other packages
+
+    # Custom commands
+    echo_title "Custom commands"
+    for command in "${custom_packages[@]}"; do
+        echo_info "$command"
+        eval $command
+    done
+
+    # Upgrade pip
+    echo_title "Upgrade pip"
+    pip install --upgrade pip
+
+    # Install packages for each package manager
+    install_packages "sudo npm -g install" "${npm_packages[@]}"
+    install_packages "pip install" "${pip_packages[@]}"
+    install_packages "go install" "${go_packages[@]}"
+    install_packages "cargo install" "${cargo_packages[@]}"
+    return 0
 }
