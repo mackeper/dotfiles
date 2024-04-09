@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-function echo_title() {
-    echo -e "\n\033[37;44m $1\033[0m"
-}
-
 # List of packages for apt
 apt_packages=(
     # Essential
@@ -31,12 +27,8 @@ apt_packages=(
     # Terminal tools
     "bat" # Alternative to cat, alias bat="batcat"
     "btop" # Resource monitor
-    "duf" # Disk usage
-    "ddgr" # DuckDuckGo from the terminal
     "fd-find" # Alternative to find, alias fd="fdfind"
     "fzf" # Fuzzy finder
-    "lolcat" # Rainbow text
-    "neofetch" # System info
     "ripgrep" # Alternative to grep, command rg
     "zoxide" # Alternative to cd, alias z="zoxide"
     "jq" # JSON processor
@@ -50,17 +42,11 @@ apt_packages=(
     "dotnet-sdk-8.0"
 
     # CTF / Security
-    "exiftool" # Read and write meta information in files
-    "hexyl" # Hex viewer
-    "nmap" # Network scanner
-    "steghide" # Hide data in files
     "openvpn" # VPN
 )
 
 # List of packages for npm
-npm_packages=(
-    "wikit" # Terminal wikipedia
-)
+npm_packages=()
 
 # List of packages for pip
 pip_packages=(
@@ -69,7 +55,7 @@ pip_packages=(
     # "yt-dlp" # Youtube downloader
 
     # CTF / Security
-    "flask-unsign"
+    # "flask-unsign"
 
     # Development
     "pynvim" # Neovim support
@@ -83,12 +69,8 @@ go_packages=(
 # List of packages for cargo install
 cargo_packages=(
     # Terminal tools
-    "du-dust" # Disk usage
-    "onefetch" # Neofetch for git repos
     "git-delta" # Better git diffs
-    "procs" # Alternative to ps
     "eza" # Easy alias, alias ls="eza --icons"; alias ll="eza --icons -la", etc.
-    "cargo-nextest" # Rust test runner used by neotest-rust
 )
 
 custom_packages=(
@@ -136,36 +118,3 @@ custom_packages=(
     # && sudo apt update \
     # && sudo apt install gh -y
 )
-
-# Function to concatenate packages into strings
-install_packages() {
-    local packages=("$@")
-    local concatenated="$1"
-    for package in "${packages[@]:1}"; do
-        concatenated+=" $package"
-    done
-    echo_title "$concatenated"
-    $concatenated
-}
-
-# Update and upgrade
-echo_title "APT"
-sudo apt update
-sudo apt upgrade -y
-install_packages "sudo apt install" "${apt_packages[@]}" # Required before installing other packages
-
-# Custom commands
-echo_title "Custom commands"
-for command in "${custom_packages[@]}"; do
-    echo -e "\033[34m $command\033[0m"
-    eval $command
-done
-
-echo_title "pip"
-pip install --upgrade pip
-
-# Install packages for each package manager
-install_packages "sudo npm -g install" "${npm_packages[@]}"
-install_packages "pip install" "${pip_packages[@]}"
-install_packages "go install" "${go_packages[@]}"
-install_packages "cargo install" "${cargo_packages[@]}"

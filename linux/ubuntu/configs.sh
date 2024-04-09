@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-function echo_title() {
-    echo -e "\n\033[37;44m $1\033[0m"
-}
-
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+source $SCRIPT_DIR/lib.sh
 
 commands=(
     'ln -sf $SCRIPT_DIR/.tmux.conf ~/.tmux.conf'
