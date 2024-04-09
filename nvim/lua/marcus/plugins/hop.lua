@@ -9,6 +9,7 @@ return {
     },
     keys = {
         { "s", "<CMD>lua require('hop').hint_char1()<CR>", desc = "Hop to char" },
+        { "s", "<CMD>lua require('hop').hint_char1()<CR>", desc = "Hop to char", mode = "v" },
     },
     config = function(_, opts)
         require("hop").setup(opts)

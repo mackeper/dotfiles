@@ -7,13 +7,13 @@
     editor = nvim
 
 [color "grep"]
-        linenumber = bold blue
-        filename = bold green
-        match = bold red
-        context = white
+    linenumber = bold blue
+    filename = bold green
+    match = bold red
+    context = white
 
 [grep]
-        linenumber = true
+    linenumber = true
 
 [interactive]
     diffFilter = delta --color-only
@@ -32,4 +32,4 @@
 [pull]
     rebase = false
 [init]
-	defaultBranch = main
+    defaultBranch = main
