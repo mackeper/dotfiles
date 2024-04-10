@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 STATIC_REPO_PATH="https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu"
-LOCAL_REPO_PATH="~/git/dotfiles"
+LOCAL_REPO_PATH="$HOME/git/dotfiles"
 just_configs=false
 include_fun_packages=false
 
@@ -77,7 +77,7 @@ main() {
         exit 0
     fi
 
-    install_packages_from_source $STATIC_REPO_PATH/essential_packages.sh
+    install_packages_from_source "$STATIC_REPO_PATH/essential_packages.sh"
 
     if [ $include_fun_packages = true ]; then
         install_packages_from_source $STATIC_REPO_PATH/fun_packages.sh

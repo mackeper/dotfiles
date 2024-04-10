@@ -64,11 +64,13 @@ install_packages() {
 }
 
 install_packages_from_source() {
-
+    echo_title "Installing packages from source"
     if [ ! -z "$1" ]; then
+        echo_error "Missing source argument"
         return 1
     fi
 
+    echo_info "Sourcing $1"
     source <(curl -s "$1")
 
     # Update and upgrade
