@@ -57,6 +57,7 @@ copy_configs() {
     commands=(
         'ln -sf "$LOCAL_REPO_PATH/linux/ubuntu/.tmux.conf" ~/.tmux.conf'
         'ln -sf "$LOCAL_REPO_PATH/linux/ubuntu/.zshrc" ~/.zshrc'
+        'mkdir -p ~/.config'
         'ln -sf "$LOCAL_REPO_PATH/nvim" ~/.config/nvim'
         'ln -sf "$LOCAL_REPO_PATH/.gitconfig" ~/.gitconfig'
     )
