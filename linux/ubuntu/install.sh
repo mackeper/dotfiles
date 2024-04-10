@@ -55,10 +55,10 @@ download_dotfiles() {
 
 copy_configs() {
     commands=(
-        'ln -sf $local_repo_path/linux/ubuntu/.tmux.conf ~/.tmux.conf'
-        'ln -sf $local_repo_path/linux/ubuntu/.zshrc ~/.zshrc'
-        'ln -sf $local_repo_path/nvim ~/.config/nvim'
-        'ln -sf $local_repo_path/.gitconfig ~/.gitconfig'
+        'ln -sf "$LOCAL_REPO_PATH/linux/ubuntu/.tmux.conf" ~/.tmux.conf'
+        'ln -sf "$LOCAL_REPO_PATH/linux/ubuntu/.zshrc" ~/.zshrc'
+        'ln -sf "$LOCAL_REPO_PATH/nvim" ~/.config/nvim'
+        'ln -sf "$LOCAL_REPO_PATH/.gitconfig" ~/.gitconfig'
     )
 
     echo_title "Copying configs"
