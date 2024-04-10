@@ -19,7 +19,7 @@ help() {
     echo "  -f  Include fun packages"
 }
 
-while getopts ":hc:" option; do
+while getopts ":hcf:" option; do
     case $option in
     h)
         help
@@ -72,6 +72,7 @@ main() {
     check_requirements $requirements || exit 1
     download_dotfiles || exit 1
 
+    echo_debug "Just configs: $just_configs"
     if [ $just_configs = true ]; then
         copy_configs
         exit 0

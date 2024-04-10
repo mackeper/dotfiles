@@ -11,7 +11,11 @@ echo_warning() {
 }
 
 echo_info() {
-    echo -e "\033[32m[ info ] $1\033[0m"
+    echo -e "\033[34m[ info ] $1\033[0m"
+}
+
+echo_debug() {
+    echo -e "\033[32m[ debug ] $1\033[0m"
 }
 
 # Check if requirements are installed
