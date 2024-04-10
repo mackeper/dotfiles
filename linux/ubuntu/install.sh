@@ -44,7 +44,7 @@ download_dotfiles() {
         cd ~/git/dotfiles
         git pull
         cd -
-        return 1
+        return 0
     fi
 
     echo_title "Downloading dotfiles"
