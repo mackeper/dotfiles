@@ -77,7 +77,7 @@ install_packages_from_source() {
     echo_title "APT"
     sudo apt update
     sudo apt upgrade -y
-    install_packages "sudo apt install" "${apt_packages[@]}" # Required before installing other packages
+    install_packages "sudo apt install -y " "${apt_packages[@]}" # Required before installing other packages
 
     # Custom commands
     echo_title "Custom commands"
