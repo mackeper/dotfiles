@@ -3,6 +3,7 @@
 STATIC_REPO_PATH="https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu"
 LOCAL_REPO_PATH="~/git/dotfiles"
 just_configs=false
+include_fun_packages=false
 
 source <(curl -s $STATIC_REPO_PATH/lib.sh)
 
@@ -15,6 +16,7 @@ help() {
     echo "Options:"
     echo "  -h  Display help"
     echo "  -c  Just setup the configuration files"
+    echo "  -f  Include fun packages"
 }
 
 while getopts ":hc:" option; do
@@ -25,6 +27,9 @@ while getopts ":hc:" option; do
         ;;
     c)
         just_configs=true
+        ;;
+    f)
+        include_fun_packages=true
         ;;
     \?) # Invalid option
         echo "Invalid option command line option. Use -h for help."
@@ -68,10 +73,20 @@ copy_configs() {
 main() {
     check_requirements $requirements || exit 1
     download_dotfiles || exit 1
+
+    if [ $just_configs = true ]; then
+        copy_configs
+        exit 0
+    fi
+
     install_essential_packages
     install_packages_from_source $STATIC_REPO_PATH/essential_packages.sh
+
+    if [ $include_fun_packages = true ]; then
+        install_packages_from_source $STATIC_REPO_PATH/fun_packages.sh
+    fi
+
     copy_configs
-    # install_packages_from_source $STATIC_REPO_PATH/fun_packages.sh
 }
 
 main
