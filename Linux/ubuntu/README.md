@@ -1,52 +1,38 @@
 # Ubuntu
 
-## Shell
+## Install essential packages
 
-### Zsh
+As root:
 
 ```bash
-sudo apt install zsh
-zsh --version
-chsh -s $(which zsh) # Change default shell to zsh
+apt update
+apt install -y sudo software-properties-common vim curl
 ```
 
-### Zap (Zsh plugin manager)
+## Setup up a sudo user
 
 ```bash
-zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
+adduser marcus
+usermod -aG sudo marcus
+echo 'marcus ALL=(ALL:ALL) ALL' >> /etc/sudoers
 ```
 
-### Oh My Posh
+## Install setup
+
+Install default setup:
 
 ```bash
-curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/bin
+curl -s https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu/install.sh | bash
 ```
 
-## Software
-
-### Tools
+To include fun packages like `neofetch` and `lolcat`:
 
 ```bash
-sudo apt install build-essential
-sudo apt install unzip
-sudo apt-get install fuse libfuse2
+curl -s https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu/install.sh | bash -s -- -f
 ```
 
-### Programming
+Run help to see all available options:
 
 ```bash
-# Neovim, donno, download appimage from repo
-# chmod u+x nvim.appimage
-
-# Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Python
-sudo apt install python3-pip
-pip3 install --upgrade pip
-pip3 install pynvim
-
-# Node https://github.com/nodesource/distributions?tab=readme-ov-file#ubuntu-versions
-curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - &&\
-sudo apt-get install -y nodejs
+curl -s https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu/install.sh | bash -s -- -h
 ```
