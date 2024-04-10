@@ -49,9 +49,7 @@ download_dotfiles() {
 
     echo_title "Downloading dotfiles"
     mkdir -p ~/git
-    git config --global user.email "mpt.ostling@gmail.com"
-    git config --global user.name "Marcus Östling"
-    git clone https://github.com/mackeper/dotfiles.git $LOCAL_REPO_PATH
+    git clone https://github.com/mackeper/dotfiles.git "$LOCAL_REPO_PATH"
     return 0
 }
 
@@ -79,7 +77,6 @@ main() {
         exit 0
     fi
 
-    install_essential_packages
     install_packages_from_source $STATIC_REPO_PATH/essential_packages.sh
 
     if [ $include_fun_packages = true ]; then

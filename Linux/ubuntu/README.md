@@ -6,6 +6,7 @@ As root:
 
 ```bash
 apt update
+apt upgrade -y
 apt install -y sudo software-properties-common vim curl
 ```
 
