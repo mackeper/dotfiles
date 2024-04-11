@@ -10,7 +10,6 @@
 pkg install x11-repo
 pkg install git which curl unzip wget proot-distro
 proot-distro install ubuntu
-proot-distro login ubuntu
 ```
 
 #### Font
@@ -18,8 +17,17 @@ proot-distro login ubuntu
 ```bash
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.0/CascadiaCode.zip
 unzip CascadiaCode.zip -d CascadiaCode
-mv CascadiaCode/CascadiaCode.ttf ~/.termux/font.ttf # Move the regular.
+mv CascadiaCode/CaskaydiaCoveNerdFont-Regular.ttf  ~/.termux/font.ttf # Move the regular.
+rm -rf CascadiaCode CascadiaCode.zip
 ```
+
+#### Create a new sudo user
+
+```bash
+proot-distro login ubuntu
+```
+
+See [Ubuntu](../ubuntu/README.md) for more information.
 
 #### Access ubuntu
 
