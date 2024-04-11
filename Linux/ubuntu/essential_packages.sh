@@ -87,9 +87,9 @@ custom_packages=(
     "sudo install lazygit /usr/local/bin"
     "rm lazygit lazygit.tar.gz"
 
-    # Zsh
+    # Zsh / Zap
     'chsh -s $(which zsh)'
-    'zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1'
+    'zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 --keep'
 
     # Oh My Posh
     'curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/bin'
