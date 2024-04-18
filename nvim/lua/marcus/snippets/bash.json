@@ -1,0 +1,67 @@
+{
+    "boilerplate": {
+        "prefix": "boilerplate",
+        "body": [
+            "#!/usr/bin/env bash",
+            "",
+            "echo_title() { echo -e \"\\n\\033[30;44m \\$1 \\033[0m\"; }",
+            "echo_error() { echo -e \"\\033[31m[ error ] \\$1\\033[0m\"; }",
+            "echo_warning() { echo -e \"\\033[33m[ warning ] \\$1\\033[0m\"; }",
+            "echo_info() { echo -e \"\\033[34m[ info ] \\$1\\033[0m\"; }",
+            "echo_debug() { echo -e \"\\033[32m[ debug ] \\$1\\033[0m\"; }",
+            "",
+            "main() {",
+            "    echo_title \"Start\"",
+            "}",
+            "",
+            "main"
+        ],
+        "description": "Create boilerplate script"
+    },
+    "requirements": {
+        "prefix": "requirements",
+        "body": [
+            "# Usage: requirements <requirement1> <requirement2> ...",
+            "requirements() {",
+            "    requirements=\\$@",
+            "    missing_requirements=()",
+            "    for requirement in ${requirements[@]}; do",
+            "        if ! command -v \\$requirement &>/dev/null; then",
+            "            missing_requirements+=(\\$requirement)",
+            "        fi",
+            "    done",
+            "    if [ ${#missing_requirements[@]} -gt 0 ]; then",
+            "        echo_error \"Missing requirements: ${missing_requirements[@]}\"",
+            "        exit 1",
+            "    fi",
+            "}"
+        ],
+        "description": "Create requirements function"
+    },
+    "getopts": {
+        "prefix": "getopts",
+        "body": [
+            "help() {",
+            "    echo \"Usage: SCRIPT_NAME [-a <arg>] [-b <arg>]\"",
+            "    echo \"\"",
+            "    echo \"Options:\"",
+            "    echo \"  -a <arg>    Description of option a\"",
+            "    echo \"  -b          Description of option b\"",
+            "    echo \"  -h          Display this help message\"",
+            "    exit 0",
+            "}",
+            "",
+            "getopts() {",
+            "    while getopts \"a:bh\" opt; do",
+            "        case $opt in",
+            "            a) a=$OPTARG ;;",
+            "            b) echo \"b\" ;;",
+            "            h) help ;;",
+            "            \\?) help ;;",
+            "        esac",
+            "    done",
+            "}"
+        ],
+        "description": "Create getopts function"
+    }
+}
