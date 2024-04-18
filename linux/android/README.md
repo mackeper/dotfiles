@@ -42,3 +42,9 @@ curl -s https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu/
 ```
 
 See [Ubuntu](../ubuntu/README.md) for more information.
+
+# Known issues
+
+## Neovim / lazy
+
+Might need to set `concurrency = 5` in `~/.config/nvim/lua/marcus/lazy.lua`.
