@@ -23,17 +23,12 @@
         "body": [
             "# Usage: requirements <requirement1> <requirement2> ...",
             "requirements() {",
-            "    requirements=\\$@",
-            "    missing_requirements=()",
-            "    for requirement in ${requirements[@]}; do",
-            "        if ! command -v \\$requirement &>/dev/null; then",
-            "            missing_requirements+=(\\$requirement)",
-            "        fi",
+            "    for requirement; do",
+            "        command -v \\$requirement &>/dev/null || {",
+            "            echo_error \"Missing requirement: \\$requirement\"",
+            "            exit 1",
+            "        }",
             "    done",
-            "    if [ ${#missing_requirements[@]} -gt 0 ]; then",
-            "        echo_error \"Missing requirements: ${missing_requirements[@]}\"",
-            "        exit 1",
-            "    fi",
             "}"
         ],
         "description": "Create requirements function"

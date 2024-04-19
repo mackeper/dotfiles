@@ -15,9 +15,14 @@ requirements() {
     done
 }
 
+repos() {
+    echo_title "Repositories of $1"
+    curl -s "https://api.github.com/users/$1/repos?per_page=100" | jq -r '.[].git_url'
+}
+
 main() {
-    echo_title "Start"
-    requirements curl jq blah
+    requirements curl jq
+    repos mackeper
 }
 
 main
