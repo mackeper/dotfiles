@@ -240,12 +240,22 @@ return {
             table.insert(ensure_installed, "powershell_es")
         end
 
-        require("mason-lspconfig").setup({
-            ensure_installed = ensure_installed,
-            handlers = {
-                default_setup,
-            },
+        local setup_mason_lspconfig = function(lsps)
+            require("mason-lspconfig").setup({
+                ensure_installed = lsps,
+                handlers = {
+                    default_setup,
+                },
+            })
+        end
+
+        vim.api.nvim_create_user_command("MasonInstallAll", function()
+            setup_mason_lspconfig(ensure_installed)
+        end, {
+            desc = "Install all LSP servers",
         })
+
+        setup_mason_lspconfig({})
 
         require("mason-tool-installer").setup({
             ensure_installed = {
