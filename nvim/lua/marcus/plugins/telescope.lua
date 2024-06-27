@@ -33,14 +33,14 @@ return {
             defaults = {
                 mappings = {
                     i = {
-                        ["<c-t>"] = require("trouble.providers.telescope").open_with_trouble,
+                        ["<c-t>"] = require("trouble.sources.telescope").open,
                         ["<C-q>"] = function(prompt_bufnr)
                             actions.send_to_qflist(prompt_bufnr)
                             require("trouble").open("quickfix")
                         end,
                     },
                     n = {
-                        ["<c-t>"] = require("trouble.providers.telescope").open_with_trouble,
+                        ["<c-t>"] = require("trouble.sources.telescope").open,
                         ["<C-q>"] = function(prompt_bufnr)
                             actions.send_to_qflist(prompt_bufnr)
                             require("trouble").open("quickfix")
