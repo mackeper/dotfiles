@@ -32,10 +32,9 @@ return {
             ["<leader>w"] = { name = "Window" },
             ["<leader>x"] = { name = "Trouble" },
             ["<leader>z"] = { name = "Mode" },
+            ["<leader>zc"] = { name = "Cloak" },
             ["<leader>p"] = { name = "Copilot" },
-        })
 
-        wk.register({
             ["gi"] = { name = "Implementation" },
         })
 
