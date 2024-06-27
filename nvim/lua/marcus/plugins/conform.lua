@@ -28,7 +28,7 @@ return {
             sh = { "shfmt" },
             markdown = { "markdownlint", "markdownlint-cli2" },
 
-            ["*"] = { "trim_whitespace" },
+            ["_"] = { "trim_whitespace" },
         },
 
         format_on_save = {

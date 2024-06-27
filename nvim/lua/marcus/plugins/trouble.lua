@@ -5,45 +5,33 @@ return {
     keys = {
         {
             "<leader>xx",
-            function()
-                require("trouble").open()
-            end,
-            desc = "Trouble: open",
+            "<cmd>Trouble diagnostics open focus=true<cr>",
+            desc = "Diagnostics (Trouble)",
         },
         {
-            "<leader>xw",
-            function()
-                require("trouble").open("workspace_diagnostics")
-            end,
-            desc = "Trouble: Workspace diagnostics",
+            "<leader>xX",
+            "<cmd>Trouble diagnostics open focus=true filter.buf=0<cr>",
+            desc = "Buffer Diagnostics (Trouble)",
         },
         {
-            "<leader>xd",
-            function()
-                require("trouble").open("document_diagnostics")
-            end,
-            desc = "Trouble: Document diagnostics",
+            "<leader>xs",
+            "<cmd>Trouble symbols open focus=true<cr>",
+            desc = "Symbols (Trouble)",
         },
         {
-            "<leader>xq",
-            function()
-                require("trouble").open("quickfix")
-            end,
-            desc = "Trouble: Quickfix",
+            "<leader>xr",
+            "<cmd>Trouble lsp open focus=true<cr>",
+            desc = "LSP Definitions / references / ... (Trouble)",
         },
         {
             "<leader>xl",
-            function()
-                require("trouble").open("loclist")
-            end,
-            desc = "Trouble: Location list",
+            "<cmd>Trouble loclist open focus=true<cr>",
+            desc = "Location List (Trouble)",
         },
         {
-            "gR",
-            function()
-                require("trouble").open("lsp_references")
-            end,
-            desc = "Trouble: LSP references",
+            "<leader>xq",
+            "<cmd>Trouble qflist open focus=true<cr>",
+            desc = "Quickfix List (Trouble)",
         },
         {
             "[q",
