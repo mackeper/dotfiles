@@ -17,6 +17,16 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
+-- JavaScript / TypeScript
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "javascript", "typescript" },
+    callback = function()
+        print("Setting JavaScript/TypeScript indent")
+        vim.opt_local.tabstop = 2
+        vim.opt_local.softtabstop = 2
+        vim.opt_local.shiftwidth = 2
+    end,
+})
 
 -- Wrap lines
 vim.opt.wrap = false
