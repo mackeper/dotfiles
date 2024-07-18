@@ -93,6 +93,20 @@ vim.opt.undofile = true
 
 -- Clipboard
 vim.opt.clipboard = "unnamedplus"
+if vim.fn.has("wsl") then
+    vim.g.clipboard = {
+        name = "WslClipboard",
+        copy = {
+            ["+"] = "win32yank.exe -i --crlf",
+            ["*"] = "win32yank.exe -i --crlf",
+        },
+        paste = {
+            ["+"] = "win32yank.exe -o --lf",
+            ["*"] = "win32yank.exe -o --lf",
+        },
+        cache_enabled = 0,
+    }
+end
 
 -- Spellcheck (z=) for suggestions
 vim.opt.spell = false
