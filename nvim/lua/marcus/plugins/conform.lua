@@ -20,7 +20,7 @@ return {
         formatters_by_ft = {
             lua = { "stylua" },
             csharp = { "csharpier" },
-            elm = { "elm-format" },
+            -- elm = { "elm-format" }, -- Just rely on elm-language-server for now
             haskell = { "fourmolu" },
             python = { "isort", "black" },
             javascript = { { "prettierd", "prettier" } },
