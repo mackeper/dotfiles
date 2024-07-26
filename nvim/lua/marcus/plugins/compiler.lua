@@ -19,8 +19,8 @@ return {
     },
     opts = {},
     keys = {
-        { "<leader>cc", "<cmd>CompilerOpen<cr>", desc = "Open compiler" },
-        { "<leader>cr", "<cmd>CompilerRedo<cr>", desc = "Redo last compiler command" },
-        { "<leader>ct", "<cmd>CompilerToggleResults<cr>", desc = "Toggle compiler results" },
+        { "<leader>cco", "<cmd>CompilerOpen<cr>", desc = "Open compiler" },
+        { "<leader>ccr", "<cmd>CompilerRedo<cr>", desc = "Redo last compiler command" },
+        { "<leader>cct", "<cmd>CompilerToggleResults<cr>", desc = "Toggle compiler results" },
     },
 }

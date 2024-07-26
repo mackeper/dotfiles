@@ -50,9 +50,5 @@ return {
         vim.keymap.set("n", "<leader>ep", function()
             require("toggleterm").exec_command("cmd='python3 " .. vim.fn.expand("%") .. "'", python.count)
         end, { noremap = true, silent = true, desc = "Run file in python" })
-
-        vim.keymap.set("t", "<leader>ep", function()
-            python:close()
-        end, { noremap = true, silent = true, desc = "Close python terminal" })
     end,
 }
