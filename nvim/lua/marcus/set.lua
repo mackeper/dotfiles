@@ -115,3 +115,10 @@ vim.opt.spelllang = "en_us"
 -- Terminal
 -- vim.g.terminal_emulator = "powershell"
 -- vim.opt.shell = "powershell"
+vim.api.nvim_create_autocmd("TermOpen", {
+    pattern = "*",
+    callback = function()
+        vim.cmd("startinsert")
+        vim.cmd("setlocal nonumber norelativenumber")
+    end,
+})

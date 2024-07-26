@@ -75,3 +75,16 @@ vim.keymap.set("n", "<leader>wu", ":windo diffoff", { desc = "Undo diff windows"
 
 -- Terminal
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
+-- Run file
+local function runFile()
+    vim.cmd("silent w")
+    if vim.bo.filetype == "python" then
+        vim.cmd("!python3 %")
+    elseif vim.bo.filetype == "lua" then
+        vim.cmd("exec '!lua " .. vim.fn.expand("%") .. "'")
+    else
+        print("Cannot run file of type: " .. vim.bo.filetype)
+    end
+end
+vim.keymap.set("n", "<leader>ef", runFile, { desc = "Run file" })
