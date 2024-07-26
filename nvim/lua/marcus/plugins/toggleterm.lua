@@ -15,7 +15,8 @@ return {
         end
 
         require("toggleterm").setup({
-            direction = "float",
+            direction = "horizontal",
+            size = 20,
             open_mapping = [[<C-\>]],
             insert_mappings = true,
             terminal_mappings = true,
@@ -31,6 +32,7 @@ return {
             cmd = "lazygit",
             hidden = true,
             count = 2,
+            direction = "float",
         })
 
         vim.keymap.set("n", "<C-g>", function()
@@ -41,14 +43,10 @@ return {
             lazygit:toggle()
         end, { noremap = true, silent = true })
 
-        local python = Terminal:new({
-            hidden = true,
-            dir = "%:p:h",
-            count = 3,
-        })
-
-        vim.keymap.set("n", "<leader>ep", function()
-            require("toggleterm").exec_command("cmd='python3 " .. vim.fn.expand("%") .. "'", python.count)
-        end, { noremap = true, silent = true, desc = "Run file in python" })
+        -- local python = Terminal:new({
+        --     hidden = true,
+        --     dir = "%:p:h",
+        --     count = 3,
+        -- })
     end,
 }
