@@ -6,7 +6,7 @@ return {
         vim.o.timeoutlen = 100
     end,
     opts = {
-        window = {
+        win = {
             border = "single",
         },
         notify = false, -- Show warnings for keymaps
