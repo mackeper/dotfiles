@@ -2,6 +2,8 @@ Import-Module posh-git
 Import-Module Terminal-Icons
 (@(& 'C:/Users/macke/AppData/Local/Programs/oh-my-posh/bin/oh-my-posh.exe' init pwsh --config='C:\Users\macke\AppData\Local\Programs\oh-my-posh\themes\jandedobbeleer.omp.json' --print) -join "`n") | Invoke-Expression
 
+. .\mimic_linux.ps1
+
 Set-Variable MaximumHistoryCount 32767
 
 # --- Aliases
@@ -14,18 +16,11 @@ function Remove-Alias ([string] $AliasName)
     }
 }
 Remove-Alias ls -Force -ErrorAction SilentlyContinue
-function ls
-{ Get-ChildItem -Exclude .* | Format-Wide -AutoSize -ErrorAction SilentlyContinue
-}
-function ll
-{ Get-ChildItem
-}
-
 function proj
-{ Set-Location D:\Documents\Projects\ 
+{ Set-Location D:\Documents\Projects\
 }
 function d
-{ Set-Location D:\ 
+{ Set-Location D:\
 }
 function downloads
 { Set-Location D:\Downloads
@@ -34,7 +29,7 @@ function cdownloads
 { Set-Location C:\Users\macke\Downloads
 }
 function software
-{ Set-Location D:\Documents\Software\ 
+{ Set-Location D:\Documents\Software\
 }
 
 
@@ -67,11 +62,11 @@ class FzfCompleterAttribute : System.Management.Automation.ArgumentCompleterAttr
             param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
             $availableArguments = (git branch --format='%(refname:short)')
             if ([string]::IsNullOrWhiteSpace($wordToComplete))
-            { return $availableArguments; 
+            { return $availableArguments;
             }
             $availableArguments | Select-String "$wordToComplete"
         })
-    { 
+    {
     }
 }
 
@@ -90,11 +85,6 @@ Set-PSReadLineKeyHandler -Key Ctrl+o -ScriptBlock {
 # Remove-Alias cd -Force -ErrorAction SilentlyContinue
 
 # linux like
-function which ($command)
-{ 
-    Get-Command -Name $command -ErrorAction SilentlyContinue | 
-        Select-Object -ExpandProperty Path -ErrorAction SilentlyContinue 
-} 
 
 # --- cht.sh (https://github.com/chubin/cheat.sh)
 function cht
@@ -112,10 +102,10 @@ function cht
 
 # --- Git (https://github.com/gluons/powershell-git-aliases)
 function gitmergecode
-{ git status --porcelain | Select-String -Pattern "UU" | ForEach-Object { $_ -replace "UU ", "" } | ForEach-Object { code $_ } 
+{ git status --porcelain | Select-String -Pattern "UU" | ForEach-Object { $_ -replace "UU ", "" } | ForEach-Object { code $_ }
 }
 function gitcsprojcode
-{ git status --porcelain | Select-String -Pattern " M.*csproj" | ForEach-Object { $_ -replace " M ", "" } | ForEach-Object { code $_ } 
+{ git status --porcelain | Select-String -Pattern " M.*csproj" | ForEach-Object { $_ -replace " M ", "" } | ForEach-Object { code $_ }
 }
 
 Remove-Alias gc -Force -ErrorAction SilentlyContinue
@@ -128,190 +118,190 @@ Remove-Alias gp -Force -ErrorAction SilentlyContinue
 Remove-Alias gpv -Force -ErrorAction SilentlyContinue
 
 function g
-{ & git $args 
+{ & git $args
 }
 function ga
-{ & git add $args 
+{ & git add $args
 }
 function gaa
-{ & git add -a $args 
+{ & git add -a $args
 }
 function gau
-{ & git add -u $args 
+{ & git add -u $args
 }
 function gb
-{ & git branch $args 
+{ & git branch $args
 }
 function gbr
-{ & git branch --remote $args 
+{ & git branch --remote $args
 }
 function gbl
-{ & git blame -b -w $args 
+{ & git blame -b -w $args
 }
 function gc
-{ & git commit -ev $args 
+{ & git commit -ev $args
 }
 function gc!
-{ & git commit -ev --amend $args 
+{ & git commit -ev --amend $args
 }
 function gclean
-{ & git clean -fX 
+{ & git clean -fX
 }
 function gcleanvs
-{ & git clean -fX -e !.vs 
+{ & git clean -fX -e !.vs
 }
 function gco
-{ & git checkout $args 
+{ & git checkout $args
 }
 function gcob
-{ & git checkout -b $args 
+{ & git checkout -b $args
 }
 function gcm
-{ git checkout $((git rev-parse --verify master 2>$null) ? 'master' : 'main' ) $args 
+{ git checkout $((git rev-parse --verify master 2>$null) ? 'master' : 'main' ) $args
 }
 function gcl
-{ & git checkout - $args 
+{ & git checkout - $args
 }
 function gd
-{ & git diff $args 
+{ & git diff $args
 }
 function gdca
-{ & git diff --cached $args 
+{ & git diff --cached $args
 }
 function gdcw
-{ & git diff --cached --word-diff $args 
+{ & git diff --cached --word-diff $args
 }
 function gdct
-{ & git describe --tags $(git rev-list --tags --max-count=1) $args 
+{ & git describe --tags $(git rev-list --tags --max-count=1) $args
 }
 function gds
-{ & git diff --staged $args 
+{ & git diff --staged $args
 }
 function gdt
-{ & git diff-tree --no-commit-id --name-only -r $args 
+{ & git diff-tree --no-commit-id --name-only -r $args
 }
 function gdw
-{ & git diff --word-diff $args 
+{ & git diff --word-diff $args
 }
 function gdss
-{ & git diff --shortstat $args 
+{ & git diff --shortstat $args
 }
 function gf
-{ & git fetch $args 
+{ & git fetch $args
 }
 function gfa
-{ & git fetch --all --prune $args 
+{ & git fetch --all --prune $args
 }
 function gfo
-{ & git fetch origin $args 
+{ & git fetch origin $args
 }
 function gg
-{ & git grep -n $args 
+{ & git grep -n $args
 }
 function ggwt([Parameter(Mandatory=$true)][string]$Pattern, [string]$filePattern="*.cs")
-{ & git grep -n $Pattern -- $filePattern ":!*Fixture*" ":!*Test*" 
+{ & git grep -n $Pattern -- $filePattern ":!*Fixture*" ":!*Test*"
 }
 function gl
-{ & git pull $args 
+{ & git pull $args
 }
 function glg
-{ & git log --stat $args 
+{ & git log --stat $args
 }
 function glgp
-{ & git log --stat -p $args 
+{ & git log --stat -p $args
 }
 function glgg
-{ & git log --graph $args 
+{ & git log --graph $args
 }
 function glgga
-{ & git log --graph --decorate --all $args 
+{ & git log --graph --decorate --all $args
 }
 function glgm
-{ & git log --graph --max-count=10 $args 
+{ & git log --graph --max-count=10 $args
 }
 function glo
-{ & git log --oneline --decorate $args 
+{ & git log --oneline --decorate $args
 }
 function glol
-{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' $args 
+{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' $args
 }
 function glols
-{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --stat $args 
+{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --stat $args
 }
 function glod
-{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' $args 
+{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' $args
 }
 function glods
-{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' --date=short $args 
+{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' --date=short $args
 }
 function glola
-{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --all $args 
+{ & git log --graph --pretty='%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --all $args
 }
 function glog
-{ & git log --oneline --decorate --graph $args 
+{ & git log --oneline --decorate --graph $args
 }
 function gloga
-{ & git log --oneline --decorate --graph --all $args 
+{ & git log --oneline --decorate --graph --all $args
 }
 function gm
-{ & git merge $args 
+{ & git merge $args
 }
 function gmt
-{ & git mergetool --no-prompt $args 
+{ & git mergetool --no-prompt $args
 }
 function gmtvim
-{ & git mergetool --no-prompt --tool=vimdiff $args 
+{ & git mergetool --no-prompt --tool=vimdiff $args
 }
 function gp
-{ & git push $args 
+{ & git push $args
 }
 function gpn
-{ & git push --set-upstream origin (git branch --show-current) 
+{ & git push --set-upstream origin (git branch --show-current)
 }
 function greh
-{ & git reset $args 
+{ & git reset $args
 }
 function grm
-{ & git rm $args 
+{ & git rm $args
 }
 function grmc
-{ & git rm --cached $args 
+{ & git rm --cached $args
 }
 function grs
-{ & git restore $args 
+{ & git restore $args
 }
 function grss
-{ & git restore --staged $args 
+{ & git restore --staged $args
 }
 function gss
-{ & git status -s $args 
+{ & git status -s $args
 }
 function gst
-{ & git status $args 
+{ & git status $args
 }
 function gstaa
-{ & git stash apply $args 
+{ & git stash apply $args
 }
 function gstc
-{ & git stash clear $args 
+{ & git stash clear $args
 }
 function gstd
-{ & git stash drop $args 
+{ & git stash drop $args
 }
 function gstl
-{ & git stash list $args 
+{ & git stash list $args
 }
 function gstp
-{ & git stash pop $args 
+{ & git stash pop $args
 }
 function gsts
-{ & git stash show --text $args 
+{ & git stash show --text $args
 }
 function gstu
-{ & git stash --include-untracked $args 
+{ & git stash --include-untracked $args
 }
 function gstall
-{ & git stash --all $args 
+{ & git stash --all $args
 }
 
 

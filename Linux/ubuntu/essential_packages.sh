@@ -2,43 +2,14 @@
 
 # List of packages for apt
 apt_packages=(
-    # Essential
-    "build-essential"
-    "git"
-    "unzip"
-    "fuse"
-    "libfuse2"
-    "curl"
-    "wget"
-    "openssl"
-    "tmux"
-    "xclip"
-    "libffi-dev"
-    "libffi8ubuntu1"
-    "libgmp-dev"
-    "libgmp10"
-    "libncurses-dev"
-    "libncurses5"
-    "libtinfo5"
-
-    # Terminal
-    "zsh"
-
     # Terminal tools
     "bat" # Alternative to cat, alias bat="batcat"
     "btop" # Resource monitor
     "fd-find" # Alternative to find, alias fd="fdfind"
-    "fzf" # Fuzzy finder
-    "ripgrep" # Alternative to grep, command rg
-    "zoxide" # Alternative to cd, alias z="zoxide"
     "jq" # JSON processor
 
     # Development
     "cmake" # Build system
-    "make" # Build system
-    "python3"
-    "python3-pip"
-    "python3-venv"
     "dotnet-sdk-8.0"
 
     # CTF / Security
@@ -58,7 +29,6 @@ pip_packages=(
     # "flask-unsign"
 
     # Development
-    "pynvim" # Neovim support
 )
 
 # List of packages for go install
@@ -68,25 +38,9 @@ go_packages=(
 
 # List of packages for cargo install
 cargo_packages=(
-    # Terminal tools
-    "git-delta" # Better git diffs
-    "eza" # Easy alias, alias ls="eza --icons"; alias ll="eza --icons -la", etc.
-)
+I)
 
 custom_packages=(
-    # Nvim
-    'mkdir ~/bin && wget -O ~/bin/nvim https://github.com/neovim/neovim/releases/download/v0.9.5/nvim.appimage && chmod u+x ~/bin/nvim'
-
-    # Zoxide
-    "curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash"
-
-    # Lazygit
-    'LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"'"'"tag_name": "v\K[^"]*'"'"')'
-    'curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"'
-    "tar xf lazygit.tar.gz lazygit"
-    "sudo install lazygit /usr/local/bin"
-    "rm lazygit lazygit.tar.gz"
-
     # Zsh / Zap
     'chsh -s $(which zsh)'
     'zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1 --keep'
