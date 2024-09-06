@@ -4,7 +4,6 @@ choco install microsoft-windows-terminal -y
 
 # Development
 ## Editor
-choco install vscode -y
 choco install neovim -y
 
 ## Tools
