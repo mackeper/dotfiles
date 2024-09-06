@@ -2,6 +2,14 @@
 
 ![](.images/README/README_1698152733223.png)
 
+## Setup powershell
+
+```Powershell
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://github.com/mackeper/dotfiles/tree/master/windows/install.ps1'))
+```
+
+# OLD BELOW
+
 ## Install powershell
 
 ```powershell
