@@ -17,6 +17,20 @@ function Write-Success($message)
 { Write-Host "[ success ] $message" -ForegroundColor Green
 }
 
+function New-Profile()
+{
+    Write-Title "Creating profile"
+    $profilePath = $PROFILE
+    if (!(Test-Path $profilePath))
+    {
+        New-Item -ItemType File -Path $profilePath
+        Write-Success "Created $profilePath"
+    } else
+    {
+        Write-Info "$profilePath already exists"
+    }
+}
+
 function Copy-Configs()
 {
     Write-Title "Copying configs"
@@ -26,7 +40,6 @@ function Copy-Configs()
         [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/git_aliases.ps1", (Get-Item $PROFILE).Directory)
         [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/mimic_linux.ps1", (Get-Item $PROFILE).Directory)
         [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/modules.ps1", (Get-Item $PROFILE).Directory)
-        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/bin_path.ps1", (Get-Item $PROFILE).Directory)
 
         # Git
         [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/.gitconfig", $env:USERPROFILE)
@@ -59,24 +72,28 @@ function Copy-Configs()
 
         Write-Success "Copied $filename to $destination"
     }
+}
 
-    # # Powershell
-    # Copy-Item $SCRIPT_DIR\Powershell\Microsoft.PowerShell_profile.ps1 $PROFILE
-    # Write-Info "Copied Microsoft.PowerShell_profile.ps1 to $PROFILE"
-    # Copy-Item $SCRIPT_DIR\Powershell\mimic_linux.ps1 (Get-Item $PROFILE).Directory
-    # Write-Info "Copied mimic_linux.ps1 to $PROFILE directory"
-    # Copy-Item $SCRIPT_DIR\Powershell\git_aliases.ps1 (Get-Item $PROFILE).Directory
-    # Write-Info "Copied git_aliases.ps1 to $PROFILE directory"
-    #
-    # # Git
-    # Copy-Item $SCRIPT_DIR\..\.gitconfig (Join-Path $env:USERPROFILE ".gitconfig")
-    # Write-Info "Copied .gitconfig to $env:USERPROFILE"
+function New-Bin-Path()
+{
+    Write-Title "Creating bin path"
+    $binPath = "$((Get-Item $PROFILE).Directory)\bin_path.ps1"
+    if (!(Test-Path $binPath))
+    {
+        New-Item -ItemType File -Path $binPath
+        Write-Success "Created $binPath"
+    } else
+    {
+        Write-Info "$binPath already exists"
+    }
 }
 
 function main()
 {
     Write-Title "Starting installation"
+    New-Profile
     Copy-Configs
+    New-Bin-Path
     Write-Title "Installation complete"
 }
 
