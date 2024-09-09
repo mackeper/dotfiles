@@ -23,13 +23,16 @@ $softwareList = @(
     "python3"
     "mingw"
     "powertoys"
-    "vlc"
     "keepass.install"
     "fzf"
     "gsudo"
     "win32yank"
     "bat"
-)
+    "ripgrep"
+    "bottom"
+    "oh-my-posh"
+    "autohotkey"
+    I)
 
 function Install-Chocolatey()
 {
