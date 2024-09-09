@@ -68,6 +68,7 @@ function main() {
     install_software "nvim" "https://github.com/neovim/neovim/releases/download/v0.10.1/nvim-linux64.tar.gz" "nvim-linux64/bin/nvim"
     install_software "zoxide" "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.4/zoxide-0.9.4-x86_64-unknown-linux-musl.tar.gz" "zoxide"
     install_software "delta" "https://github.com/dandavison/delta/releases/download/0.18.1/delta-0.18.1-x86_64-unknown-linux-gnu.tar.gz" "delta-0.18.1-x86_64-unknown-linux-gnu/delta"
+    install_software "dust" "https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-unknown-linux-gnu.tar.gz" "dust-v1.1.1-x86_64-unknown-linux-gnu/dust"
     # install_software "bat" "https://github.com/sharkdp/bat/releases/download/v0.24.0/bat-v0.24.0-x86_64-unknown-linux-gnu.tar.gz" "bat"
     # install_software "btm" "https://github.com/ClementTsang/bottom/releases/download/0.10.2/bottom_x86_64-unknown-linux-gnu.tar.gz" "btm"
 }

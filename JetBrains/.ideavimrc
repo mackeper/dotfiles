@@ -1,0 +1,274 @@
+
+" .ideavimrc is a configuration file for IdeaVim plugin.
+" * List of commands: https://jb.gg/h38q75
+" * Examples: https://jb.gg/share-ideavimrc
+
+" Important rider keymaps
+" Hide Active Tool Window - q
+" Hide All Tool Windows - Shift + q
+
+"" Vim settings
+    let mapleader="\<space>"
+    set clipboard+=unnamed
+
+    " Visuals
+    set scrolloff=5
+    set sidescrolloff=5
+    set showmode
+    set showcmd
+    set number
+    " set relativenumber
+
+    " Sound
+    set belloff=all
+    set noerrorbells
+    set vb t_vb=
+
+    " Search
+    set hls " Disable highlighting after search
+    set incsearch
+    set ignorecase
+    set smartcase
+
+"" IdeaVim
+    " Smart join for <C-J>
+    set ideajoin
+
+    " Map vim marks to IDEA global marks
+    set ideamarks
+    set ideastatusicon=enabled
+
+"" Plugins (Enable IdeaVim plugins https://jb.gg/ideavim-plugins)
+    Plug 'vim-scripts/argtextobj.vim'
+    Plug 'easymotion/vim-easymotion'
+    map s <Plug>(easymotion-s2)
+
+    "" Highlight copied text
+    Plug 'machakann/vim-highlightedyank'
+    let g:highlightedyank_highlight_duration = "1000"
+    let g:highlightedyank_highlight_color = "rgba(100, 100, 0, 155)"
+
+    "" Commentary plugin
+    Plug 'tpope/vim-commentary'
+
+    "" Surround plugin
+    " let surround_no_mappings = 0
+    Plug 'tpope/vim-surround'
+
+    "" Which-key plugin
+    set which-key
+    let g:WhichKey_FontSize = 16
+    let g:WhichKey_CommandColor = "#41ead4"
+    let g:WhichKey_PrefixColor = "#f335b2"
+    let g:WhichKey_SortOrder = "by_key_prefix_first"
+    let g:WhichKey_CommandStyle = "bold"
+    set notimeout
+    
+    let g:WhichKeyDesc_buffer = "<leader>b Buffer"
+    let g:WhichKeyDesc_buffer_close = "<leader>bd delete buffer"
+    let g:WhichKeyDesc_buffer_close_all = "<leader>ba Close all buffers"
+    let g:WhichKeyDesc_buffer_close_other = "<leader>bo Close other buffers"
+    let g:WhichKeyDesc_buffer_pin = "<leader>bp Pin buffer"
+    nmap <leader>bd <Action>(CloseContent)
+    nmap <leader>ba <Action>(CloseAllEditors)
+    nmap <leader>bo <Action>(CloseAllEditorsButActive)
+    nmap <leader>bp <Action>(PinActiveTabToggle)
+    
+    let g:WhichKeyDesc_goto = "g Go to X"
+    let g:WhichKeyDesc_goto_declaration = "gd Go to Definition"
+    let g:WhichKeyDesc_goto_implementation = "gi Go to Implementation"
+    let g:WhichKeyDesc_goto_references = "gr Go to References"
+    let g:WhichKeyDesc_goto_test = "gt Go to Test"
+    let g:WhichKeyDesc_goto_hint = "gh Show Hint"
+    nmap gc <Action>(GotoDeclaration)
+    nmap gi <Action>(GotoImplementation)
+    nmap gr <Action>(FindUsages)
+    nmap gt <Action>(GotoTest)
+    nmap gh <Action>(QuickJavaDoc)
+
+    let g:WhichKeyDesc_git = "<leader>g Git"
+    let g:WhichKeyDesc_git_blame = "<leader>gb Git Blame"
+    let g:WhichKeyDesc_git_diff = "<leader>gd Git Diff"
+    nmap <leader>gb <Action>(Annotate)
+    nmap <leader>gd <Action>(ActivateCommitToolWindow)
+    
+    let g:WhichKeyDesc_harpoon = "<leader>h Harpoon"
+    let g:WhichKeyDesc_harpoon_goto1 = "<leader>hh Harpoon 1"
+    let g:WhichKeyDesc_harpoon_goto2 = "<leader>hj Harpoon 2"
+    let g:WhichKeyDesc_harpoon_goto3 = "<leader>hk Harpoon 3"
+    let g:WhichKeyDesc_harpoon_goto4 = "<leader>hl Harpoon 4"
+    let g:WhichKeyDesc_harpoon_goto5 = "<leader>h; Harpoon 5"
+    let g:WhichKeyDesc_harpoon_set1 = "<leader>hH Set Harpoon 1"
+    let g:WhichKeyDesc_harpoon_set2 = "<leader>hJ Set Harpoon 2"
+    let g:WhichKeyDesc_harpoon_set3 = "<leader>hK Set Harpoon 3"
+    let g:WhichKeyDesc_harpoon_set4 = "<leader>hL Set Harpoon 4"
+    let g:WhichKeyDesc_harpoon_set5 = "<leader>h: Set Harpoon 5"
+    let g:WhichKeyDesc_harpoon_add = "<leader>ha Add Harpoon"
+    let g:WhichKeyDesc_harpoon_show = "<leader>ho Show Harpoon"
+    nmap <leader>hh <Action>(GotoHarpoon1)
+    nmap <leader>hj <Action>(GotoHarpoon2)
+    nmap <leader>hk <Action>(GotoHarpoon3)
+    nmap <leader>hl <Action>(GotoHarpoon4)
+    nmap <leader>h; <Action>(GotoHarpoon5)
+    nmap <leader>hH <Action>(SetHarpoon1)
+    nmap <leader>hJ <Action>(SetHarpoon2)
+    nmap <leader>hK <Action>(SetHarpoon3)
+    nmap <leader>hL <Action>(SetHarpoon4)
+    nmap <leader>h: <Action>(SetHarpoon5)
+    nmap <leader>ha <Action>(AddToHarpoon)
+    nmap <leader>ho <Action>(ShowHarpoon)
+
+    let g:WhichKeyDesc_ide = "<leader>i IDE"
+    let g:WhichKeyDesc_ide_build = "<leader>ib Build"
+    let g:WhichKeyDesc_ide_build_solution = "<leader>ibs Build solution"
+    let g:WhichKeyDesc_ide_build_rebuild = "<leader>ibr Rebuild solution"
+    let g:WhichKeyDesc_ide_build_project = "<leader>ibp Build current project"
+    let g:WhichKeyDesc_ide_build_cancel = "<leader>ibc Cancel build"
+    nmap <leader>ibs <Action>(BuildSolutionAction)
+    nmap <leader>ibr <Action>(RebuildSolutionAction)
+    nmap <leader>ibp <Action>(BuildCurrentProject)
+    nmap <leader>ibc <Action>(StopBuild)
+    let g:WhichKeyDesc_ide_test = "<leader>it Test"
+    let g:WhichKeyDesc_ide_test_context = "<leader>itr Test current context"
+    let g:WhichKeyDesc_ide_test_debug = "<leader>itd Debug current context"
+    let g:WhichKeyDesc_ide_test_all = "<leader>ita Test all"
+    nmap <leader>itr <Action>(RiderUnitTestRunContextAction)
+    nmap <leader>itd <Action>(RiderUnitTestDebugContextAction)
+    nmap <leader>ita <Action>(RiderUnitTestRunSolutionAction)
+    let g:WhichKeyDesc_ide_nuget = "<leader>in Nuget"
+    let g:WhichKeyDesc_ide_nuget_restore = "<leader>inr Restore packages"
+    let g:WhichKeyDesc_ide_nuget_restore_force = "<leader>inf Restore packages (force)"
+    let g:WhichKeyDesc_ide_nuget_manage = "<leader>inp Manage packages"
+    let g:WhichKeyDesc_ide_nuget_open = "<leader>inn Open Nuget Menu"
+    nmap <leader>inr <Action>(RiderNuGetPopupRestoreAction)
+    nmap <leader>inf <Action>(RiderNuGetPopupRestoreForceAction)
+    nmap <leader>inn <Action>(NuGet)
+    nmap <leader>inp <Action>(RiderNuGetManagePackagesForCurrentProjectAction)
+    let g:WhichKeyDesc_ide_ideavim = "<leader>iv IdeaVim"
+    let g:WhichKeyDesc_ide_ideavim_track = "<leader>ivt Track IdeaVim"
+    nmap <leader>ivt <Action>(VimFindActionIdAction)
+
+    let g:WhichKeyDesc_refactor = "<leader>r Refactor"
+    let g:WhichKeyDesc_refactor_rename = "<leader>rn Rename"
+    let g:WhichKeyDesc_refactor_reformat = "<leader>rf Reformat"
+    let g:WhichKeyDesc_refactor_find_replace_in_file = "<leader>rw Find and replace in file"
+    nmap <leader>rn <Action>(RenameElement)
+    nmap <leader>rf <Action>(ReformatCode)
+    nmap <leader>rw :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
+
+    let g:WhichKeyDesc_search = "<leader>j Search"
+    let g:WhichKeyDesc_search_recent_files = "<leader>jm Recent files"
+    let g:WhichKeyDesc_search_find = "<leader>jf Find symbol"
+    let g:WhichKeyDesc_search_find_in_file = "<leader>jg Find in file"
+    nmap <C-\> <Action>(ActivateTerminalToolWindow)
+    nmap <leader>jm <Action>(RecentFiles)
+    nmap <leader>jf <Action>(SearchEverywhere)
+    nmap <leader>jg <Action>(FindInPath)
+
+    let g:WhichKeyDesc_explorer = "<leader>e Explorer"
+    let g:WhichKeyDesc_explorer_sync = "<leader>es Sync explorer"
+    let g:WhichKeyDesc_explorer_new = "<leader>ea New element"
+    let g:WhichKeyDesc_explorer_outline = "<leader>eo Open Outline"
+    let g:WhichKeyDesc_explorer_marks = "<leader>e Open Marks"
+    nmap <leader>es <Action>(SelectInProjectView)<Action>(CollapseAll)
+    nmap <leader>ea <Action>(NewElementSamePlace)
+    " nmap <leader>er <Action>(RenameFile)
+    nmap <leader>eo <Action>(ActivateStructureToolWindow)
+    nmap <leader>om <Action>(ActivateMarksToolWindow)
+    
+    let g:WhichKeyDesc_open = "<leader>o Open"
+    let g:WhichKeyDesc_open_reveal = "<leader>oe Reveal in explorer"
+    nmap <leader>oe <Action>(RevealIn)
+    
+    let g:WhichKeyDesc_copilot = "<leader>p Copilot"
+    let g:WhichKeyDesc_copilot_chat = "<leader>pc Chat"
+    nmap <leader>pc <Action>(ActivateGitHubCopilotChatToolWindow)
+
+    let g:WhichKeyDesc_mode = "<leader>z Mode"
+    let g:WhichKeyDesc_mode_zen = "<leader>zm Zen mode"
+    let g:WhichKeyDesc_mode_distraction_free = "<leader>zd Distraction free mode"
+    nmap <leader>zm <Action>(ToggleZenMode)
+    nmap <leader>zd <Action>(ToggleDistractionFreeMode)
+
+    let g:WhichKeyDesc_code = "<leader>c Code / Copy"
+    let g:WhichKeyDesc_code_copy_path = "<leader>cp Copy path"
+    let g:WhichKeyDesc_code_breakpoint = "<leader>cb Toggle Breakpoint"
+    let g:WhichKeyDesc_code_next_error = "<leader>ce Next error"
+    let g:WhichKeyDesc_code_prev_error = "<leader>cE Previous error"
+    nmap <leader>cp <Action>(CopyAbsolutePath)
+    nmap <leader>cb <Action>(ToggleLineBreakpoint)
+    nmap <leader>ce <Action>(GotoNextErrorInSolution)
+    nmap <leader>cE <Action>(GotoPrevErrorInSolution)
+
+    let g:WhichKeyDesc_surround = "<leader>s Surround"
+    let g:WhichKeyDesc_surround_add = "<leader>sa Add surrounding"
+    let g:WhichKeyDesc_surround_delete = "<leader>sd Delete surrounding"
+    let g:WhichKeyDesc_surround_replace = "<leader>sr Replace surrounding"
+    nmap <leader>sa <Plug>YSurround
+    nmap <leader>sd <Plug>DSurround
+    nmap <leader>sr <Plug>CSurround
+    
+    let g:WhichKeyDesc_window = "<leader>w Window"
+    let g:WhichKeyDesc_window_split_horizontally = "<leader>ws Split horizontally"
+    let g:WhichKeyDesc_window_split_vertically = "<leader>wv Split vertically"
+    let g:WhichKeyDesc_window_new = "<leader>wn Open in new window"
+    nmap <leader>ws <Action>(SplitHorizontally)
+    nmap <leader>wv <Action>(SplitVertically)
+    nmap <leader>wn <Action>(EditSourceInNewWindow)
+    
+    let g:WhichKeyDesc_quickfix = "<leader>x Quickfix"
+    let g:WhichKeyDesc_quickfix_errors = "<leader>xx Errors"
+    let g:WhichKeyDesc_quickfix_todos = "<leader>xt Todos"
+    nmap <leader>xx <Action>(Rider.ProblemsView.ErrorsInSolution)
+    nmap <leader>xt <Action>(ActivateTODOToolWindow)
+    
+"" Remaps
+    " Disable search highlighting
+    nmap <leader>n :noh<CR>
+    nmap <ESC> :noh<CR>
+    
+    let g:WhichKeyDesc_center_cursor = "zz Center cursor"
+    nmap zz zz100z<Left>
+    " Refactor
+    " xmap p pgv"@=v:register.'y'<cr>
+
+    " Move selected line / block up or down
+    vmap J :m '>+1<CR>gv=gv
+    vmap K :m '<-2<CR>gv=gv
+
+    " Keep cursor in the middle when moving around
+    nmap n nzz
+    nmap N Nzz
+    nmap J mzJ`z
+    nmap <C-d> <C-d>zz
+    nmap <C-u> <C-u>zz
+
+    nmap <Tab> <Action>(NextTab)
+    nmap <S-Tab> <Action>(PreviousTab)
+    
+    let g:WhichKeyDesc_code_action = "<leader>. Code action"
+    nmap <leader>. <Action>(ShowIntentionActions)
+    vmap <leader>. <Action>(ShowIntentionActions)
+    
+    " Navigate
+    let g:WhichKeyDesc_navigate_method_up = "[["
+    let g:WhichKeyDesc_navigate_method_down = "]]"
+    let g:WhichKeyDesc_navigate_error_next = "]e"
+    let g:WhichKeyDesc_navigate_error_prev = "[e"
+    nmap [[ <Action>(MethodUp)
+    nmap ]] <Action>(MethodDown)
+    nmap ]e <Action>(ReSharperGotoNextErrorInSolution)
+    nmap [e <Action>(ReSharperGotoPrevErrorInSolution)
+    
+    let g:WhichKeyDesc_navigate_camel_case = "<leader>u Camel case"
+    nmap <leader>u /\u/s<CR>:noh<CR>
+    vmap <leader>u /\u/s<CR>
+    
+    nmap <C-o> <Action>(Back)
+    nmap <C-i> <Action>(Forward)
+    
+    nmap <C-a> ggVG
+
+    " Source file
+    let g:WhichKeyDesc_source_file = "zl Source file"
+    nmap zl :source ~/.ideavimrc<CR>

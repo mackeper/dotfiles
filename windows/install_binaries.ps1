@@ -99,7 +99,6 @@ function Main()
     Install-Software "nvim" "https://github.com/neovim/neovim/releases/download/v0.10.1/nvim-win64.zip" "nvim-win64\bin\nvim.exe"
     Install-Software "zoxide" "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.4/zoxide-0.9.4-x86_64-pc-windows-msvc.zip" "zoxide.exe"
     Install-Software "delta" "https://github.com/dandavison/delta/releases/download/0.18.1/delta-0.18.1-x86_64-pc-windows-msvc.zip" "delta-0.18.1-x86_64-pc-windows-msvc\delta.exe"
-    Install-Software "btm" "https://github.com/ClementTsang/bottom/releases/download/0.10.2/bottom_x86_64-pc-windows-gnu.zip" "btm.exe"
     Install-Software "duf" "https://github.com/muesli/duf/releases/download/v0.8.1/duf_0.8.1_Windows_x86_64.zip" "duf.exe"
     Install-Software "dust" "https://github.com/bootandy/dust/releases/download/v1.1.1/dust-v1.1.1-x86_64-pc-windows-gnu.zip" "dust-v1.1.1-x86_64-pc-windows-gnu\dust.exe"
     Install-Software "fd" "https://github.com/sharkdp/fd/releases/download/v10.2.0/fd-v10.2.0-x86_64-pc-windows-gnu.zip" "fd-v10.2.0-x86_64-pc-windows-gnu\fd.exe"

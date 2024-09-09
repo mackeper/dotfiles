@@ -20,26 +20,31 @@ function Write-Success($message)
 function Copy-Configs()
 {
     Write-Title "Copying configs"
-    filesToCopy = @(
-        # Powershell 
-        [Tuple]::Create("https://github.com/mackeper/dotfiles/blob/master/windows/Powershell/Microsoft.PowerShell_profile.ps1", (Get-Item $PROFILE).Directory),
-        [Tuple]::Create("https://github.com/mackeper/dotfiles/blob/master/windows/Powershell/mimic_linux.ps1", (Get-Item $PROFILE).Directory),
-        [Tuple]::Create("https://github.com/mackeper/dotfiles/blob/master/windows/Powershell/git_aliases.ps1", (Get-Item $PROFILE).Directory),
+    $filesToCopy = @(
+        # Powershell
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/Microsoft.PowerShell_profile.ps1", (Get-Item $PROFILE).Directory)
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/git_aliases.ps1", (Get-Item $PROFILE).Directory)
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/mimic_linux.ps1", (Get-Item $PROFILE).Directory)
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/modules.ps1", (Get-Item $PROFILE).Directory)
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/Powershell/bin_path.ps1", (Get-Item $PROFILE).Directory)
 
         # Git
-        [Tuple]::Create("https://github.com/mackeper/dotfiles/blob/master/windows/Powershell/Microsoft.PowerShell_profile.ps1", $env:USERPROFILE)
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/.gitconfig", $env:USERPROFILE)
+
+        # Development
+        [Tuple]::Create("https://raw.githubusercontent.com/mackeper/dotfiles/master/JetBrains/.ideavimrc", $env:USERPROFILE)
     )
 
     foreach ($file in $filesToCopy)
     {
         $url = $file.Item1
         $filename = Split-Path $url -Leaf
-        $destination = "$file.Item2\$filename"
+        $destination = "$($file.Item2)\$filename"
 
         if (Test-Path $destination)
         {
             Write-Warning "$destination already exists. Creating backup $destination.bak."
-            Copy-Item $destination "$destination.bak" 
+            Copy-Item $destination "$destination.bak"
         }
 
         try
@@ -48,6 +53,7 @@ function Copy-Configs()
         } catch
         {
             Write-Error "Failed to download $url"
+            Write-Error $_.Exception.Message
             continue
         }
 
@@ -59,7 +65,7 @@ function Copy-Configs()
     # Write-Info "Copied Microsoft.PowerShell_profile.ps1 to $PROFILE"
     # Copy-Item $SCRIPT_DIR\Powershell\mimic_linux.ps1 (Get-Item $PROFILE).Directory
     # Write-Info "Copied mimic_linux.ps1 to $PROFILE directory"
-    # Copy-Item $SCRIPT_DIR\Powershell\git_aliases.ps1 (Get-Item $PROFILE).Directory 
+    # Copy-Item $SCRIPT_DIR\Powershell\git_aliases.ps1 (Get-Item $PROFILE).Directory
     # Write-Info "Copied git_aliases.ps1 to $PROFILE directory"
     #
     # # Git
