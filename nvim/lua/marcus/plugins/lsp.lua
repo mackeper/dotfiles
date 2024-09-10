@@ -232,7 +232,7 @@ return {
             "rust_analyzer", -- Rust
             "sqlls", -- SQL
             "svelte", -- Svelte
-            "tsserver", -- JavaScript / TypeScript
+            "ts_ls", -- JavaScript / TypeScript
             "yamlls", -- yaml
         }
 
