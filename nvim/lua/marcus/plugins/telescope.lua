@@ -40,7 +40,7 @@ return {
                     width = 0.80,
                     height = 0.80,
                 },
-                file_ignore_patterns = { "node_modules" },
+                file_ignore_patterns = { "node_modules", ".git" },
                 path_display = { "truncate" },
                 prompt_prefix = "   ",
                 selection_caret = "  ",
