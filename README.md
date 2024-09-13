@@ -5,4 +5,3 @@
 - [Windows](./windows/README.md)
 - Linux
   - [Ubuntu](./linux/ubuntu/README.md)  
-- [MacOS](./macos/README.md)
