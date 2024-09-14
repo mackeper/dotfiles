@@ -3,10 +3,6 @@
 # List of packages for apt
 apt_packages=(
     # Terminal tools
-    "bat" # Alternative to cat, alias bat="batcat"
-    "btop" # Resource monitor
-    "fd-find" # Alternative to find, alias fd="fdfind"
-    "jq" # JSON processor
 
     # Development
     "cmake" # Build system
@@ -37,8 +33,7 @@ go_packages=(
 )
 
 # List of packages for cargo install
-cargo_packages=(
-I)
+cargo_packages=()
 
 custom_packages=(
     # Zsh / Zap

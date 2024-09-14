@@ -79,8 +79,8 @@ main() {
         exit 0
     fi
 
-    echo_info "Installing packages $STATIC_REPO_PATH/essential_packages.sh"
-    install_packages_from_source "$STATIC_REPO_PATH/essential_packages.sh" || exit 1
+    echo_info "Installing packages $STATIC_REPO_PATH/minimal_packages.sh"
+    install_packages_from_source "$STATIC_REPO_PATH/minimal_packages.sh" || exit 1
 
     if [ $include_fun_packages = true ]; then
         install_packages_from_source $STATIC_REPO_PATH/fun_packages.sh
