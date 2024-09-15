@@ -40,10 +40,13 @@ install_packages() {
         echo_error "Missing install command"
         return 1
     fi
+
+    echo_info "Install command: '$1'"
     if [ -z "$2" ]; then
         echo_error "Missing packages"
         return 1
     fi
+
     local packages=("$@")
     local concatenated="$1"
     for package in "${packages[@]:1}"; do
@@ -61,7 +64,7 @@ install_packages_from_source() {
     fi
 
     echo_info "Sourcing $1"
-    source <(curl -s "$1")
+    source $1
 
     # Update and upgrade
     echo_title "APT"

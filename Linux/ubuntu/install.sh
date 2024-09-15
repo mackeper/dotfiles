@@ -2,8 +2,13 @@
 
 STATIC_REPO_PATH="https://raw.githubusercontent.com/mackeper/dotfiles/master/linux/ubuntu"
 LOCAL_REPO_PATH="$HOME/git/dotfiles"
+SCRIPTS_PATH="$LOCAL_REPO_PATH/linux/ubuntu"
+MINIMAL_PACKAGES_PATH="$SCRIPTS_PATH/minimal_packages.sh"
+EXTENDED_PACKAGES_PATH="$SCRIPTS_PATH/extended_packages.sh"
+LIB_PATH="$SCRIPTS_PATH/lib.sh"
+BINARIES_PATH="$SCRIPTS_PATH/install_binaries.sh"
 just_configs=false
-include_fun_packages=false
+include_extended_packages=false
 
 source <(curl -s $STATIC_REPO_PATH/lib.sh)
 
@@ -28,8 +33,8 @@ while getopts ":hcf:" option; do
     c)
         just_configs=true
         ;;
-    f)
-        include_fun_packages=true
+    e)
+        include_extended_packages=true
         ;;
     \?) # Invalid option
         echo "Invalid option command line option. Use -h for help."
@@ -73,20 +78,25 @@ main() {
     check_requirements $requirements || exit 1
     download_dotfiles || exit 1
 
+    echo_info "Sourcing $LIB_PATH"
+    source $LIB_PATH
+
     echo_debug "Just configs: $just_configs"
     if [ $just_configs = true ]; then
         copy_configs
         exit 0
     fi
 
-    echo_info "Installing packages $STATIC_REPO_PATH/minimal_packages.sh"
-    install_packages_from_source "$STATIC_REPO_PATH/minimal_packages.sh" || exit 1
+    echo_info "Installing packages $MINIMAL_PACKAGES_PATH"
+    install_packages_from_source "$MINIMAL_PACKAGES_PATH" || exit 1
 
-    if [ $include_fun_packages = true ]; then
-        install_packages_from_source $STATIC_REPO_PATH/fun_packages.sh
+    if [ $include_extended_packages = true ]; then
+        install_packages_from_source "$EXTENDED_PACKAGES_PATH" || exit 1
     fi
 
     copy_configs
+
+    source $BINARIES_PATH
 }
 
 main
