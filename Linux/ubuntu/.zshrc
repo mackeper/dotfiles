@@ -19,6 +19,7 @@ export PATH=$PATH:~/.dotnet/tools
 
 if uname -r |grep -q 'microsoft' ; then
     export PATH=$PATH:/mnt/c/Windows
+    export PATH=$PATH:/mnt/c/Windows/System32
     export PATH=$PATH:/mnt/c/ProgramData/chocolatey/bin
     export PATH=$PATH:"/mnt/c/Program Files/PowerShell/7"
 

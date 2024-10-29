@@ -58,11 +58,6 @@ if (-not (Get-Module -ListAvailable -Name PSReadLine))
     Write-Host "PSReadLine installed. Restart PowerShell to load the module."
 }
 Import-Module PSReadLine
-Set-PSReadLineOption -PredictionSource History
-# Set-PSReadLineOption -PredictionViewStyle ListView
-# Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
-Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
-Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 # https://github.com/PowerShell/PSReadLine/issues/3159
 $OnViModeChange = [scriptblock]{
@@ -76,8 +71,13 @@ $OnViModeChange = [scriptblock]{
         Write-Host -NoNewLine "`e[5 q"
     }
 }
-Set-PsReadLineOption -EditMode Vi
+
+Set-PSReadLineOption -PredictionSource History
+Set-PsReadLineOption -EditMode emacs
 Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $OnViModeChange
+
+Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 Set-PSReadLineKeyHandler -Key Ctrl+p -ScriptBlock {
     $locations = @("D:\Documents\Projects", "D:\Documents\Software")
