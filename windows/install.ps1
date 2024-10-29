@@ -88,6 +88,27 @@ function New-Bin-Path()
     }
 }
 
+function Install-Nvim()
+{
+    Write-Title "Installing Neovim"
+    $nvimPath = "$env:LOCALAPPDATA\nvim"
+    if (!(Test-Path $nvimPath))
+    {
+        mkdir "$nvimPath_bak"
+        Move-Item -r "$nvimPath" "$nvimPath_bak"
+    }
+}
+
+function Get-Dotfiles()
+{
+    Write-Title "Getting dotfiles"
+    $dotfilesPath = "$env:USERPROFILE\Documents\git\dotfiles"
+    if (!(Test-Path $dotfilesPath))
+    {
+        git clone 
+    }
+}
+
 function main()
 {
     Write-Title "Starting installation"
