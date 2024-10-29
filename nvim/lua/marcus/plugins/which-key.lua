@@ -22,6 +22,7 @@ return {
             { "<leader>d", group = "Debug" },
             { "<leader>e", group = "Explorer" },
             { "<leader>g", group = "Git" },
+            { "<leader>gc", group = "Git Conflict" },
             { "<leader>j", group = "Telescope" },
             { "<leader>jg", desc = "Git" },
             { "<leader>l", group = "LSP" },
