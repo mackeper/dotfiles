@@ -226,6 +226,7 @@ return {
             "jsonls", -- Json
             "lua_ls", -- Lua
             "marksman", -- Markdown
+            "ocamllsp", -- OCaml
             "omnisharp", -- C# change to csharp_ls?
             "pylsp", -- Python
             -- "pyright", -- Python
@@ -270,6 +271,7 @@ return {
                 "shfmt", -- bash
                 "markdownlint", -- Markdown
                 "markdownlint-cli2", -- Markdown
+                "ocamlformat", -- OCaml
             },
         })
 

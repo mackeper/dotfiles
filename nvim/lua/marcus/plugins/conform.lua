@@ -27,6 +27,7 @@ return {
             rust = { "rustfmt" },
             sh = { "shfmt" },
             markdown = { "markdownlint", "markdownlint-cli2" },
+            ocaml = { "ocamlformat" },
 
             ["_"] = { "trim_whitespace" },
         },

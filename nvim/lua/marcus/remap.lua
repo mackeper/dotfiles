@@ -83,8 +83,18 @@ local function runFile()
         vim.cmd("!python3 %")
     elseif vim.bo.filetype == "lua" then
         vim.cmd("exec '!lua " .. vim.fn.expand("%") .. "'")
+    elseif vim.bo.filetype == "cs" then
+        vim.cmd("!dotnet build")
     else
         print("Cannot run file of type: " .. vim.bo.filetype)
     end
 end
 vim.keymap.set("n", "<leader>ef", runFile, { desc = "Run file" })
+
+-- Code
+vim.api.nvim_create_user_command("GetUuid", function()
+    vim.fn.setreg("+", vim.fn.systemlist("python3 -c 'import uuid; print(uuid.uuid4(), end=\"\")'"))
+    vim.cmd('normal! "+p')
+end, {})
+
+vim.keymap.set("n", "<leader>ru", ":GetUuid<CR>", { desc = "Generate UUID" })
