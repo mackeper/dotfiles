@@ -28,6 +28,12 @@
                     "sh"
                 ],
                 "path": "./bash.json"
+            },
+            {
+                "language": [
+                    "ocaml"
+                ],
+                "path": "./ocaml.json"
             }
         ]
     }
