@@ -6,7 +6,7 @@ return {
         vim.o.timeoutlen = 100
     end,
     opts = {
-        window = {
+        win = {
             border = "single",
         },
         notify = false, -- Show warnings for keymaps
@@ -22,6 +22,7 @@ return {
             { "<leader>d", group = "Debug" },
             { "<leader>e", group = "Explorer" },
             { "<leader>g", group = "Git" },
+            { "<leader>gc", group = "Git Conflict" },
             { "<leader>j", group = "Telescope" },
             { "<leader>jg", desc = "Git" },
             { "<leader>l", group = "LSP" },

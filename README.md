@@ -2,6 +2,6 @@
 
 ![](.images/README/README_1698151885106.png)
 
-- [Windows](./Windows/README.md)
+- [Windows](./windows/README.md)
 - Linux
-  - [Ubuntu](./Linux/Ubuntu/README.md)  
+  - [Ubuntu](./linux/ubuntu/README.md)  
