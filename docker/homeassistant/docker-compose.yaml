@@ -1,0 +1,13 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    ports:
+      - "8123:8123/tcp" # Only needed for Windows
+    volumes:
+      - /opt/homeassistant/config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
+    # network_mode: host # Disabled for windows
