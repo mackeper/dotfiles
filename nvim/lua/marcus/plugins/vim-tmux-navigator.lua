@@ -1,5 +1,6 @@
 return {
     "christoomey/vim-tmux-navigator",
+    event = "BufReadPre",
     cmd = {
         "TmuxNavigateLeft",
         "TmuxNavigateDown",
@@ -12,5 +13,6 @@ return {
         { "<C-DOWN>", "<CMD>TmuxNavigateDown<cr>" },
         { "<C-UP>", "<CMD>TmuxNavigateUp<cr>" },
         { "<C-RIGHT>", "<CMD>TmuxNavigateRight<cr>" },
+        { "<M-\\>", "<CMD>TmuxNavigatePrevious<cr>" },
     },
 }

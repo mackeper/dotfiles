@@ -2,6 +2,30 @@
 
 ![](.images/README/README_1698152733223.png)
 
+## Setup powershell
+
+```Powershell
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/install.ps1'))
+```
+
+Install binaries
+
+```Powershell
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/install_binaries.ps1'))
+```
+
+Install choco packages
+
+```powershell
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/mackeper/dotfiles/master/windows/install_choco.ps1'))
+```
+
+### Font
+
+[CascadiaCode](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/CascadiaCode.zip)
+
+# OLD BELOW
+
 ## Install powershell
 
 ```powershell

@@ -17,10 +17,21 @@ export PATH=$PATH:~/go/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/.dotnet/tools
 
+if uname -r |grep -q 'microsoft' ; then
+    export PATH=$PATH:/mnt/c/Windows
+    export PATH=$PATH:/mnt/c/Windows/System32
+    export PATH=$PATH:/mnt/c/ProgramData/chocolatey/bin
+    export PATH=$PATH:"/mnt/c/Program Files/PowerShell/7"
+
+    function powershell() {
+        pwsh.exe -NoExit -c 'cd $env:userprofile'
+    }
+fi
+
 # ---- Auto tmux ----
-# if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-#   exec tmux
-# fi
+if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+  exec tmux new-session -A -s main
+fi
 
 # ---- Tools ----
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
@@ -52,6 +63,11 @@ unsetopt BEEP
 # ---- Keymaps ----
 # setxkbmap -option ctrl:nocaps
 # setxkbmap -layout us -variant altgr-intl
+
+# ---- Bindkeys ----
+lazygit_func () { eval 'lazygit' }
+zle -N lazygit_func
+bindkey '^G' lazygit_func
 
 # ---- History ----
 setopt HIST_FIND_NO_DUPS    # Don't find duplicates on ctrl-r

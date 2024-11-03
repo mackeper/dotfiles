@@ -27,10 +27,24 @@ return {
             },
         })
 
-        -- Setup trouble.nvim integration
         local actions = require("telescope.actions")
         telescope.setup({
             defaults = {
+                layout_strategy = "horizontal",
+                layout_config = {
+                    horizontal = {
+                        prompt_position = "bottom",
+                        preview_width = 0.55,
+                        results_width = 0.8,
+                    },
+                    width = 0.80,
+                    height = 0.80,
+                },
+                file_ignore_patterns = { "node_modules", ".git/" },
+                path_display = { "truncate" },
+                prompt_prefix = "   ",
+                selection_caret = "  ",
+                -- Setup trouble.nvim integration
                 mappings = {
                     i = {
                         ["<c-t>"] = require("trouble.sources.telescope").open,
@@ -56,6 +70,8 @@ return {
         vim.keymap.set("n", "<leader>jb", builtin.buffers, { desc = "Buffers" })
         vim.keymap.set("n", "<leader>jf", builtin.find_files, { desc = "Find files" })
         vim.keymap.set("n", "<leader>jgg", builtin.live_grep, { desc = "Live grep" })
+        vim.keymap.set("n", "<leader>jG", builtin.grep_string, { desc = "Grep string under cursor" })
+        vim.keymap.set("v", "<leader>jG", builtin.grep_string, { desc = "Grep string in selection" })
         vim.keymap.set("n", "<leader>jgb", builtin.git_branches, { desc = "Git branches" })
         vim.keymap.set("n", "<leader>jgc", builtin.git_commits, { desc = "Git commits" })
         vim.keymap.set("n", "<leader>jgt", builtin.git_stash, { desc = "Git stash" })
