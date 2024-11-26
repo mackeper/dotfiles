@@ -2,6 +2,9 @@
 
 # List of packages for apt
 apt_packages=(
+    # libraries
+    "libssl-dev"
+
     # Development
     "cmake" # Build system
     "dotnet-sdk-8.0"

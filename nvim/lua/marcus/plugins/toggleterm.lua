@@ -25,6 +25,8 @@ return {
                 border = "curved",
                 winblend = 0,
             },
+            auto_scroll = true,
+            shell = nil,
         })
 
         local Terminal = require("toggleterm.terminal").Terminal
@@ -33,6 +35,7 @@ return {
             hidden = true,
             count = 2,
             direction = "float",
+            terminal_mappings = false,
         })
 
         vim.keymap.set("n", "<C-g>", function()

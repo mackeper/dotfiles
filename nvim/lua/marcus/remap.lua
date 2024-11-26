@@ -74,7 +74,7 @@ vim.keymap.set("n", "<leader>wd", ":windo diffthis", { desc = "Diff windows" })
 vim.keymap.set("n", "<leader>wu", ":windo diffoff", { desc = "Undo diff windows" })
 
 -- Terminal
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+vim.keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- Run file
 local function runFile()

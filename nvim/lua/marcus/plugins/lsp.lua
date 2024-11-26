@@ -19,7 +19,7 @@ return {
         },
         { "folke/neodev.nvim" },
         { "WhoIsSethDaniel/mason-tool-installer.nvim" },
-        { "Hoffs/omnisharp-extended-lsp.nvim" },
+        { "csharp.nvim" },
     },
     config = function()
         local cmp = require("cmp")
@@ -86,13 +86,22 @@ return {
                 local builtin = require("telescope.builtin")
 
                 local function opts(desc)
-                    return { buffer = event.buf, noremap = true, desc = desc }
+                    return { buffer = event.buf, silent = true, nowait = true, noremap = true, desc = desc }
                 end
 
                 -- Enable completion triggered by <c-x><c-o>
-                vim.api.nvim_buf_set_option(event.buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
+                -- vim.api.nvim_buf_set_option(event.buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
-                vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
+                -- omnisharp loaded from csharp.lua
+                if client.name == "omnisharp" then
+                    local csharp = require("csharp")
+                    vim.keymap.set("n", "gd", csharp.go_to_definition, opts("Go to Definition"))
+                    vim.keymap.set("n", "<leader>cF", csharp.fix_all, opts("Fix All"))
+                    vim.keymap.set("n", "<F5>", csharp.debug_project, opts("Debug Project"))
+                    vim.keymap.set("n", "<c-f5>", csharp.run_project, opts("Run Project"))
+                else
+                    vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
+                end
                 vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
                 vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
                 vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts("Hover / Quick info"))
@@ -104,82 +113,6 @@ return {
                 end, opts("Diagnostic (errors)"))
                 vim.keymap.set("n", "<leader>.", vim.lsp.buf.code_action, opts("Code action"))
                 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename"))
-
-                if client.name == "omnisharp" then
-                    client.server_capabilities.semanticTokensProvider = {
-                        full = vim.empty_dict(),
-                        legend = {
-                            tokenModifiers = { "static" },
-                            tokenTypes = {
-                                "comment",
-                                "excluded_code",
-                                "identifier",
-                                "keyword",
-                                "keyword_control",
-                                "number",
-                                "operator",
-                                "operator_overloaded",
-                                "preprocessor_keyword",
-                                "string",
-                                "whitespace",
-                                "text",
-                                "static_symbol",
-                                "preprocessor_text",
-                                "punctuation",
-                                "string_verbatim",
-                                "string_escape_character",
-                                "class_name",
-                                "delegate_name",
-                                "enum_name",
-                                "interface_name",
-                                "module_name",
-                                "struct_name",
-                                "type_parameter_name",
-                                "field_name",
-                                "enum_member_name",
-                                "constant_name",
-                                "local_name",
-                                "parameter_name",
-                                "method_name",
-                                "extension_method_name",
-                                "property_name",
-                                "event_name",
-                                "namespace_name",
-                                "label_name",
-                                "xml_doc_comment_attribute_name",
-                                "xml_doc_comment_attribute_quotes",
-                                "xml_doc_comment_attribute_value",
-                                "xml_doc_comment_cdata_section",
-                                "xml_doc_comment_comment",
-                                "xml_doc_comment_delimiter",
-                                "xml_doc_comment_entity_reference",
-                                "xml_doc_comment_name",
-                                "xml_doc_comment_processing_instruction",
-                                "xml_doc_comment_text",
-                                "xml_literal_attribute_name",
-                                "xml_literal_attribute_quotes",
-                                "xml_literal_attribute_value",
-                                "xml_literal_cdata_section",
-                                "xml_literal_comment",
-                                "xml_literal_delimiter",
-                                "xml_literal_embedded_expression",
-                                "xml_literal_entity_reference",
-                                "xml_literal_name",
-                                "xml_literal_processing_instruction",
-                                "xml_literal_text",
-                                "regex_comment",
-                                "regex_character_class",
-                                "regex_anchor",
-                                "regex_quantifier",
-                                "regex_grouping",
-                                "regex_alternation",
-                                "regex_text",
-                                "regex_self_escaped_character",
-                                "regex_other_escape",
-                            },
-                        },
-                    }
-                end
             end,
         })
 
@@ -213,6 +146,7 @@ return {
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         local ensure_installed = {
+            "asm_lsp", -- Assembly
             "bashls", -- bash
             "clangd", -- c
             "cssls", -- css
@@ -227,7 +161,6 @@ return {
             "lua_ls", -- Lua
             "marksman", -- Markdown
             "ocamllsp", -- OCaml
-            "omnisharp", -- C# change to csharp_ls?
             "pylsp", -- Python
             -- "pyright", -- Python
             "rust_analyzer", -- Rust
@@ -305,22 +238,6 @@ return {
                         enable = false,
                     },
                 },
-            },
-        })
-
-        require("lspconfig").omnisharp.setup({
-            cmd = {
-                "dotnet",
-                vim.fn.stdpath("data") .. "/mason/packages/omnisharp/libexec/OmniSharp.dll",
-            },
-            sdk_include_prereleases = true,
-            enable_editorconfig_support = true,
-            enable_roslyn_analyzers = true,
-            organize_imports_on_format = true,
-            enable_import_completion = true,
-            enable_ms_build_load_projects_on_demand = true,
-            handlers = {
-                ["textDocument/definition"] = require("omnisharp_extended").handler,
             },
         })
 

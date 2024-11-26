@@ -18,16 +18,17 @@ return {
     },
     opts = {
         formatters_by_ft = {
-            lua = { "stylua" },
+            asm = { "asmfmt" },
             csharp = { "csharpier" },
             -- elm = { "elm-format" }, -- Just rely on elm-language-server for now
             haskell = { "fourmolu" },
-            python = { "isort", "black" },
             javascript = { { "prettierd", "prettier" } },
-            rust = { "rustfmt" },
-            sh = { "shfmt" },
+            lua = { "stylua" },
             markdown = { "markdownlint", "markdownlint-cli2" },
             ocaml = { "ocamlformat" },
+            python = { "isort", "black" },
+            rust = { "rustfmt" },
+            sh = { "shfmt" },
 
             ["_"] = { "trim_whitespace" },
         },
