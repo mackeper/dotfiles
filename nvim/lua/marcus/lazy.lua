@@ -15,6 +15,7 @@ local opts = {
     default = {
         lazy = true,
     },
+    concurrency = 10,
 }
 
 require("lazy").setup("marcus.plugins", opts)

@@ -11,6 +11,10 @@ plug "zap-zsh/fzf"
 autoload -Uz compinit
 compinit
 
+# ---- nvim something fix ----
+# https://github.com/nvim-lua/plenary.nvim/issues/536
+export XDG_RUNTIME_DIR=/tmp
+
 # ---- Add local bin ----
 export PATH=$PATH:~/bin
 export PATH=$PATH:~/go/bin

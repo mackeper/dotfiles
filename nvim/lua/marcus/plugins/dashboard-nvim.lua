@@ -6,6 +6,9 @@ return {
         { "nvim-tree/nvim-web-devicons" },
     },
     config = function()
+        local version = vim.version()
+        local nvim_version = "v" .. version.major .. "." .. version.minor .. "." .. version.patch
+
         require("dashboard").setup({
             theme = "hyper",
             disable_move = false,
@@ -70,7 +73,7 @@ return {
                     },
                 },
                 footer = {
-                    "❤",
+                    "❤   " .. nvim_version .. " ❤",
                 },
             },
         })

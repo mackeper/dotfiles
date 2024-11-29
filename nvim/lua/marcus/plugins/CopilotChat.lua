@@ -7,10 +7,16 @@ return {
             { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
         },
         opts = {
+            context = "buffers",
             window = {
                 layout = "float",
                 border = "rounded",
+                width = 0.8,
+                height = 0.8,
             },
+            highlight_headers = false,
+            separator = "---",
+            error_header = "> [!ERROR] Error",
         },
         commands = {
             "CopilotChatToggle",
@@ -18,7 +24,7 @@ return {
         keys = {
             {
                 "<leader>pc",
-                "ggVG<CMD>CopilotChatToggle<CR>",
+                "<CMD>CopilotChatToggle<CR>",
                 desc = "Copilot: Chat",
             },
             {
