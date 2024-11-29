@@ -6,6 +6,7 @@ return {
         { "williamboman/mason-lspconfig.nvim" },
         { "hrsh7th/nvim-cmp" },
         { "onsails/lspkind.nvim" }, -- Icons
+
         { "hrsh7th/cmp-nvim-lsp" },
         { "hrsh7th/cmp-buffer" },
         { "hrsh7th/cmp-path" },
@@ -17,6 +18,8 @@ return {
                 "rafamadriz/friendly-snippets",
             },
         },
+        { "zbirenbaum/copilot-cmp" },
+
         { "folke/neodev.nvim" },
         { "WhoIsSethDaniel/mason-tool-installer.nvim" },
         { "csharp.nvim" },
@@ -24,6 +27,7 @@ return {
     config = function()
         local cmp = require("cmp")
         local cmp_lsp = require("cmp_nvim_lsp")
+        require("copilot_cmp").setup()
         require("neodev").setup({ -- Before lspconfig
             override = function(_, library)
                 library.enabled = true
@@ -57,6 +61,7 @@ return {
                 end,
             },
             sources = {
+                { name = "copilot" },
                 { name = "nvim_lsp" },
                 { name = "luasnip" },
                 { name = "path" },
@@ -155,7 +160,7 @@ return {
             "eslint",
             -- "fsautocomplete", -- F#
             "gopls", -- Go
-            -- "hls", -- Haskell
+            "hls", -- Haskell
             "html", -- HTML
             "jsonls", -- Json
             "lua_ls", -- Lua
@@ -261,22 +266,6 @@ return {
                 },
             },
         })
-
-        -- vim.api.nvim_create_autocmd('BufWritePre', {
-        --     desc = 'Format python on write using black',
-        --     pattern = '*.py',
-        --     group = vim.api.nvim_create_augroup('black_on_save', { clear = true }),
-        --     callback = function()
-        --         local format_command = { "black", vim.api.nvim_buf_get_name(0) }
-        --         vim.fn.jobstart(format_command, {
-        --             on_exit = function(_, code, _)
-        --                 if code == 0 then
-        --                     vim.api.nvim_command('e!')
-        --                 end
-        --             end,
-        --         })
-        --     end,
-        -- })
 
         require("lspconfig").rust_analyzer.setup({
             settings = {

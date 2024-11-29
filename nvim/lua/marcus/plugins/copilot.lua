@@ -9,16 +9,16 @@ return {
         { "<leader>pA", "<cmd>Copilot auth<CR>", mode = "n", desc = "Auth Copilot" },
         { "<leader>pS", "<cmd>Copilot suggestion<CR>", mode = "n", desc = "Suggest Copilot" },
         { "<leader>pT", "<cmd>Copilot toggle<CR>", mode = "n", desc = "Toggle Copilot" },
+        { "<leader>pP", "<cmd>Copilot panel<CR>", mode = "n", desc = "Panel Copilot" },
     },
     opts = {
-        enabled = true,
-        auto_refresh = true,
         suggestion = {
-            enabled = true,
+            enabled = false,
             auto_trigger = true,
         },
         panel = {
-            enabled = false,
+            enabled = true,
+            auto_refresh = true,
         },
         filetypes = {
             markdown = true,
