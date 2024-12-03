@@ -24,28 +24,28 @@ return {
     end,
     keys = {
         {
-            "<leader>ctf",
+            "<leader>itf",
             function()
                 require("neotest").run.run(vim.fn.expand("%"))
             end,
             desc = "Run current test file",
         },
         {
-            "<leader>ctr",
+            "<leader>itr",
             function()
                 require("neotest").run.run()
             end,
             desc = "Run current test",
         },
         {
-            "<leader>cto",
+            "<leader>ito",
             function()
                 require("neotest").output.open({ enter = true, auto_close = true })
             end,
             desc = "Open test output",
         },
         {
-            "<leader>cts",
+            "<leader>its",
             function()
                 require("neotest").summary.toggle()
             end,

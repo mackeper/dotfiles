@@ -12,6 +12,17 @@ return {
             },
         })
 
+        -- Add operators for text objects
+        -- g= evaluate expression
+        -- gm multiply
+        -- gr replace with register
+        -- gs sort
+        -- gx exchange
+        require("mini.operators").setup()
+
+        -- Show buffers as tabs, bufferline looks better
+        -- require("mini.tabline").setup()
+
         -- Auto highlight text under cursor
         require("mini.cursorword").setup({})
 

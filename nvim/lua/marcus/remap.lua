@@ -85,6 +85,12 @@ local function runFile()
         vim.cmd("exec '!lua " .. vim.fn.expand("%") .. "'")
     elseif vim.bo.filetype == "cs" then
         vim.cmd("!dotnet build")
+    elseif vim.bo.filetype == "sh" then
+        vim.cmd("!bash %")
+    elseif vim.bo.filetype == "c" then
+        vim.cmd("make")
+    elseif vim.bo.filetype == "ocaml" then
+        vim.cmd("dune build")
     else
         print("Cannot run file of type: " .. vim.bo.filetype)
     end
