@@ -23,11 +23,15 @@ return {
             { "<leader>e", group = "Explorer" },
             { "<leader>g", group = "Git" },
             { "<leader>gc", group = "Git Conflict" },
+            { "<leader>i", group = "IDE" },
+            { "<leader>ic", group = "Compile" },
+            { "<leader>it", group = "Test" },
             { "<leader>j", group = "Telescope" },
             { "<leader>jg", desc = "Git" },
             { "<leader>l", group = "LSP" },
             { "<leader>lt", desc = "Tools" },
             { "<leader>o", group = "Open" },
+            { "<leader>p", group = "Copilot" },
             { "<leader>r", group = "Refactor" },
             { "<leader>s", group = "Surround / Session" },
             { "<leader>t", group = "Tabs" },
@@ -35,7 +39,6 @@ return {
             { "<leader>x", group = "Trouble" },
             { "<leader>z", group = "Mode" },
             { "<leader>zc", desc = "Cloak" },
-            { "<leader>p", group = "Copilot" },
 
             { "gi", desc = "Go to implementation" },
         })

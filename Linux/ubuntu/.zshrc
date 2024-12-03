@@ -60,6 +60,7 @@ alias fd='fdfind'
 alias ls='eza --icons'
 alias ll='eza -la --icons'
 alias lt='eza --tree --level=3 --icons'
+alias python='python3'
 
 # ---- Turn off all beeps ----
 unsetopt BEEP
