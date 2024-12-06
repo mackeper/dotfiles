@@ -1,4 +1,5 @@
 return {
+    enabled = false,
     "gelguy/wilder.nvim",
     event = "CmdlineEnter",
     config = function()

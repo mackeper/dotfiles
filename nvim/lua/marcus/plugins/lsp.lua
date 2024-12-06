@@ -95,11 +95,13 @@ return {
 
                 -- omnisharp loaded from csharp.lua
                 if client.name == "omnisharp" then
-                    local csharp = require("csharp")
-                    vim.keymap.set("n", "gd", csharp.go_to_definition, opts("Go to Definition"))
-                    vim.keymap.set("n", "<leader>cF", csharp.fix_all, opts("Fix All"))
-                    vim.keymap.set("n", "<F5>", csharp.debug_project, opts("Debug Project"))
-                    vim.keymap.set("n", "<c-f5>", csharp.run_project, opts("Run Project"))
+                    local csharp = prequire("csharp")
+                    if csharp then
+                        vim.keymap.set("n", "gd", csharp.go_to_definition, opts("Go to Definition"))
+                        vim.keymap.set("n", "<leader>cF", csharp.fix_all, opts("Fix All"))
+                        vim.keymap.set("n", "<F5>", csharp.debug_project, opts("Debug Project"))
+                        vim.keymap.set("n", "<c-f5>", csharp.run_project, opts("Run Project"))
+                    end
                 else
                     vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
                 end

@@ -1,6 +1,6 @@
 return {
+    enabled = false,
     "Zeioth/compiler.nvim",
-    lazy = true,
     cmd = { "CompilerOpen", "CompilerToggleResults", "CompilerRedo" },
     dependencies = {
         { "nvim-telescope/telescope.nvim" },

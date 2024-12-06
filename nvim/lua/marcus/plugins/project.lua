@@ -1,4 +1,5 @@
 return {
+    enabled = false,
     "ahmedkhalf/project.nvim",
     event = "VeryLazy",
     opts = {

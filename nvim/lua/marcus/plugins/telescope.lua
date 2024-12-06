@@ -8,7 +8,7 @@ return {
     config = function()
         local builtin = require("telescope.builtin")
         local telescope = require("telescope")
-        telescope.load_extension("projects")
+        -- telescope.load_extension("projects")
 
         -- stylua: ignore
         telescope.setup({
@@ -23,7 +23,7 @@ return {
                 git_stash = { hidden = true, },
                 help_tags = { hidden = true, },
                 oldfiles = { hidden = true, },
-                projects = { hidden = true, },
+                -- projects = { hidden = true, },
             },
         })
 
@@ -82,7 +82,7 @@ return {
         vim.keymap.set("n", "<leader>jm", builtin.oldfiles, { desc = "Recent files" })
         vim.keymap.set("n", "<leader>jr", builtin.git_files, { desc = "Git files" })
         vim.keymap.set("n", "<leader>jc", function() builtin.colorscheme({ enable_preview = true }) end, { desc = "Colorschemes" })
-        vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
+        -- vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
         vim.keymap.set("n", "<leader>jn", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Neovim files" })
         -- stylua: ignore end
     end,
