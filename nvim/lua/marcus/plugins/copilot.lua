@@ -13,7 +13,7 @@ return {
     },
     opts = {
         suggestion = {
-            enabled = false,
+            enabled = true,
             auto_trigger = true,
         },
         panel = {

@@ -18,8 +18,6 @@ return {
                 "rafamadriz/friendly-snippets",
             },
         },
-        { "zbirenbaum/copilot-cmp" },
-
         { "folke/neodev.nvim" },
         { "WhoIsSethDaniel/mason-tool-installer.nvim" },
         { "csharp.nvim" },
@@ -27,7 +25,6 @@ return {
     config = function()
         local cmp = require("cmp")
         local cmp_lsp = require("cmp_nvim_lsp")
-        require("copilot_cmp").setup()
         require("neodev").setup({ -- Before lspconfig
             override = function(_, library)
                 library.enabled = true
@@ -61,7 +58,6 @@ return {
                 end,
             },
             sources = {
-                { name = "copilot" },
                 { name = "nvim_lsp" },
                 { name = "luasnip" },
                 { name = "path" },
