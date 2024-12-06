@@ -14,10 +14,10 @@ return {
         outline_window = {
             width = 15,
             auto_close = false,
-            focus_on_open = false,
+            focus_on_open = true,
         },
         outline_items = {
-            show_symbol_details = false,
+            show_symbol_details = true,
         },
     },
     config = function(_, opts)

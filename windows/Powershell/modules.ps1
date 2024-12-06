@@ -73,6 +73,7 @@ $OnViModeChange = [scriptblock]{
 }
 
 Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PsReadLineOption -EditMode emacs
 Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $OnViModeChange
 
