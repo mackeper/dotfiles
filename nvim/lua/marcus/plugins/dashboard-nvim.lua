@@ -1,4 +1,5 @@
 return {
+    enabled = false,
     "nvimdev/dashboard-nvim",
     lazy = true,
     event = "VimEnter",

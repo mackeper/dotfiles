@@ -15,11 +15,11 @@ return {
         csharp.setup({
             lsp = {
                 omnisharp = {
-                    enable = false,
+                    enable = true,
                 },
 
                 roslyn = {
-                    enable = true,
+                    enable = false,
                     cmd_path = exe,
                 },
             },

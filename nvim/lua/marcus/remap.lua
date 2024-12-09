@@ -57,8 +57,8 @@ vim.keymap.set("n", "<leader>bh", ":bprevious<CR>", { desc = "Previous buffer" }
 vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
 vim.keymap.set("n", "<leader>bo", ":bufdo bd<CR>", { desc = "Delete all buffers" })
 vim.keymap.set("n", "<leader>bn", ":enew<CR>", { desc = "New buffer" })
-vim.keymap.set("n", "<tab>", ":bnext<CR>", { desc = "Next buffer" })
-vim.keymap.set("n", "<S-tab>", ":bprevious<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<tab>", ":bnext<CR>", { desc = "Next buffer", silent = true })
+vim.keymap.set("n", "<S-tab>", ":bprevious<CR>", { desc = "Previous buffer", silent = true })
 
 -- Window navigation
 -- Disable because it's already mapped in vim-tmux-navigator

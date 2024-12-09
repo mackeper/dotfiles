@@ -23,6 +23,7 @@ return {
             { "<leader>e", group = "Explorer" },
             { "<leader>g", group = "Git" },
             { "<leader>gc", group = "Git Conflict" },
+            { "<leader>h", group = "Harpoon" },
             { "<leader>i", group = "IDE" },
             { "<leader>ic", group = "Compile" },
             { "<leader>it", group = "Test" },
@@ -39,7 +40,6 @@ return {
             { "<leader>x", group = "Trouble" },
             { "<leader>z", group = "Mode" },
             { "<leader>zc", desc = "Cloak" },
-
             { "gi", desc = "Go to implementation" },
         })
 

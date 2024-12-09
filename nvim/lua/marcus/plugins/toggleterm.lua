@@ -28,28 +28,5 @@ return {
             auto_scroll = true,
             shell = nil,
         })
-
-        local Terminal = require("toggleterm.terminal").Terminal
-        local lazygit = Terminal:new({
-            cmd = "lazygit",
-            hidden = true,
-            count = 2,
-            direction = "float",
-            terminal_mappings = false,
-        })
-
-        vim.keymap.set("n", "<C-g>", function()
-            lazygit:toggle()
-        end, { noremap = true, silent = true })
-
-        vim.keymap.set("t", "<C-g>", function()
-            lazygit:toggle()
-        end, { noremap = true, silent = true })
-
-        -- local python = Terminal:new({
-        --     hidden = true,
-        --     dir = "%:p:h",
-        --     count = 3,
-        -- })
     end,
 }
