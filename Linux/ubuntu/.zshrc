@@ -39,7 +39,8 @@ fi
 
 # ---- Tools ----
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-  eval "$(oh-my-posh init zsh)"
+  eval "$(oh-my-posh init zsh --config '~/bin/themes/tokyonight_storm.omp.json')"
+  # eval "$(starship init zsh)"
 fi
 
 # eval $(thefuck --alias)

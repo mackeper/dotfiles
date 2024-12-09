@@ -1,6 +1,6 @@
 return {
+    enabled = true,
     "j-hui/fidget.nvim",
-    lazy = true,
     event = "LspAttach",
     opts = {
         notification = {

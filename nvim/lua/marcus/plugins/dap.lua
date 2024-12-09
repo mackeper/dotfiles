@@ -1,5 +1,5 @@
 return {
-    enabled = false,
+    enabled = true,
     "mfussenegger/nvim-dap",
     dependencies = {
         {

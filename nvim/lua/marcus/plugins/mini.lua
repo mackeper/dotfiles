@@ -34,9 +34,6 @@ return {
             mappings = {
                 add = "<leader>sa", -- Add surrounding in Normal and Visual modes
                 delete = "<leader>sd", -- Delete surrounding
-                find = "<leader>sf", -- Find surrounding (to the right)
-                find_left = "<leader>sF", -- Find surrounding (to the left)
-                highlight = "<leader>sh", -- Highlight surrounding
                 replace = "<leader>sr", -- Replace surrounding
                 update_n_lines = "<leader>sn", -- Update `n_lines`
             },
@@ -51,10 +48,10 @@ return {
         hipatterns.setup({
             highlighters = {
                 fixme = { pattern = "%f[%w]()FIXME()%f[%W]", group = "MiniHipatternsFixme" },
-                bug = { pattern = "%f[%w]()BUG()%f[%W]", group = "MiniHipatternsFixme" },
-                hack = { pattern = "%f[%w]()HACK()%f[%W]", group = "MiniHipatternsHack" },
-                todo = { pattern = "%f[%w]()TODO()%f[%W]", group = "MiniHipatternsTodo" },
-                note = { pattern = "%f[%w]()NOTE()%f[%W]", group = "MiniHipatternsNote" },
+                bug   = { pattern = "%f[%w]()BUG()%f[%W]", group   = "MiniHipatternsFixme" },
+                hack  = { pattern = "%f[%w]()HACK()%f[%W]", group  = "MiniHipatternsHack" },
+                todo  = { pattern = "%f[%w]()TODO()%f[%W]", group  = "MiniHipatternsTodo" },
+                note  = { pattern = "%f[%w]()NOTE()%f[%W]", group  = "MiniHipatternsNote" },
 
                 hex_color = hipatterns.gen_highlighter.hex_color(),
             },
@@ -73,18 +70,19 @@ return {
     init = function()
         vim.api.nvim_create_autocmd("FileType", {
             pattern = {
-                "help",
-                "alpha",
-                "dashboard",
-                "neo-tree",
                 "NvimTree",
                 "Trouble",
-                "trouble",
+                "alpha",
+                "dashboard",
+                "help",
                 "lazy",
-                "mason",
-                "notify",
-                "toggleterm",
                 "lazyterm",
+                "mason",
+                "neo-tree",
+                "notify",
+                "snacks_dashboard",
+                "toggleterm",
+                "trouble",
             },
             callback = function()
                 vim.b.miniindentscope_disable = true

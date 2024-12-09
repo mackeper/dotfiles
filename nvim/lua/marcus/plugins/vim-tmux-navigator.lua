@@ -15,4 +15,7 @@ return {
         { "<C-RIGHT>", "<CMD>TmuxNavigateRight<cr>" },
         { "<M-\\>", "<CMD>TmuxNavigatePrevious<cr>" },
     },
+    config = function()
+        vim.g.tmux_navigator_no_mappings = 1
+    end,
 }
