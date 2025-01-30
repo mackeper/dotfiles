@@ -4,6 +4,7 @@ return {
     event = "VeryLazy",
     dependencies = {
         "nvim-lua/plenary.nvim",
+        { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     },
     config = function()
         local builtin = require("telescope.builtin")
@@ -25,7 +26,12 @@ return {
                 oldfiles = { hidden = true, },
                 -- projects = { hidden = true, },
             },
+            extensions = {
+                fzf = {},
+            },
         })
+
+        telescope.load_extension("fzf")
 
         local actions = require("telescope.actions")
         telescope.setup({

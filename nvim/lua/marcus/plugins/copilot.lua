@@ -1,5 +1,5 @@
 return {
-    enabled = true,
+    enabled = VARIANT == 0,
     "zbirenbaum/copilot.lua",
     event = "InsertEnter",
     cmd = "Copilot",

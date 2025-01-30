@@ -1,4 +1,5 @@
 return {
+    enabled = true,
     "akinsho/toggleterm.nvim",
     event = { "BufReadPost", "BufNewFile" },
     -- version = "v2.8.*",

@@ -1,15 +1,15 @@
-# ---- Created by Zap installer ----
 [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 plug "zsh-users/zsh-autosuggestions"
+plug "zsh-users/zsh-completions"
 plug "zap-zsh/supercharge"
-plug "zap-zsh/zap-prompt"
 plug "zsh-users/zsh-syntax-highlighting"
 plug "Aloxaf/fzf-tab"
+plug "Freed-Wu/fzf-tab-source"
 plug "zap-zsh/fzf"
+plug "hlissner/zsh-autopair"
 
 # ---- Load and initialise completion system ----
-autoload -Uz compinit
-compinit
+autoload -Uz compinit; compinit
 
 # ---- nvim something fix ----
 # https://github.com/nvim-lua/plenary.nvim/issues/536
@@ -25,12 +25,65 @@ if uname -r |grep -q 'microsoft' ; then
     export PATH=$PATH:/mnt/c/Windows
     export PATH=$PATH:/mnt/c/Windows/System32
     export PATH=$PATH:/mnt/c/ProgramData/chocolatey/bin
-    export PATH=$PATH:"/mnt/c/Program Files/PowerShell/7"
+    export PATH=$PATH:"/mnt/c/Program Files/WindowsApps/Microsoft.PowerShell_7.4.6.0_x64__8wekyb3d8bbwe"
 
     function powershell() {
         pwsh.exe -NoExit -c 'cd $env:userprofile'
     }
 fi
+
+# ---- Vim ----
+export EDITOR='nvim'
+export VISUAL='nvim'
+export MANPAGER='nvim +Man!'
+
+bindkey -v
+export KEYTIMEOUT=1
+
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
+# Vim normal/insert mode cursor
+cursor_mode() {
+    # See https://ttssh2.osdn.jp/manual/4/en/usage/tips/vim.html for cursor shapes
+    cursor_block='\e[2 q'
+    cursor_beam='\e[6 q'
+
+    function zle-keymap-select {
+        if [[ ${KEYMAP} == vicmd ]] ||
+            [[ $1 = 'block' ]]; then
+            echo -ne $cursor_block
+        elif [[ ${KEYMAP} == main ]] ||
+            [[ ${KEYMAP} == viins ]] ||
+            [[ ${KEYMAP} = '' ]] ||
+            [[ $1 = 'beam' ]]; then
+            echo -ne $cursor_beam
+        fi
+    }
+
+    zle-line-init() {
+        echo -ne $cursor_beam
+    }
+
+    zle -N zle-keymap-select
+    zle -N zle-line-init
+}
+cursor_mode
+
+# Add vim text objects
+autoload -Uz select-bracketed select-quoted
+zle -N select-quoted
+zle -N select-bracketed
+for km in viopp visual; do
+  bindkey -M $km -- '-' vi-up-line-or-history
+  for c in {a,i}${(s..)^:-\'\"\`\|,./:;=+@}; do
+    bindkey -M $km $c select-quoted
+  done
+  for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
+    bindkey -M $km $c select-bracketed
+  done
+done
 
 # ---- Auto tmux ----
 if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
@@ -39,7 +92,7 @@ fi
 
 # ---- Tools ----
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-  eval "$(oh-my-posh init zsh --config '~/bin/themes/tokyonight_storm.omp.json')"
+  eval "$(oh-my-posh init zsh --config '~/bin/themes/patriksvensson.omp.json')"
   # eval "$(starship init zsh)"
 fi
 
@@ -47,9 +100,8 @@ fi
 eval "$(zoxide init zsh)"
 
 # FZF
-# export FZF_DEFAULT_OPTS="--preview 'batcat -n --color=always {}'"
 export FZF_DEFAULT_OPTS="--preview '[[ -f {} ]] && batcat -n --color=always {} || eza --icons --color=always --tree --level=1 {}'"
-export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window up:3:wrap"
+export FZF_CTRL_T_COMMAND='rg --files --hidden --glob "!.git"'
 
 # aliases
 function wttr() { curl "wttr.in/$1"; }
@@ -80,9 +132,13 @@ setopt HIST_FIND_NO_DUPS    # Don't find duplicates on ctrl-r
 setopt HIST_IGNORE_DUPS     # Don't add to hist if same as last one
 setopt INC_APPEND_HISTORY   # Add lines to hist as soon as they are entered
 setopt HIST_REDUCE_BLANKS   # Don't add superfluous blanks to hist
+setopt appendhistory
+setopt hist_ignore_space
+setopt sharehistory
 HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
+HISTSIZE=5000
+SAVEHIST=5000
+HISTDUP=erase
 
 # ---- Git aliases ----
 alias g='git'
