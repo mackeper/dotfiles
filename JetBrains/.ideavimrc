@@ -63,7 +63,7 @@
     let g:WhichKey_SortOrder = "by_key_prefix_first"
     let g:WhichKey_CommandStyle = "bold"
     set notimeout
-    
+
     let g:WhichKeyDesc_buffer = "<leader>b Buffer"
     let g:WhichKeyDesc_buffer_close = "<leader>bd delete buffer"
     let g:WhichKeyDesc_buffer_close_all = "<leader>ba Close all buffers"
@@ -73,7 +73,7 @@
     nmap <leader>ba <Action>(CloseAllEditors)
     nmap <leader>bo <Action>(CloseAllEditorsButActive)
     nmap <leader>bp <Action>(PinActiveTabToggle)
-    
+
     let g:WhichKeyDesc_goto = "g Go to X"
     let g:WhichKeyDesc_goto_declaration = "gd Go to Definition"
     let g:WhichKeyDesc_goto_implementation = "gi Go to Implementation"
@@ -89,9 +89,11 @@
     let g:WhichKeyDesc_git = "<leader>g Git"
     let g:WhichKeyDesc_git_blame = "<leader>gb Git Blame"
     let g:WhichKeyDesc_git_diff = "<leader>gd Git Diff"
+    let g:WhichKeyDesc_git_commit = "<leader>gc Git Commit"
     nmap <leader>gb <Action>(Annotate)
-    nmap <leader>gd <Action>(ActivateCommitToolWindow)
-    
+    nmap <leader>gd <Action>(Git.CompareWithBranch)
+    nmap <leader>gc <Action>(ActivateCommitToolWindow)
+
     let g:WhichKeyDesc_harpoon = "<leader>h Harpoon"
     let g:WhichKeyDesc_harpoon_goto1 = "<leader>hh Harpoon 1"
     let g:WhichKeyDesc_harpoon_goto2 = "<leader>hj Harpoon 2"
@@ -130,9 +132,11 @@
     nmap <leader>ibc <Action>(StopBuild)
     let g:WhichKeyDesc_ide_test = "<leader>it Test"
     let g:WhichKeyDesc_ide_test_context = "<leader>itr Test current context"
+    let g:WhichKeyDesc_ide_test_class = "<leader>itc Test current class"
     let g:WhichKeyDesc_ide_test_debug = "<leader>itd Debug current context"
     let g:WhichKeyDesc_ide_test_all = "<leader>ita Test all"
     nmap <leader>itr <Action>(RiderUnitTestRunContextAction)
+    nmap <leader>itc gg/class<CR><Action>(RiderUnitTestRunContextAction)
     nmap <leader>itd <Action>(RiderUnitTestDebugContextAction)
     nmap <leader>ita <Action>(RiderUnitTestRunSolutionAction)
     let g:WhichKeyDesc_ide_nuget = "<leader>in Nuget"
@@ -151,10 +155,15 @@
     let g:WhichKeyDesc_refactor = "<leader>r Refactor"
     let g:WhichKeyDesc_refactor_rename = "<leader>rn Rename"
     let g:WhichKeyDesc_refactor_reformat = "<leader>rf Reformat"
-    let g:WhichKeyDesc_refactor_find_replace_in_file = "<leader>rw Find and replace in file"
+    let g:WhichKeyDesc_refactor_cleanup = "<leader>rc Cleanup"
+    let g:WhichKeyDesc_refactor_find_replace_in_file = "<leader>rw Find and replace word in file"
+    let g:WhichKeyDesc_refactor_find_replace_in_quote = "<leader>r" Find and replace quote in file"
     nmap <leader>rn <Action>(RenameElement)
     nmap <leader>rf <Action>(ReformatCode)
-    nmap <leader>rw :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
+    nmap <leader>rc <Action>(SilentCodeCleanup)
+    nmap <leader>rw viw"hy:%s/<C-r>h//g<left><left>
+    nmap <leader>r" vi""hy:%s/<C-r>h//g<left><left>
+    vmap <leader>rw "hy:%s/<C-r>h//g<left><left>
 
     let g:WhichKeyDesc_search = "<leader>j Search"
     let g:WhichKeyDesc_search_recent_files = "<leader>jm Recent files"
@@ -175,14 +184,17 @@
     " nmap <leader>er <Action>(RenameFile)
     nmap <leader>eo <Action>(ActivateStructureToolWindow)
     nmap <leader>om <Action>(ActivateMarksToolWindow)
-    
+
     let g:WhichKeyDesc_open = "<leader>o Open"
     let g:WhichKeyDesc_open_reveal = "<leader>oe Reveal in explorer"
     nmap <leader>oe <Action>(RevealIn)
-    
+
     let g:WhichKeyDesc_copilot = "<leader>p Copilot"
     let g:WhichKeyDesc_copilot_chat = "<leader>pc Chat"
+    let g:WhichKeyDesc_copilot_chat_inline = "<leader>pi Inline chat"
     nmap <leader>pc <Action>(ActivateGitHubCopilotChatToolWindow)
+    nmap <leader>pi <Action>(OpenInlineChatAction)
+    vmap <leader>pi <Action>(OpenInlineChatAction)
 
     let g:WhichKeyDesc_mode = "<leader>z Mode"
     let g:WhichKeyDesc_mode_zen = "<leader>zm Zen mode"
@@ -207,7 +219,7 @@
     nmap <leader>sa <Plug>YSurround
     nmap <leader>sd <Plug>DSurround
     nmap <leader>sr <Plug>CSurround
-    
+
     let g:WhichKeyDesc_window = "<leader>w Window"
     let g:WhichKeyDesc_window_split_horizontally = "<leader>ws Split horizontally"
     let g:WhichKeyDesc_window_split_vertically = "<leader>wv Split vertically"
@@ -215,18 +227,18 @@
     nmap <leader>ws <Action>(SplitHorizontally)
     nmap <leader>wv <Action>(SplitVertically)
     nmap <leader>wn <Action>(EditSourceInNewWindow)
-    
+
     let g:WhichKeyDesc_quickfix = "<leader>x Quickfix"
     let g:WhichKeyDesc_quickfix_errors = "<leader>xx Errors"
     let g:WhichKeyDesc_quickfix_todos = "<leader>xt Todos"
     nmap <leader>xx <Action>(Rider.ProblemsView.ErrorsInSolution)
     nmap <leader>xt <Action>(ActivateTODOToolWindow)
-    
+
 "" Remaps
     " Disable search highlighting
     nmap <leader>n :noh<CR>
     nmap <ESC> :noh<CR>
-    
+
     let g:WhichKeyDesc_center_cursor = "zz Center cursor"
     nmap zz zz100z<Left>
     " Refactor
@@ -245,11 +257,11 @@
 
     nmap <Tab> <Action>(NextTab)
     nmap <S-Tab> <Action>(PreviousTab)
-    
+
     let g:WhichKeyDesc_code_action = "<leader>. Code action"
     nmap <leader>. <Action>(ShowIntentionActions)
     vmap <leader>. <Action>(ShowIntentionActions)
-    
+
     " Navigate
     let g:WhichKeyDesc_navigate_method_up = "[["
     let g:WhichKeyDesc_navigate_method_down = "]]"
@@ -259,15 +271,16 @@
     nmap ]] <Action>(MethodDown)
     nmap ]e <Action>(ReSharperGotoNextErrorInSolution)
     nmap [e <Action>(ReSharperGotoPrevErrorInSolution)
-    
+
     let g:WhichKeyDesc_navigate_camel_case = "<leader>u Camel case"
     nmap <leader>u /\u/s<CR>:noh<CR>
     vmap <leader>u /\u/s<CR>
-    
+    nmap <S-w> /\u/s<CR>:noh<CR>
+
     nmap <C-o> <Action>(Back)
     nmap <C-i> <Action>(Forward)
-    
-    nmap <C-a> ggVG
+
+    " nmap <C-a> ggVG
 
     " Source file
     let g:WhichKeyDesc_source_file = "zl Source file"

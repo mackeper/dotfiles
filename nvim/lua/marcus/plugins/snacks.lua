@@ -22,20 +22,18 @@ return {
         --     right = { "fold", "git" },
         -- },
         terminal = { enabled = false },
-        toggle = { enabled = false },
+        toggle = { enabled = true },
         words = { enabled = true },
     },
     -- stylua: ignore
     keys = {
-        -- Profiler
         { "<leader>?", function() Snacks.toggle() end, desc = "Snacks profiler",},
-        -- Gitbrowse
         { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Gitbrowse", },
-        -- Lazygit
         { "<C-g>", function() Snacks.lazygit.open() end, desc = "Lazygit", },
-
-        -- { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
-        -- { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+        -- { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
+        -- { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+        -- { [[<C-\>]], function() Snacks.terminal() end, desc = "Toggle Terminal" },
+        -- { "<leader><leader>", function() Snacks.terminal() end, desc = "Toggle Terminal" },
     },
     config = function(_, opts)
         require("snacks").setup(opts)

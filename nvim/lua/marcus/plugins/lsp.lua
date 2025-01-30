@@ -42,7 +42,7 @@ return {
             mapping = cmp.mapping.preset.insert({
                 ["<S-Tab>"] = cmp.mapping.select_prev_item(cmp_select),
                 ["<Tab>"] = cmp.mapping.select_next_item(cmp_select),
-                ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                ["<C-y>"] = cmp.mapping.confirm({ select = true }),
                 ["<C-Space>"] = cmp.mapping.complete(),
             }),
             ---@diagnostic disable-next-line: missing-fields

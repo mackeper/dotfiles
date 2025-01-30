@@ -8,7 +8,7 @@ return {
         default = {
             dir_path = "./images",
             relative_to_current_file = true,
-            prompt_for_file_name = false,
+            prompt_for_file_name = true,
         },
     },
 }
