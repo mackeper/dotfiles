@@ -84,7 +84,7 @@ local function runFile()
     elseif vim.bo.filetype == "lua" then
         vim.cmd("exec '!lua " .. vim.fn.expand("%") .. "'")
     elseif vim.bo.filetype == "cs" then
-        vim.cmd("!dotnet build")
+        vim.cmd("!dotnet run")
     elseif vim.bo.filetype == "sh" then
         vim.cmd("!bash %")
     elseif vim.bo.filetype == "c" then

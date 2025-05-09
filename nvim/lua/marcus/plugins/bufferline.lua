@@ -1,4 +1,5 @@
 return {
+    enabled = false,
     -- Like tabs but for buffers
     "akinsho/bufferline.nvim",
     version = "*",
