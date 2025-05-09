@@ -18,6 +18,7 @@ return {
                 "rafamadriz/friendly-snippets",
             },
         },
+        { "kirasok/cmp-hledger" },
         { "folke/neodev.nvim" },
         { "WhoIsSethDaniel/mason-tool-installer.nvim" },
         { "csharp.nvim" },
@@ -25,6 +26,7 @@ return {
     config = function()
         local cmp = require("cmp")
         local cmp_lsp = require("cmp_nvim_lsp")
+        ---@diagnostic disable-next-line: missing-fields
         require("neodev").setup({ -- Before lspconfig
             override = function(_, library)
                 library.enabled = true
@@ -62,6 +64,7 @@ return {
                 { name = "luasnip" },
                 { name = "path" },
                 { name = "buffer" },
+                { name = "hledger" },
             },
         })
 
@@ -94,9 +97,10 @@ return {
                 -- vim.api.nvim_buf_set_option(event.buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
                 -- omnisharp loaded from csharp.lua
-                if client.name == "omnisharp" then
+                if client ~= nil and client.name == "omnisharp" then
                     local csharp = prequire("csharp")
                     if csharp then
+                        print("C# LSP loaded")
                         vim.keymap.set("n", "gd", csharp.go_to_definition, opts("Go to Definition"))
                         vim.keymap.set("n", "<leader>cF", csharp.fix_all, opts("Fix All"))
                         vim.keymap.set("n", "<F5>", csharp.debug_project, opts("Debug Project"))
@@ -164,6 +168,7 @@ return {
             "lua_ls", -- Lua
             "marksman", -- Markdown
             "ocamllsp", -- OCaml
+            -- "omnisharp", -- C#
             "pylsp", -- Python
             -- "pyright", -- Python
             "rust_analyzer", -- Rust
@@ -173,11 +178,27 @@ return {
             "yamlls", -- yaml
         }
 
+        local ensure_installed_tools = {
+            "elm-format", -- elm
+            "stylua", -- lua
+            "csharpier", -- csharp
+            "fourmolu", -- Haskell
+            "isort", -- Python
+            "black", -- Python
+            "prettierd", -- JavaScript / TypeScript
+            "prettier", -- JavaScript / TypeScript
+            "shfmt", -- bash
+            "markdownlint", -- Markdown
+            "markdownlint-cli2", -- Markdown
+            "ocamlformat", -- OCaml
+        }
+
         if jit.os == "Windows" then
             table.insert(ensure_installed, "powershell_es")
         end
 
         local setup_mason_lspconfig = function(lsps)
+            ---@diagnostic disable-next-line: missing-fields
             require("mason-lspconfig").setup({
                 ensure_installed = lsps,
                 handlers = {
@@ -194,22 +215,22 @@ return {
 
         setup_mason_lspconfig({})
 
-        require("mason-tool-installer").setup({
-            ensure_installed = {
-                "elm-format", -- elm
-                "stylua", -- lua
-                "csharpier", -- csharp
-                "fourmolu", -- Haskell
-                "isort", -- Python
-                "black", -- Python
-                "prettierd", -- JavaScript / TypeScript
-                "prettier", -- JavaScript / TypeScript
-                "shfmt", -- bash
-                "markdownlint", -- Markdown
-                "markdownlint-cli2", -- Markdown
-                "ocamlformat", -- OCaml
-            },
+        local setup_mason_tool_installer = function(lsps)
+            require("mason-tool-installer").setup({
+                ensure_installed = lsps,
+                auto_update = true,
+                run_on_start = true,
+                run_on_config = true,
+            })
+        end
+
+        vim.api.nvim_create_user_command("MasonToolsInstallAll", function()
+            setup_mason_lspconfig(ensure_installed_tools)
+        end, {
+            desc = "Install all LSP servers",
         })
+
+        require("mason-tool-installer").setup({})
 
         require("lspconfig").hls.setup({
             settings = {

@@ -1,4 +1,5 @@
 return {
+    enabled = true,
     "iabdelkareem/csharp.nvim",
     dependencies = {
         "williamboman/mason.nvim", -- Required, automatically installs omnisharp
@@ -35,6 +36,7 @@ return {
                 end
 
                 -- Also added in lsp.lua
+                print("C# file detected, setting up keymaps")
                 vim.keymap.set("n", "gd", csharp.go_to_definition, get_keymap_options(bufnr, "Go to Definition"))
                 vim.keymap.set("n", "<leader>cF", csharp.fix_all, get_keymap_options(bufnr, "Fix All"))
                 vim.keymap.set("n", "<F5>", csharp.debug_project, get_keymap_options(bufnr, "Debug Project"))

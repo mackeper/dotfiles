@@ -23,6 +23,7 @@ return {
                 "html",
                 "javascript",
                 "json",
+                "ledger",
                 "lua",
                 "markdown",
                 "markdown_inline",

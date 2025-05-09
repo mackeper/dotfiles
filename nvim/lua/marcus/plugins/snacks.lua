@@ -24,6 +24,13 @@ return {
         terminal = { enabled = false },
         toggle = { enabled = true },
         words = { enabled = true },
+        styles = {
+            notification = {
+                wo = {
+                    wrap = true,
+                },
+            },
+        },
     },
     -- stylua: ignore
     keys = {
