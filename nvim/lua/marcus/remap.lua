@@ -1,7 +1,7 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
 
 -- Auto clear highlights
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
+vim.k eymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
 
 -- Toggle spell check
 vim.keymap.set("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spell check" })
