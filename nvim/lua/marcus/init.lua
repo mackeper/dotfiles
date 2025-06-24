@@ -1,6 +1,6 @@
 require("marcus.set")
 require("marcus.lazy")
-require("marcus.r emap")
+require("marcus.remap")
 require("marcus.markdown2pdf")
 require("marcus.globals")
 require("marcus.autocmd")
