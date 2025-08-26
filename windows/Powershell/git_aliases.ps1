@@ -15,11 +15,52 @@ Remove-Alias gm -Force -ErrorAction SilentlyContinue
 Remove-Alias gp -Force -ErrorAction SilentlyContinue
 Remove-Alias gpv -Force -ErrorAction SilentlyContinue
 
+# ------ Auto completers -------
+
+Register-ArgumentCompleter -CommandName gco -ParameterName Branch -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+    git branch --format='%(refname:short)' | Where-Object { $_ -like "$wordToComplete*" }
+}
+
+Register-ArgumentCompleter -CommandName ga -ParameterName Path -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+    $untracked = $(git ls-files --others --exclude-standard)
+    $unstaged = $(git diff --name-only)
+    $files = @($untracked) + @($unstaged) | Sort-Object -Unique
+    $files | Where-Object { $_ -like "$wordToComplete*" }
+}
+
+Register-ArgumentCompleter -CommandName grs -ParameterName Path -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+    $unstaged = $(git diff --name-only)
+    $unstaged | Where-Object { $_ -like "$wordToComplete*" }
+}
+
+Register-ArgumentCompleter -CommandName grss -ParameterName Path -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+    $staged = $(git diff --cached --name-only)
+    $staged | Where-Object { $_ -like "$wordToComplete*" }
+}
+
+Register-ArgumentCompleter -CommandName gd -ParameterName Path -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+    $unstaged = $(git diff --name-only)
+    $unstaged | Where-Object { $_ -like "$wordToComplete*" }
+}
+
+Register-ArgumentCompleter -CommandName gdca -ParameterName Path -ScriptBlock {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+    $staged = $(git diff --cached --name-only)
+    $staged | Where-Object { $_ -like "$wordToComplete*" }
+}
+
+# ------ Functions -------
+
 function g
 { & git $args
 }
-function ga
-{ & git add $args
+function ga([string] $Path)
+{ & git add $Path
 }
 function gaa
 { & git add -a $args
@@ -48,8 +89,8 @@ function gclean
 function gcleanvs
 { & git clean -fX -e !.vs
 }
-function gco
-{ & git checkout $args
+function gco([string]$Branch)
+{ & git checkout $Branch
 }
 function gcob
 { & git checkout -b $args
@@ -60,11 +101,14 @@ function gcm
 function gcl
 { & git checkout - $args
 }
-function gd
-{ & git diff $args
+function gcp
+{ & git cherry-pick $args
 }
-function gdca
-{ & git diff --cached $args
+function gd([string] $Path)
+{ & git diff $Path
+}
+function gdca([string] $Path)
+{ & git diff --cached $Path
 }
 function gdcw
 { & git diff --cached --word-diff $args
@@ -165,11 +209,11 @@ function grm
 function grmc
 { & git rm --cached $args
 }
-function grs
-{ & git restore $args
+function grs([string] $Path)
+{ & git restore $Path
 }
-function grss
-{ & git restore --staged $args
+function grss([string] $Path)
+{ & git restore --staged $Path
 }
 function gss
 { & git status -s $args
