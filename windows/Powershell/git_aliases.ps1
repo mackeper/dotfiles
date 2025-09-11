@@ -45,6 +45,13 @@ Register-ArgumentCompleter -CommandName grss -ParameterName Path -ScriptBlock {
 Register-ArgumentCompleter -CommandName gd -ParameterName Path -ScriptBlock {
     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
     $unstaged = $(git diff --name-only)
+    $bound = @()
+    if ($fakeBoundParameters.ContainsKey('Names')) {
+        $bound = @($fakeBoundParameters['Names'])
+    }
+
+    # Exclude already typed values
+    $unstaged = $unstaged | Where-Object { $_ -notin $bound }
     $unstaged | Where-Object { $_ -like "$wordToComplete*" }
 }
 
@@ -96,7 +103,12 @@ function gcob
 { & git checkout -b $args
 }
 function gcm
-{ git checkout $((git rev-parse --verify master 2>$null) ? 'master' : 'main' ) $args
+{
+    git checkout $(
+        if (git rev-parse --verify master 2>$null) { 'master' }
+        elseif (git rev-parse --verify main 2>$null) { 'main' }
+        elseif (git rev-parse --verify develop 2>$null) { 'develop' }
+    ) $args
 }
 function gcl
 { & git checkout - $args
@@ -104,10 +116,14 @@ function gcl
 function gcp
 { & git cherry-pick $args
 }
-function gd([string] $Path)
-{ & git diff $Path
+function gd([string[]] $Path) {
+    if ($Path) {
+        & git diff @Path
+    } else {
+        & git diff
+    }
 }
-function gdca([string] $Path)
+function gdca([string] $Path="")
 { & git diff --cached $Path
 }
 function gdcw
