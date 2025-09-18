@@ -1,5 +1,5 @@
 return {
-    enabled = true,
+    enabled = false,
     "iabdelkareem/csharp.nvim",
     dependencies = {
         "williamboman/mason.nvim", -- Required, automatically installs omnisharp

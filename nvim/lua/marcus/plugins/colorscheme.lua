@@ -1,12 +1,9 @@
 return {
-    { "folke/tokyonight.nvim" },
-    { "Mofiqul/vscode.nvim" },
-    { "marko-cerovac/material.nvim" },
-    { "catppuccin/nvim", name = "catppuccin" },
-    { "EdenEast/nightfox.nvim" },
-    { "rose-pine/neovim", name = "rose-pine" },
-    { "Shatur/neovim-ayu" },
-    { "projekt0n/github-nvim-theme" },
+    { "folke/tokyonight.nvim",       enabled = false },
+    { "catppuccin/nvim",             enabled = false, name = "catppuccin" },
+    { "rose-pine/neovim",            enabled = false, name = "rose-pine" },
+    { "Shatur/neovim-ayu",           enabled = false, },
+    { "projekt0n/github-nvim-theme", enabled = false, },
     {
         "scottmckendry/cyberdream.nvim",
         priority = 1000,
@@ -60,7 +57,7 @@ return {
             --     load_colorscheme(unpack(colorschemes.catppuccin))
             -- end
 
-            load_colorscheme(unpack(colorschemes.catppuccin))
+            load_colorscheme(unpack(colorschemes.cyberdream))
         end,
     },
 }

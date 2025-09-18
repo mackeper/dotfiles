@@ -6,6 +6,11 @@
     pager = delta
     editor = nvim
 
+[status]
+    showUntrackedFiles = all
+    branch = true
+    showStash = true
+
 [color "grep"]
     linenumber = bold blue
     filename = bold green
@@ -31,5 +36,6 @@
 
 [pull]
     rebase = false
+
 [init]
     defaultBranch = main

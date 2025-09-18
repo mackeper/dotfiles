@@ -15,7 +15,7 @@ return {
             end,
         },
         lazygit = { enabled = true },
-        notifier = { enabled = true },
+        notifier = { enabled = true, timeout = 10000 },
         -- statuscolumn = {
         --     enabled = true,
         --     left = { "mark", "sign" },
@@ -34,7 +34,6 @@ return {
     },
     -- stylua: ignore
     keys = {
-        { "<leader>?", function() Snacks.toggle() end, desc = "Snacks profiler",},
         { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Gitbrowse", },
         { "<C-g>", function() Snacks.lazygit.open() end, desc = "Lazygit", },
         -- { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
