@@ -37,6 +37,8 @@ vim.opt.smartcase = true
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.inccommand = "split"
+_G.basic_excludes = { ".git", "*.egg-info", "__pycache__", "wandb","target" }
+_G.ext_excludes = vim.list_extend(vim.deepcopy(_G.basic_excludes), { ".venv", })
 
 -- Colors
 vim.opt.termguicolors = true

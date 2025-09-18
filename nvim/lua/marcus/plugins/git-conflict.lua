@@ -28,6 +28,7 @@ return {
         { "<leader>gcn", "<CMD>GitConflictNextConflict<CR>", mode = "n", desc = "Next conflict" },
         { "<leader>gcp", "<CMD>GitConflictPrevConflict<CR>", mode = "n", desc = "Previous conflict" },
         { "<leader>gcl", "<CMD>GitConflictListQf<CR>", mode = "n", desc = "List conflicts" },
+        { "<leader>gcr", "<CMD>GitConflictRefresh<CR>", mode = "n", desc = "Refresh git conflicts" },
     },
     config = true,
 }

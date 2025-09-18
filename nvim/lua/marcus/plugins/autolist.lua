@@ -22,18 +22,18 @@ return {
         -- vim.keymap.set("n", "<C-r>", "<cmd>AutolistRecalculate<cr>")
 
         -- cycle list types with dot-repeat
-        vim.keymap.set(
-            "n",
-            "<leader>acn",
-            require("autolist").cycle_next_dr,
-            { expr = true, desc = "Cycle to next list type (autolist)" }
-        )
-        vim.keymap.set(
-            "n",
-            "<leader>acp",
-            require("autolist").cycle_prev_dr,
-            { expr = true, desc = "Cycle to previous list type (autolist)" }
-        )
+        -- vim.keymap.set(
+        --     "n",
+        --     "<leader>acn",
+        --     require("autolist").cycle_next_dr,
+        --     { expr = true, desc = "Cycle to next list type (autolist)" }
+        -- )
+        -- vim.keymap.set(
+        --     "n",
+        --     "<leader>acp",
+        --     require("autolist").cycle_prev_dr,
+        --     { expr = true, desc = "Cycle to previous list type (autolist)" }
+        -- )
 
         -- if you don't want dot-repeat
         -- vim.keymap.set("n", "<leader>cn", "<cmd>AutolistCycleNext<cr>")

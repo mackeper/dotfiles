@@ -5,7 +5,7 @@ return {
     keys = {
         { "<leader>gd", "<CMD>DiffviewOpen<CR>", mode = { "n" }, desc = "Toggle diff view" },
     },
-    config = {
+    opts = {
         keymaps = {
             view = {
                 ["<leader>gd"] = "<CMD>DiffviewClose<CR>",

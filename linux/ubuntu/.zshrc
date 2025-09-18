@@ -8,6 +8,8 @@ plug "Freed-Wu/fzf-tab-source"
 plug "zap-zsh/fzf"
 plug "hlissner/zsh-autopair"
 
+[ -f .env ] && source .env
+
 # ---- Load and initialise completion system ----
 autoload -Uz compinit; compinit
 
@@ -20,6 +22,11 @@ export PATH=$PATH:~/bin
 export PATH=$PATH:~/go/bin
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:~/.dotnet/tools
+export PATH=$PATH:$HOME/dotnet
+export PATH=$PATH:$HOME/.local/share/nvim/mason/bin
+
+export DOTNET_ROOT=$HOME/dotnet
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 if uname -r |grep -q 'microsoft' ; then
     export PATH=$PATH:/mnt/c/Windows

@@ -1,0 +1,39 @@
+-- local allowed_repos = { "notes" }
+-- local function is_repo_allowed(repo_name)
+--   for _, name in ipairs(allowed_repos) do
+--     if name == repo_name then return true end
+--   end
+--   return false
+-- end
+--
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--   pattern = "*",
+--   callback = function()
+--     local cwd = vim.fn.getcwd()
+--     local git_root = vim.fn.systemlist({ "git", "-C", cwd, "rev-parse", "--show-toplevel" })[1]
+--     if not git_root then return end
+--
+--     local repo_name = vim.fn.fnamemodify(git_root, ":t")
+--     print ("Current repository: " .. repo_name)
+--     if not is_repo_allowed(repo_name) then return end
+--
+--     local filename = vim.fn.expand("%")
+--     local commit_msg = "auto-commit: " .. filename
+--
+--     vim.fn.jobstart({ "git", "-C", cwd, "add", filename }, {
+--       on_exit = function()
+--         vim.fn.jobstart({ "git", "-C", cwd, "commit", "-m", commit_msg }, {
+--           on_exit = function()
+--             vim.fn.jobstart({ "git", "-C", cwd, "push" }, {
+--               on_exit = function()
+--                 vim.schedule(function()
+--                   vim.notify("Git push completed: " .. filename, vim.log.levels.INFO)
+--                 end)
+--               end
+--             })
+--           end
+--         })
+--       end
+--     })
+--   end
+-- })
