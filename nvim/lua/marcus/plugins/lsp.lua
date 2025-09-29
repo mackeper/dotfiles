@@ -239,7 +239,13 @@ return {
 
         require("mason-tool-installer").setup({})
 
-        require("lspconfig").hls.setup({
+        vim.lsp.config('clangd', {
+            settings = {
+                cmd = { "clangd", "-Wall", }
+            },
+        })
+
+        vim.lsp.config('hls', {
             settings = {
                 haskell = {
                     formattingProvider = "fourmolu",
@@ -247,7 +253,7 @@ return {
             },
         })
 
-        require("lspconfig").lua_ls.setup({
+        vim.lsp.config('lua_ls', {
             settings = {
                 Lua = {
                     runtime = {
@@ -280,7 +286,7 @@ return {
             })
         end
 
-        require("lspconfig").pylsp.setup({
+        vim.lsp.config('pylsp', {
             settings = {
                 pylsp = {
                     plugins = {
@@ -293,7 +299,7 @@ return {
             },
         })
 
-        require("lspconfig").rust_analyzer.setup({
+        vim.lsp.config('rust_analyzer', {
             settings = {
                 ["rust-analyzer"] = {
                     diagnostics = {
