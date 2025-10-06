@@ -140,8 +140,12 @@ return {
         )
 
         local default_setup = function(server)
-            require("lspconfig")[server].setup({
-                capabilities = capabilities,
+            vim.lsp.config(server, {
+                settings = {
+                    [server] = {
+                        capabilities = capabilities,
+                    },
+                },
             })
         end
 
@@ -159,45 +163,45 @@ return {
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         local ensure_installed = {
-            "asm_lsp",  -- Assembly
-            "bashls",   -- bash
-            "clangd",   -- c
-            "cssls",    -- css
+            "asm_lsp", -- Assembly
+            "bashls", -- bash
+            "clangd", -- c
+            "cssls", -- css
             "dockerls", -- docker
-            "elmls",    -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
+            "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
             "eslint",
             -- "fsautocomplete", -- F#
-            "gopls",         -- Go
-            "hls",           -- Haskell
-            "html",          -- HTML
-            "jsonls",        -- Json
-            "lua_ls",        -- Lua
-            "marksman",      -- Markdown
-            "ocamllsp",      -- OCaml
+            "gopls", -- Go
+            "hls", -- Haskell
+            "html", -- HTML
+            "jsonls", -- Json
+            "lua_ls", -- Lua
+            "marksman", -- Markdown
+            "ocamllsp", -- OCaml
             -- "omnisharp", -- C#
-            "pylsp",         -- Python
+            "pylsp", -- Python
             -- "pyright", -- Python
-            "roslyn",        -- C#
+            "roslyn", -- C#
             "rust_analyzer", -- Rust
-            "sqlls",         -- SQL
-            "svelte",        -- Svelte
-            "ts_ls",         -- JavaScript / TypeScript
-            "yamlls",        -- yaml
+            "sqlls", -- SQL
+            "svelte", -- Svelte
+            "ts_ls", -- JavaScript / TypeScript
+            "yamlls", -- yaml
         }
 
         local ensure_installed_tools = {
-            "elm-format",        -- elm
-            "stylua",            -- lua
-            "csharpier",         -- csharp
-            "fourmolu",          -- Haskell
-            "isort",             -- Python
-            "black",             -- Python
-            "prettierd",         -- JavaScript / TypeScript
-            "prettier",          -- JavaScript / TypeScript
-            "shfmt",             -- bash
-            "markdownlint",      -- Markdown
+            "elm-format", -- elm
+            "stylua", -- lua
+            "csharpier", -- csharp
+            "fourmolu", -- Haskell
+            "isort", -- Python
+            "black", -- Python
+            "prettierd", -- JavaScript / TypeScript
+            "prettier", -- JavaScript / TypeScript
+            "shfmt", -- bash
+            "markdownlint", -- Markdown
             "markdownlint-cli2", -- Markdown
-            "ocamlformat",       -- OCaml
+            "ocamlformat", -- OCaml
         }
 
         if jit.os == "Windows" then
@@ -239,13 +243,13 @@ return {
 
         require("mason-tool-installer").setup({})
 
-        vim.lsp.config('clangd', {
+        vim.lsp.config("clangd", {
             settings = {
-                cmd = { "clangd", "-Wall", }
+                cmd = { "clangd", "-Wall" },
             },
         })
 
-        vim.lsp.config('hls', {
+        vim.lsp.config("hls", {
             settings = {
                 haskell = {
                     formattingProvider = "fourmolu",
@@ -253,7 +257,7 @@ return {
             },
         })
 
-        vim.lsp.config('lua_ls', {
+        vim.lsp.config("lua_ls", {
             settings = {
                 Lua = {
                     runtime = {
@@ -279,14 +283,18 @@ return {
         })
 
         if jit.os == "Windows" then
-            require("lspconfig").powershell_es.setup({
-                bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
+            vim.lsp.config("powershell_es", {
+                settings = {
+                    powershell_es = {
+                        bundle_path = vim.fn.stdpath("data") .. "/mason/packages/powershell-editor-services",
+                    },
+                },
                 -- shell = "powershell.exe",
                 -- cmd = { "pwsh", "-NoLogo", "-NoProfile", "-Command", "c:/PSES/Start-EditorServices.ps1 ..." },
             })
         end
 
-        vim.lsp.config('pylsp', {
+        vim.lsp.config("pylsp", {
             settings = {
                 pylsp = {
                     plugins = {
@@ -299,7 +307,7 @@ return {
             },
         })
 
-        vim.lsp.config('rust_analyzer', {
+        vim.lsp.config("rust_analyzer", {
             settings = {
                 ["rust-analyzer"] = {
                     diagnostics = {
