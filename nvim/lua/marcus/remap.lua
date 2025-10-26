@@ -91,6 +91,8 @@ local function runFile()
         vim.cmd("make")
     elseif vim.bo.filetype == "ocaml" then
         vim.cmd("dune build")
+    elseif vim.bo.filetype == "go" then
+        vim.cmd("!go run %")
     else
         print("Cannot run file of type: " .. vim.bo.filetype)
     end

@@ -1,4 +1,5 @@
 return {
+    enabled = true,
     "nvim-tree/nvim-tree.lua",
     event = { "BufReadPost", "BufNewFile" },
     dependencies = {
