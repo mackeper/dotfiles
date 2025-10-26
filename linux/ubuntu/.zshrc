@@ -1,6 +1,7 @@
 [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 plug "zsh-users/zsh-autosuggestions"
 plug "zsh-users/zsh-completions"
+plug "marlonrichert/zsh-autocomplete"
 plug "zap-zsh/supercharge"
 plug "zsh-users/zsh-syntax-highlighting"
 plug "Aloxaf/fzf-tab"
@@ -12,6 +13,11 @@ plug "hlissner/zsh-autopair"
 
 # ---- Load and initialise completion system ----
 autoload -Uz compinit; compinit
+zstyle ':autocomplete:*' default-context history-incremental-search-backward
+zstyle ':autocomplete:*' min-input 1
+zstyle ':autocomplete:*' delay 0.1
+zstyle ':autocomplete:*:*' list-lines 5
+
 
 # ---- nvim something fix ----
 # https://github.com/nvim-lua/plenary.nvim/issues/536
@@ -94,7 +100,7 @@ done
 
 # ---- Auto tmux ----
 if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-  exec tmux new-session -A -s main
+  # exec tmux new-session -A -s main
 fi
 
 # ---- Tools ----
@@ -109,6 +115,23 @@ eval "$(zoxide init zsh)"
 # FZF
 export FZF_DEFAULT_OPTS="--preview '[[ -f {} ]] && batcat -n --color=always {} || eza --icons --color=always --tree --level=1 {}'"
 export FZF_CTRL_T_COMMAND='rg --files --hidden --glob "!.git"'
+
+function fzf-cd() {
+  local locations=(
+    "$HOME/git"
+    "$HOME"
+  )
+
+  local dirs=()
+  for loc in "${locations[@]}"; do
+    [[ -d "$loc" ]] && dirs+=($(find "$loc" -mindepth 1 -maxdepth 1 -type d 2>/dev/null))
+  done
+
+  local dest=$(printf '%s\n' "${dirs[@]}" | fzf)
+  [[ -n "$dest" ]] && cd "$dest"
+}
+
+bindkey -s '^P' 'fzf-cd\n'
 
 # aliases
 function wttr() { curl "wttr.in/$1"; }
@@ -219,3 +242,5 @@ alias gstall='git stash --all'
 # This section can be safely removed at any time if needed.
 [[ ! -r '/home/marcus/.opam/opam-init/init.zsh' ]] || source '/home/marcus/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
 # END opam configuration
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
