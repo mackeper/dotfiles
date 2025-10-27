@@ -9,7 +9,8 @@ end
 vim.api.nvim_create_autocmd("BufWritePost", {
     pattern = "*",
     callback = function()
-        local cwd = vim.fn.getcwd()
+        -- local cwd = vim.fn.getcwd()
+        local cwd = vim.fn.expand('%:p:h')
         local git_root = vim.fn.systemlist({ "git", "-C", cwd, "rev-parse", "--show-toplevel" })[1]
         if not git_root then return end
 
