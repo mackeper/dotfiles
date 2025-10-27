@@ -13,6 +13,16 @@ return {
         vim.g.wiki_tag_list = {
             output = 'echo',
         }
+        vim.g.wiki_journal = {
+            name = '98_journal',
+            root = '',
+            frequency = 'daily',
+            date_format = {
+                daily = '%Y-%m-%d',
+                weekly = '%Y_w%V',
+                monthly = '%Y_m%m',
+            },
+        }
     end,
     keys = {
         { "<leader>wp",  "<cmd>WikiPages<cr>",          desc = "Wiki pages" },

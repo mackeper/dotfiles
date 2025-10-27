@@ -26,7 +26,8 @@ vim.api.nvim_create_autocmd("BufWritePost", {
                         vim.fn.jobstart({ "git", "-C", cwd, "push" }, {
                             on_exit = function()
                                 vim.schedule(function()
-                                    vim.notify("Git push completed: " .. filename, vim.log.levels.INFO)
+                                    vim.notify("Git push completed: " .. filename .. " to " .. repo_name,
+                                        vim.log.levels.INFO)
                                 end)
                             end
                         })
