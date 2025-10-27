@@ -28,12 +28,12 @@ return {
             },
             extensions = {
                 fzf = {},
-                doodle = {},
+                -- doodle = {},
             },
         })
 
         telescope.load_extension("fzf")
-        telescope.load_extension("doodle")
+        -- telescope.load_extension("doodle")
 
         local actions = require("telescope.actions")
         telescope.setup({
@@ -94,7 +94,7 @@ return {
         -- vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
         vim.keymap.set("n", "<leader>jn", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end,
             { desc = "Neovim files" })
-        vim.keymap.set("n", "<leader>dn", telescope.extensions.doodle.find_notes, { desc = "Doodle Find Notes" })
+        -- vim.keymap.set("n", "<leader>dn", telescope.extensions.doodle.find_notes, { desc = "Doodle Find Notes" })
         -- stylua: ignore end
     end,
 }

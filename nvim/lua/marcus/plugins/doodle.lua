@@ -1,5 +1,5 @@
 return {
-    enabled = true,
+    enabled = false,
     "apdot/doodle", --  Your second brain, inside Neovim.
     -- dir = "/home/marcus/git/doodle",
     dependencies = {
