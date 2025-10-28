@@ -21,7 +21,7 @@ return {
         --     left = { "mark", "sign" },
         --     right = { "fold", "git" },
         -- },
-        terminal = { enabled = false },
+        terminal = { enabled = true },
         toggle = { enabled = true },
         words = { enabled = true },
         styles = {
@@ -34,11 +34,11 @@ return {
     },
     -- stylua: ignore
     keys = {
-        { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Gitbrowse", },
-        { "<C-g>", function() Snacks.lazygit.open() end, desc = "Lazygit", },
+        { "<leader>gB", function() Snacks.gitbrowse() end,    desc = "Gitbrowse", },
+        { "<C-g>",      function() Snacks.lazygit.open() end, desc = "Lazygit", },
         -- { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
         -- { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
-        -- { [[<C-\>]], function() Snacks.terminal() end, desc = "Toggle Terminal" },
+        { "<leader>tt", function() Snacks.terminal() end,     desc = "Toggle Terminal" },
         -- { "<leader><leader>", function() Snacks.terminal() end, desc = "Toggle Terminal" },
     },
     config = function(_, opts)

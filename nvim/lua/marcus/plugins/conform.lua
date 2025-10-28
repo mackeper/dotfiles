@@ -19,6 +19,7 @@ return {
     opts = {
         formatters_by_ft = {
             asm = { "asmfmt" },
+            c = { 'clang-format' },
             csharp = { "csharpier" },
             -- elm = { "elm-format" }, -- Just rely on elm-language-server for now
             haskell = { "fourmolu" },
@@ -39,6 +40,9 @@ return {
         },
 
         formatters = {
+            ["clang-format"] = {
+                prepend_args = { "--style", "file", "--fallback-style", "webkit" },
+            },
             shfmt = {
                 prepend_args = { "-i", "4" },
             },

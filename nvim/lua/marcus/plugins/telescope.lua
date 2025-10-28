@@ -28,10 +28,12 @@ return {
             },
             extensions = {
                 fzf = {},
+                -- doodle = {},
             },
         })
 
         telescope.load_extension("fzf")
+        -- telescope.load_extension("doodle")
 
         local actions = require("telescope.actions")
         telescope.setup({
@@ -87,9 +89,12 @@ return {
         vim.keymap.set("n", "<leader>jh", builtin.help_tags, { desc = "Help" })
         vim.keymap.set("n", "<leader>jm", builtin.oldfiles, { desc = "Recent files" })
         vim.keymap.set("n", "<leader>jr", builtin.git_files, { desc = "Git files" })
-        vim.keymap.set("n", "<leader>jc", function() builtin.colorscheme({ enable_preview = true }) end, { desc = "Colorschemes" })
+        vim.keymap.set("n", "<leader>jc", function() builtin.colorscheme({ enable_preview = true }) end,
+            { desc = "Colorschemes" })
         -- vim.keymap.set("n", "<leader>jp", telescope.extensions.projects.projects, { desc = "Projects" })
-        vim.keymap.set("n", "<leader>jn", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end, { desc = "Neovim files" })
+        vim.keymap.set("n", "<leader>jn", function() builtin.find_files({ cwd = vim.fn.stdpath("config") }) end,
+            { desc = "Neovim files" })
+        -- vim.keymap.set("n", "<leader>dn", telescope.extensions.doodle.find_notes, { desc = "Doodle Find Notes" })
         -- stylua: ignore end
     end,
 }
