@@ -19,6 +19,7 @@ local opts = {
     change_detection = {
         enabled = false,
     },
+    cache = true,
 }
 
 require("lazy").setup("marcus.plugins", opts)

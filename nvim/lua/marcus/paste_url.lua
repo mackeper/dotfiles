@@ -1,0 +1,41 @@
+local function get_clipboard()
+    local os_name = vim.loop.os_uname().sysname
+    local cmd
+    if os_name == "Windows_NT" then
+        cmd = 'powershell -NoProfile -Command "Get-Clipboard"'
+    elseif os_name == "Darwin" then
+        cmd = "pbpaste"
+    else
+        -- assume Linux
+        cmd = "xclip -selection clipboard -o" -- or wl-paste
+    end
+
+    local handle = io.popen(cmd)
+    if not handle then
+        return ""
+    end
+    local result = handle:read("*a")
+    handle:close()
+    return result
+end
+
+local function paste_markdown_link()
+    local text = get_clipboard()
+    -- simple URL detection
+    local url = text:match("(https?://%S+)")
+    if url then
+        -- description: use what is before the URL, or the URL itself
+        local desc = text:gsub("%s*" .. url .. "$", ""):gsub("^%s+", "")
+        if desc == "" then
+            desc = url
+        end
+        local md = string.format("[%s](%s)", desc, url)
+        vim.api.nvim_put({ md }, "c", true, true)
+    else
+        -- fallback: normal paste
+        vim.api.nvim_feedkeys('"+p', "n", false)
+    end
+end
+
+vim.notify("Mapping <leader>cu to paste clipboard as Markdown link if URL present")
+vim.keymap.set("n", "<leader>cu", paste_markdown_link, { desc = "Paste clipboard as Markdown link if URL present" })
