@@ -1,7 +1,9 @@
-local allowed_repos = { "notes", "wiki", }
+local allowed_repos = { "notes", "wiki" }
 local function is_repo_allowed(repo_name)
     for _, name in ipairs(allowed_repos) do
-        if name == repo_name then return true end
+        if name == repo_name then
+            return true
+        end
     end
     return false
 end
@@ -10,15 +12,23 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     pattern = "*",
     callback = function()
         -- local cwd = vim.fn.getcwd()
-        local cwd = vim.fn.expand('%:p:h')
+        local cwd = vim.fn.expand("%:p:h")
         local git_root = vim.fn.systemlist({ "git", "-C", cwd, "rev-parse", "--show-toplevel" })[1]
-        if not git_root then return end
+        if not git_root then
+            return
+        end
 
         local repo_name = vim.fn.fnamemodify(git_root, ":t")
-        if not is_repo_allowed(repo_name) then return end
+        if not is_repo_allowed(repo_name) then
+            return
+        end
 
         local filename = vim.fn.expand("%")
         local commit_msg = "auto-commit: " .. filename
+
+        -- vim.fn.jobstart({ "git", "-C", cwd, "pull" }, {
+        --     on_exit = function() end,
+        -- })
 
         vim.fn.jobstart({ "git", "-C", cwd, "add", filename }, {
             on_exit = function()
@@ -27,14 +37,24 @@ vim.api.nvim_create_autocmd("BufWritePost", {
                         vim.fn.jobstart({ "git", "-C", cwd, "push" }, {
                             on_exit = function()
                                 vim.schedule(function()
-                                    vim.notify("Git push completed: " .. filename .. " to " .. repo_name,
-                                        vim.log.levels.INFO)
+                                    vim.notify(
+                                        "Git push completed: " .. filename .. " to " .. repo_name,
+                                        vim.log.levels.INFO
+                                    )
                                 end)
-                            end
+                            end,
                         })
-                    end
+                    end,
                 })
-            end
+            end,
         })
-    end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    pattern = "*.props",
+    callback = function()
+        vim.opt_local.fixendofline = false
+        vim.opt_local.endofline = false
+    end,
 })

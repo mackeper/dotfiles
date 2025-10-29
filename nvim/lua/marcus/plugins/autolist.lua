@@ -21,8 +21,6 @@ return {
                 vim.keymap.set("n", "o", "o<cmd>AutolistNewBullet<cr>")
                 vim.keymap.set("n", "O", "O<cmd>AutolistNewBulletBefore<cr>")
 
-                vim.keymap.set("n", "<leader>at", "<cmd>AutolistToggleCheckbox<cr><CR>")
-
                 -- cycle list types with dot-repeat
                 -- vim.keymap.set(
                 --     "n",

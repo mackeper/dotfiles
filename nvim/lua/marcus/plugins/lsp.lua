@@ -34,11 +34,59 @@ return {
             end,
         })
 
+        ---- Setup snippets ----
         local ls = require("luasnip")
         local ls_vs_loader = require("luasnip.loaders.from_vscode")
         ls_vs_loader.lazy_load()
         ls_vs_loader.lazy_load({ paths = { "./lua/marcus/snippets" } })
 
+        local snippets = {}
+        local snippet = ls.snippet
+        local text = ls.text_node
+        local insert = ls.insert_node
+        local func = ls.function_node
+        local function create_code_block_snippet(lang)
+            return snippet({
+                trig = lang,
+                name = lang .. " code block",
+            }, {
+                text("```" .. lang, ""),
+                insert(1),
+                text({ "", "```" }),
+            })
+        end
+
+        local function clipboard()
+            return vim.fn.getreg("+")
+        end
+
+        table.insert(snippets, create_code_block_snippet("bash"))
+        table.insert(snippets, create_code_block_snippet("python"))
+        table.insert(snippets, create_code_block_snippet("csharp"))
+        table.insert(snippets, create_code_block_snippet("lua"))
+        table.insert(snippets, create_code_block_snippet("javascript"))
+        table.insert(snippets, create_code_block_snippet("html"))
+        table.insert(snippets, create_code_block_snippet("powershell"))
+        table.insert(snippets, create_code_block_snippet("json"))
+        table.insert(snippets, create_code_block_snippet("yaml"))
+
+        table.insert(
+            snippets,
+            snippet({
+                trig = "linkc",
+                name = "Link from clipboard",
+            }, {
+                text("["),
+                insert(1, "LINK"),
+                text("]("),
+                func(clipboard, {}),
+                text(")"),
+            })
+        )
+
+        ls.add_snippets("markdown", snippets)
+
+        ---- Setup nvim-cmp ----
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
         cmp.setup({
             mapping = cmp.mapping.preset.insert({

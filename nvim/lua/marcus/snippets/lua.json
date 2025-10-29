@@ -14,5 +14,13 @@
             "end,"
         ],
         "description": "config lazy"
+    },
+    "stylua ignore": {
+        "prefix": "stylua",
+        "body": [
+            "-- stylua: ignore start",
+            "-- stylua: ignore end"
+        ],
+        "description": "stylua ignore"
     }
 }
