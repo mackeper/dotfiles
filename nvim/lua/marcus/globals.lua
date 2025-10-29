@@ -17,3 +17,13 @@ vim.api.nvim_create_user_command("Scratch", function()
     vim.bo.bufhidden = "hide"
     vim.bo.swapfile = false
 end, {})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "lua",
+    callback = function()
+        vim.keymap.set("n", "<leader><leader>", function()
+            vim.cmd("luafile " .. vim.fn.expand("%"))
+            print("Reloaded " .. vim.fn.expand("%:t"))
+        end, { desc = "Reload current Lua file", buffer = true })
+    end,
+})

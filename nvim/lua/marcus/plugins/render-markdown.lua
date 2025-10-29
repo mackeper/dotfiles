@@ -10,6 +10,26 @@ return {
         anti_conceal = {
             enabled = false,
         },
+        heading = {
+            icons = { "󰎤 ", "󰎧 ", "󰎪 ", "󰎭 ", "󰎱 ", "󰎳 " },
+            position = "inline",
+            width = "block",
+            min_width = 64,
+            right_pad = 1,
+        },
+        link = {
+            footnote = {
+                icon = "",
+            },
+            image = "",
+            email = "",
+            hyperlink = "",
+            url = "",
+            wiki = {
+                icon = "",
+            },
+            custom = {},
+        },
     },
     dependencies = {
         "nvim-treesitter/nvim-treesitter",
