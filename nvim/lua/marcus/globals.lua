@@ -3,7 +3,7 @@ P = function(v)
     return v
 end
 
-function prequire(...)
+function Prequire(...)
     local status, lib = pcall(require, ...)
     if status then
         return lib
