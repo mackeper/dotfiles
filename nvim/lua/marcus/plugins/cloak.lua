@@ -1,6 +1,6 @@
 return {
     -- Hide sensitive information in your files
-    enabled = true,
+    enabled = false,
     "laytan/cloak.nvim",
     event = "BufReadPre",
     opts = {},

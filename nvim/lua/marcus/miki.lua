@@ -8,6 +8,11 @@ end
 
 vim.g.miki_journal_root = vim.g.miki_root .. "98_Journal"
 
+local file_pickers = {
+    telescope = "telescope",
+    minipick = "minipick",
+}
+
 local config = {
     wiki_root = vim.g.miki_root,
     journal_root = vim.g.miki_journal_root,
@@ -17,6 +22,7 @@ local config = {
     spellcheck = {
         enabled = true,
     },
+    file_picker = file_pickers.minipick,
 }
 
 --------------------------------------------------------------
@@ -50,13 +56,23 @@ local function _miki_get_tags()
 end
 
 local function _miki_find_pages()
-    require("telescope.builtin").find_files({
-        cwd = config.wiki_root,
-        hidden = false,
-    })
+    if config.file_picker == "telescope" then
+        require("telescope.builtin").find_files({
+            cwd = config.wiki_root,
+            hidden = false,
+        })
+    elseif config.file_picker == "minipick" then
+        require("mini.pick").builtin.files({}, {
+            source = {
+                cwd = config.wiki_root,
+            },
+        })
+    else
+        vim.notify("Invalid file picker: " .. config.file_picker, vim.log.levels.ERROR)
+    end
 end
 
-local function _miki_find_tags()
+local function _miki_find_tags_telescope()
     local pickers = require("telescope.pickers")
     local finders = require("telescope.finders")
     local conf = require("telescope.config").values
@@ -86,6 +102,42 @@ local function _miki_find_tags()
             end,
         })
         :find()
+end
+
+local function _miki_find_tags_minipick()
+    local mini_pick = require("mini.pick")
+    local tags = _miki_get_tags()
+    if not tags then
+        return
+    end
+
+    mini_pick.start({
+        source = {
+            items = tags,
+            choose = function(item)
+                vim.notify("Searching for tag: " .. item, vim.log.levels.INFO)
+                mini_pick.stop()
+                mini_pick.builtin.grep({
+                    tool = "rg",
+                    pattern = item,
+                }, {
+                    source = {
+                        cwd = vim.g.miki_root,
+                    },
+                })
+            end,
+        },
+    })
+end
+
+local function _miki_find_tags()
+    if config.file_picker == "telescope" then
+        _miki_find_tags_telescope()
+    elseif config.file_picker == "minipick" then
+        _miki_find_tags_minipick()
+    else
+        vim.notify("Invalid file picker: " .. config.file_picker, vim.log.levels.ERROR)
+    end
 end
 
 local function _miki_open_page(page)
@@ -173,5 +225,18 @@ if config.spellcheck.enabled then
         end,
     })
 end
+
+----------------------------------------------------------------
+--------------------Should not be here -------------------------
+----------------------------------------------------------------
+--- Just because I have not confiured the formatting yet
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        vim.cmd("setlocal tabstop=2")
+        vim.cmd("setlocal shiftwidth=2")
+        vim.cmd("setlocal softtabstop=2")
+    end,
+})
 
 vim.notify("miki.lua loaded", vim.log.levels.INFO)

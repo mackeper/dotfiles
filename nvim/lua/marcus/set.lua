@@ -8,8 +8,8 @@ vim.opt.showtabline = 2
 vim.opt.showcmd = true
 
 -- Line numbers
-vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.number = false
+vim.opt.relativenumber = false
 
 -- Indentation
 vim.opt.tabstop = 4
@@ -28,6 +28,9 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
+-- UI Style
+-- vim.opt.winborder = "rounded" -- Does not work well with wilder
+
 -- Wrap lines
 vim.opt.wrap = false
 
@@ -37,8 +40,8 @@ vim.opt.smartcase = true
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.inccommand = "split"
-_G.basic_excludes = { ".git", "*.egg-info", "__pycache__", "wandb","target" }
-_G.ext_excludes = vim.list_extend(vim.deepcopy(_G.basic_excludes), { ".venv", })
+_G.basic_excludes = { ".git", "*.egg-info", "__pycache__", "wandb", "target" }
+_G.ext_excludes = vim.list_extend(vim.deepcopy(_G.basic_excludes), { ".venv" })
 
 -- Colors
 vim.opt.termguicolors = true

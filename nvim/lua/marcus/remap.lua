@@ -1,4 +1,15 @@
 -- vim.keymap.set("n", "<leader>je", vim.cmd.Explore)
+-- Run command and output to scratch buffer
+vim.keymap.set("n", "<leader>:", function()
+    vim.ui.input({}, function(c)
+        if c and c ~= "" then
+            vim.cmd("noswapfile vnew")
+            vim.bo.buftype = "nofile"
+            vim.bo.bufhidden = "wipe"
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(c))
+        end
+    end)
+end)
 
 -- Auto clear highlights
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear highlights" })
