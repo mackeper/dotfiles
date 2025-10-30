@@ -4,7 +4,7 @@ return {
     ft = "cs",
     opts = {},
     config = function(_, opts)
-        -- require("roslyn").setup(opts)
+        require("roslyn").setup(opts)
         vim.lsp.config("roslyn", {
             on_attach = function()
                 print("This will run when the server attaches!")
