@@ -38,7 +38,6 @@ vim.keymap.set(
 
 -- File
 vim.keymap.set("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], { desc = "Copy file path to clipboard" })
-vim.keymap.set("n", "<leader>zz", ":source " .. vim.fn.stdpath("config") .. "/init.lua<CR>", { desc = "Reload config" })
 vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save" })
 vim.keymap.set("n", "<C-q>", ":wq<CR>", { desc = "Save and quit" })
 

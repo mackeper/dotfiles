@@ -125,7 +125,7 @@ vim.keymap.set("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki
 
 local function add_autolist_keymaps()
     vim.keymap.set("n", "<leader>msc", function()
-        vim.api.nvim_put({ "- [ ] " }, "c", true, true) 
+        vim.api.nvim_put({ "- [ ] " }, "c", true, true)
         vim.cmd("startinsert") -- Enter insert mode
     end, { desc = "Create checkbox", noremap = true, silent = true })
     vim.keymap.set("n", "<leader>mst", function()
@@ -144,6 +144,10 @@ end
 vim.keymap.set("n", "<leader>mu", function()
     local ps1_path = vim.g.miki_root .. "/parse_url.ps1"
     local handle = io.popen('pwsh -NoProfile -NoLogo -File "' .. ps1_path .. '"')
+    if not handle then
+        vim.notify("Failed to run parse_url.ps1", vim.log.levels.ERROR)
+        return
+    end
     local result = handle:read("*a")
     handle:close()
     local text = result or ""
