@@ -145,6 +145,10 @@ end
 vim.keymap.set("n", "<leader>mu", function()
     local ps1_path = vim.g.miki_root .. "/parse_url.ps1"
     local handle = io.popen('pwsh -NoProfile -NoLogo -File "' .. ps1_path .. '"')
+    if not handle then
+        vim.notify("Failed to run parse_url.ps1", vim.log.levels.ERROR)
+        return
+    end
     local result = handle:read("*a")
     handle:close()
     local text = result or ""

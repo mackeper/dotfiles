@@ -1,9 +1,10 @@
 return {
-    { "folke/tokyonight.nvim",       enabled = false },
-    { "catppuccin/nvim",             enabled = false, name = "catppuccin" },
-    { "rose-pine/neovim",            enabled = false, name = "rose-pine" },
-    { "Shatur/neovim-ayu",           enabled = false, },
-    { "projekt0n/github-nvim-theme", enabled = false, },
+    { "folke/tokyonight.nvim", enabled = false },
+    { "catppuccin/nvim", enabled = false, name = "catppuccin" },
+    { "rose-pine/neovim", enabled = false, name = "rose-pine" },
+    { "Shatur/neovim-ayu", enabled = false },
+    { "projekt0n/github-nvim-theme", enabled = false },
+    { "marko-cerovac/material.nvim", enabled = true },
     {
         "scottmckendry/cyberdream.nvim",
         priority = 1000,
@@ -42,6 +43,12 @@ return {
                 rose_pine = { "rose-pine", nil },
                 github_dark = { "github_dark", nil },
                 github_light = { "github_light_colorblind", nil },
+                material_deep_ocean = {
+                    "material",
+                    function()
+                        vim.g.material_style = "deep ocean"
+                    end,
+                },
             }
 
             -- local light_mode = 0
@@ -57,7 +64,7 @@ return {
             --     load_colorscheme(unpack(colorschemes.catppuccin))
             -- end
 
-            load_colorscheme(unpack(colorschemes.cyberdream))
+            load_colorscheme(unpack(colorschemes.material_deep_ocean))
         end,
     },
 }

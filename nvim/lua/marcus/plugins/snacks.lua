@@ -31,16 +31,18 @@ return {
                 },
             },
         },
+        zen = {},
     },
-    -- stylua: ignore
+    -- stylua: ignore start
     keys = {
         { "<leader>gB", function() Snacks.gitbrowse() end,    desc = "Gitbrowse", },
         { "<C-g>",      function() Snacks.lazygit.open() end, desc = "Lazygit", },
         -- { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
         -- { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
         { "<leader>tt", function() Snacks.terminal() end,     desc = "Toggle Terminal" },
-        -- { "<leader><leader>", function() Snacks.terminal() end, desc = "Toggle Terminal" },
+        { "<leader>zm", function() Snacks.zen() end,    desc = "Toggle Zen Mode" },
     },
+    -- stylua: ignore end
     config = function(_, opts)
         require("snacks").setup(opts)
     end,
