@@ -59,36 +59,15 @@ isWorkMode := true
     }
 }
 
-; Notetaking
+; Note taking
 ^+W::{
-    hwnd := WinExist("ahk_exe git-bash.exe")
-
-    if hwnd {
-        WinActivate(hwnd)
-        WinWaitActive(hwnd)
-    } else {
-        Run('"C:\Program Files\Git\bin\bash.exe" -i -l -c "cd C:/git/wiki; nvim +MikiIndex +normal\ G"', , "UseErrorLevel")
-    }
+    Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +MikiIndex "+normal G"'
 }
 ^+J::{
-    hwnd := WinExist("ahk_exe git-bash.exe")
-
-    if hwnd {
-        WinActivate(hwnd)
-        WinWaitActive(hwnd)
-    } else {
-        Run('"C:\Program Files\Git\bin\bash.exe" -i -l -c "cd C:/git/wiki; nvim +WikiJournal +normal\ G"', , "UseErrorLevel")
-    }
+    Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +WikiJournal "+normal G"'
 }
 ^+C::{
-    hwnd := WinExist("ahk_exe git-bash.exe")
-
-    if hwnd {
-        WinActivate(hwnd)
-        WinWaitActive(hwnd)
-    } else {
-        Run('"C:\Program Files\Git\bin\bash.exe" -i -l -c "cd C:/git/wiki; nvim +MikiCurrent +normal\ G"', , "UseErrorLevel")
-    }
+    Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +MikiCurrent "+normal G"'
 }
 
 ; Functions
