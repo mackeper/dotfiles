@@ -119,13 +119,14 @@ vim.api.nvim_create_user_command("MikiAddLink", function() end, {})
 vim.keymap.set("n", "<leader>mi", ":MikiIndex<CR>", { desc = "Miki: Open Index", noremap = true, silent = true })
 vim.keymap.set("n", "<leader>mc", ":MikiCurrent<CR>", { desc = "Miki: Open Current", noremap = true, silent = true })
 vim.keymap.set("n", "<leader>mj", ":MikiJournal<CR>", { desc = "Miki: Open Journal", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>mf", _miki_find_pages, { desc = "Miki: Find Page", noremap = true, silent = true, buffer = false })
+vim.keymap.set("n", "<leader>mf", _miki_find_pages,
+    { desc = "Miki: Find Page", noremap = true, silent = true, buffer = false })
 vim.keymap.set("n", "<leader>mt", _miki_find_tags, { desc = "Miki: Find Tag", noremap = true, silent = true })
 vim.keymap.set("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki: Copy page path to clipboard" })
 
 local function add_autolist_keymaps()
     vim.keymap.set("n", "<leader>msc", function()
-        vim.api.nvim_put({ "- [ ] " }, "c", true, true) 
+        vim.api.nvim_put({ "- [ ] " }, "c", true, true)
         vim.cmd("startinsert") -- Enter insert mode
     end, { desc = "Create checkbox", noremap = true, silent = true })
     vim.keymap.set("n", "<leader>mst", function()
@@ -159,8 +160,14 @@ if config.autolist.enabled then
 end
 
 if config.spellcheck.enabled then
-    vim.cmd("setlocal spell")
-    vim.cmd("setlocal spelllang=en_us,sv")
+    --autocmd for markdown files
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function()
+            vim.cmd("setlocal spell")
+            vim.cmd("setlocal spelllang=en_us,sv")
+        end,
+    })
 end
 
 vim.notify("miki.lua loaded", vim.log.levels.INFO)
