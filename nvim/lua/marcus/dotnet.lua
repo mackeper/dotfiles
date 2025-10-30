@@ -2,6 +2,11 @@
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
     callback = function()
+        ---- Settings ----
+        vim.cmd("compiler dotnet")
+        vim.g.dotnet_errors_only = false
+        vim.g.dotnet_show_project_file = true
+
         local function get_current_project()
             local filepath = vim.fn.expand("%:p")
             local dir = vim.fn.fnamemodify(filepath, ":h")
@@ -26,12 +31,11 @@ vim.api.nvim_create_autocmd("FileType", {
         end
         ------
         vim.keymap.set("n", "<leader>ibc", function()
-            vim.cmd("!dotnet build " .. (get_current_project() or ""))
+            vim.cmd("make " .. (get_current_project() or ""))
         end, { desc = "Dotnet: Build current project" })
-
-        vim.keymap.set("n", "<leader>ibc", function()
-            vim.cmd("!dotnet build " .. (get_current_project() or ""))
-        end, { desc = "Dotnet: Build current project" })
+        vim.keymap.set("n", "<leader>itc", function()
+            vim.cmd("!dotnet test " .. (get_current_project() or ""))
+        end, { desc = "Dotnet: Test current project" })
         vim.keymap.set("n", "<leader>ip", function()
             vim.notify("Current project: " .. (get_current_project() or "Not found"), vim.log.levels.INFO)
         end, { desc = "Dotnet: Show current project" })

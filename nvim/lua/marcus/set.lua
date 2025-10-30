@@ -120,6 +120,10 @@ vim.opt.spelllang = "en_us"
 -- Terminal
 -- vim.g.terminal_emulator = "powershell"
 -- vim.opt.shell = "powershell"
+if jit.os == "Windows" then
+    vim.opt.shellpipe = ">"
+    vim.opt.shellredir = ">"
+end
 vim.api.nvim_create_autocmd("TermOpen", {
     pattern = "*",
     callback = function()
