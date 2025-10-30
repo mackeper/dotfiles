@@ -51,19 +51,6 @@ return {
                 },
             }
 
-            -- local light_mode = 0
-            -- light_mode = vim.fn.system(
-            --     [[powershell.exe -NoProfile -Command "& { (Get-ItemProperty -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize' -Name AppsUseLightTheme).AppsUseLightTheme }"]]
-            -- )
-            --
-            -- print("light_mode: " .. light_mode)
-            --
-            -- if light_mode:match("1") then
-            --     load_colorscheme(unpack(colorschemes.github_light))
-            -- else
-            --     load_colorscheme(unpack(colorschemes.catppuccin))
-            -- end
-
             load_colorscheme(unpack(colorschemes.material_deep_ocean))
         end,
     },

@@ -19,13 +19,13 @@ return {
     opts = {
         formatters_by_ft = {
             asm = { "asmfmt" },
-            c = { 'clang-format' },
+            c = { "clang-format" },
             csharp = { "csharpier" },
             -- elm = { "elm-format" }, -- Just rely on elm-language-server for now
             haskell = { "fourmolu" },
-            javascript = { { "prettierd", "prettier" } },
+            javascript = { "prettierd", "prettier" },
             lua = { "stylua" },
-            markdown = { "markdownlint", "markdownlint-cli2" },
+            markdown = { "markdownlint" },
             ocaml = { "ocamlformat" },
             python = { "isort", "black" },
             rust = { "rustfmt" },

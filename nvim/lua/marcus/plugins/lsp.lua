@@ -1,27 +1,20 @@
 return {
     "neovim/nvim-lspconfig",
+    enabled = true,
     -- event = { "BufReadPost", "BufNewFile" },
     dependencies = {
         { "williamboman/mason.nvim" },
         { "williamboman/mason-lspconfig.nvim" },
         { "hrsh7th/nvim-cmp" },
         { "onsails/lspkind.nvim" }, -- Icons
-
         { "hrsh7th/cmp-nvim-lsp" },
         { "hrsh7th/cmp-buffer" },
         { "hrsh7th/cmp-path" },
         { "hrsh7th/cmp-cmdline" },
         { "saadparwaiz1/cmp_luasnip" },
-        {
-            "L3MON4D3/LuaSnip",
-            dependencies = {
-                "rafamadriz/friendly-snippets",
-            },
-        },
-        { "kirasok/cmp-hledger" },
+        { "L3MON4D3/LuaSnip" },
         { "folke/neodev.nvim" },
         { "WhoIsSethDaniel/mason-tool-installer.nvim" },
-        { "csharp.nvim" },
     },
     config = function()
         local cmp = require("cmp")
@@ -112,11 +105,11 @@ return {
                 { name = "luasnip" },
                 { name = "path" },
                 { name = "buffer" },
-                { name = "hledger" },
             },
         })
 
         -- Setup keybindings
+        -- <C-w>d to show lsp diagnostics
         vim.keymap.set("n", "<leader>lq", "<Cmd>LspInfo<CR>", { noremap = true, desc = "LSP info" })
         vim.keymap.set("n", "<leader>lr", "<Cmd>LspRestart<CR>", { noremap = true, desc = "LSP restart" })
         vim.keymap.set("n", "<leader>ls", "<Cmd>LspStop<CR>", { noremap = true, desc = "LSP stop" })
@@ -148,19 +141,7 @@ return {
                 -- Enable completion triggered by <c-x><c-o>
                 -- vim.api.nvim_buf_set_option(event.buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
-                -- omnisharp loaded from csharp.lua
-                if client ~= nil and client.name == "omnisharp" then
-                    local csharp = prequire("csharp")
-                    if csharp then
-                        print("C# LSP loaded")
-                        vim.keymap.set("n", "gd", csharp.go_to_definition, opts("Go to Definition"))
-                        vim.keymap.set("n", "<leader>cF", csharp.fix_all, opts("Fix All"))
-                        vim.keymap.set("n", "<F5>", csharp.debug_project, opts("Debug Project"))
-                        vim.keymap.set("n", "<c-f5>", csharp.run_project, opts("Run Project"))
-                    end
-                else
-                    vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
-                end
+                vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
                 vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
                 vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
                 vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts("Hover / Quick info"))
@@ -215,45 +196,45 @@ return {
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         local ensure_installed = {
-            "asm_lsp",  -- Assembly
-            "bashls",   -- bash
-            "clangd",   -- c
-            "cssls",    -- css
+            "asm_lsp", -- Assembly
+            "bashls", -- bash
+            "clangd", -- c
+            "cssls", -- css
             "dockerls", -- docker
-            "elmls",    -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
+            "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
             "eslint",
             -- "fsautocomplete", -- F#
-            "gopls",         -- Go
-            "hls",           -- Haskell
-            "html",          -- HTML
-            "jsonls",        -- Json
-            "lua_ls",        -- Lua
-            "marksman",      -- Markdown
-            "ocamllsp",      -- OCaml
+            "gopls", -- Go
+            "hls", -- Haskell
+            "html", -- HTML
+            "jsonls", -- Json
+            "lua_ls", -- Lua
+            "marksman", -- Markdown
+            "ocamllsp", -- OCaml
             -- "omnisharp", -- C#
-            "pylsp",         -- Python
+            "pylsp", -- Python
             -- "pyright", -- Python
-            "roslyn",        -- C#
+            "roslyn", -- C#
             "rust_analyzer", -- Rust
-            "sqlls",         -- SQL
-            "svelte",        -- Svelte
-            "ts_ls",         -- JavaScript / TypeScript
-            "yamlls",        -- yaml
+            "sqlls", -- SQL
+            "svelte", -- Svelte
+            "ts_ls", -- JavaScript / TypeScript
+            "yamlls", -- yaml
         }
 
         local ensure_installed_tools = {
-            "elm-format",        -- elm
-            "stylua",            -- lua
-            "csharpier",         -- csharp
-            "fourmolu",          -- Haskell
-            "isort",             -- Python
-            "black",             -- Python
-            "prettierd",         -- JavaScript / TypeScript
-            "prettier",          -- JavaScript / TypeScript
-            "shfmt",             -- bash
-            "markdownlint",      -- Markdown
+            "elm-format", -- elm
+            "stylua", -- lua
+            "csharpier", -- csharp
+            "fourmolu", -- Haskell
+            "isort", -- Python
+            "black", -- Python
+            "prettierd", -- JavaScript / TypeScript
+            "prettier", -- JavaScript / TypeScript
+            "shfmt", -- bash
+            "markdownlint", -- Markdown
             "markdownlint-cli2", -- Markdown
-            "ocamlformat",       -- OCaml
+            "ocamlformat", -- OCaml
         }
 
         if jit.os == "Windows" then

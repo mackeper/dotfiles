@@ -26,8 +26,8 @@ return {
             wilder.popupmenu_renderer(wilder.popupmenu_border_theme({
                 highlighter = wilder.basic_highlighter(),
                 border = "rounded",
-                left = { " ", wilder.popupmenu_devicons() },
-                right = { " ", wilder.popupmenu_scrollbar() },
+                -- left = { " ", wilder.popupmenu_devicons() },
+                -- right = { " ", wilder.popupmenu_scrollbar() },
             }))
         )
     end,

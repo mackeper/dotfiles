@@ -1,5 +1,6 @@
 return {
     -- Heuristic buffer auto-close
+    enabled = false,
     "axkirillov/hbac.nvim",
     event = "VeryLazy",
     opts = {

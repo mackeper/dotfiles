@@ -53,22 +53,22 @@ return {
                 prompt_prefix = "   ",
                 selection_caret = "  ",
                 -- Setup trouble.nvim integration
-                mappings = {
-                    i = {
-                        ["<c-t>"] = require("trouble.sources.telescope").open,
-                        ["<C-q>"] = function(prompt_bufnr)
-                            actions.send_to_qflist(prompt_bufnr)
-                            require("trouble").open("quickfix")
-                        end,
-                    },
-                    n = {
-                        ["<c-t>"] = require("trouble.sources.telescope").open,
-                        ["<C-q>"] = function(prompt_bufnr)
-                            actions.send_to_qflist(prompt_bufnr)
-                            require("trouble").open("quickfix")
-                        end,
-                    },
-                },
+                -- mappings = {
+                --     i = {
+                --         ["<c-t>"] = require("trouble.sources.telescope").open,
+                --         ["<C-q>"] = function(prompt_bufnr)
+                --             actions.send_to_qflist(prompt_bufnr)
+                --             require("trouble").open("quickfix")
+                --         end,
+                --     },
+                --     n = {
+                --         ["<c-t>"] = require("trouble.sources.telescope").open,
+                --         ["<C-q>"] = function(prompt_bufnr)
+                --             actions.send_to_qflist(prompt_bufnr)
+                --             require("trouble").open("quickfix")
+                --         end,
+                --     },
+                -- },
             },
         })
 

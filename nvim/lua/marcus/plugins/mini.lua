@@ -32,9 +32,9 @@ return {
 
         require("mini.surround").setup({
             mappings = {
-                add = "<leader>sa",            -- Add surrounding in Normal and Visual modes
-                delete = "<leader>sd",         -- Delete surrounding
-                replace = "<leader>sr",        -- Replace surrounding
+                add = "<leader>sa", -- Add surrounding in Normal and Visual modes
+                delete = "<leader>sd", -- Delete surrounding
+                replace = "<leader>sr", -- Replace surrounding
                 update_n_lines = "<leader>sn", -- Update `n_lines`
             },
         })
@@ -63,6 +63,9 @@ return {
                 start_with_preview = "<leader>rA",
             },
         })
+
+        require("mini.pick").setup({})
+        vim.keymap.set("n", "<leader>f", ":Pick files<CR>", { noremap = true, silent = true })
 
         -- Extend a/i text objects
         require("mini.ai").setup({})
