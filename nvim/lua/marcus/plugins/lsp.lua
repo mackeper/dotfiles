@@ -1,6 +1,6 @@
 return {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPost", "BufNewFile" },
+    -- event = { "BufReadPost", "BufNewFile" },
     dependencies = {
         { "williamboman/mason.nvim" },
         { "williamboman/mason-lspconfig.nvim" },
@@ -128,8 +128,12 @@ return {
         vim.keymap.set("n", "<leader>ltu", "<Cmd>MasonToolsUpdate<CR>", { noremap = true, desc = "LSP update" })
 
         vim.keymap.set("n", "ge", vim.diagnostic.open_float, { noremap = true, desc = "Diagnostic float" })
-        vim.keymap.set("n", "[e", vim.diagnostic.goto_next, { noremap = true, desc = "Next" })
-        vim.keymap.set("n", "]e", vim.diagnostic.goto_prev, { noremap = true, desc = "Previous" })
+        vim.keymap.set("n", "[e", function()
+            vim.diagnostic.jump({ count = 1, float = true })
+        end, { noremap = true, desc = "Next" })
+        vim.keymap.set("n", "]e", function()
+            vim.diagnostic.jump({ count = -1, float = true })
+        end, { noremap = true, desc = "Previous" })
 
         vim.api.nvim_create_autocmd("LspAttach", {
             desc = "LSP keybindings",
