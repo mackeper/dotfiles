@@ -59,28 +59,60 @@ isWorkMode := true
     }
 }
 
+; Notetaking
+^+W::{
+    hwnd := WinExist("ahk_exe git-bash.exe")
+
+    if hwnd {
+        WinActivate(hwnd)
+        WinWaitActive(hwnd)
+    } else {
+        Run('"C:\Program Files\Git\bin\bash.exe" -i -l -c "cd C:/git/wiki; nvim +MikiIndex +normal\ G"', , "UseErrorLevel")
+    }
+}
+^+J::{
+    hwnd := WinExist("ahk_exe git-bash.exe")
+
+    if hwnd {
+        WinActivate(hwnd)
+        WinWaitActive(hwnd)
+    } else {
+        Run('"C:\Program Files\Git\bin\bash.exe" -i -l -c "cd C:/git/wiki; nvim +WikiJournal +normal\ G"', , "UseErrorLevel")
+    }
+}
+^+C::{
+    hwnd := WinExist("ahk_exe git-bash.exe")
+
+    if hwnd {
+        WinActivate(hwnd)
+        WinWaitActive(hwnd)
+    } else {
+        Run('"C:\Program Files\Git\bin\bash.exe" -i -l -c "cd C:/git/wiki; nvim +MikiCurrent +normal\ G"', , "UseErrorLevel")
+    }
+}
+
 ; Functions
 ShowShortcutsGUI(isWorkMode) {
-    gui := Gui()
-    gui.BackColor := "Black"
-    gui.SetFont("s14 cGreen", "Verdana")
+    shortcutGui := Gui()
+    shortcutGui.BackColor := "Black"
+    shortcutGui.SetFont("s14 cGreen", "Verdana")
 
-    gui.Add("Text",, "Alt+Ctrl+Shift+S: Spotify")
-    gui.Add("Text",, "Alt+Ctrl+Shift+K: KeePass")
-    gui.Add("Text",, "Alt+Ctrl+Shift+B: Browser")
-    gui.Add("Text",, "Alt+Ctrl+Shift+T: Windows Terminal")
+    shortcutGui.Add("Text",, "Alt+Ctrl+Shift+S: Spotify")
+    shortcutGui.Add("Text",, "Alt+Ctrl+Shift+K: KeePass")
+    shortcutGui.Add("Text",, "Alt+Ctrl+Shift+B: Browser")
+    shortcutGui.Add("Text",, "Alt+Ctrl+Shift+T: Windows Terminal")
 
     if isWorkMode {
-        gui.Add("Text",, "Alt+Ctrl+Shift+O: Outlook")
-        gui.Add("Text",, "Alt+Ctrl+Shift+C: Teams")
-        gui.Add("Text",, "Alt+Ctrl+Shift+I: Rider")
+        shortcutGui.Add("Text",, "Alt+Ctrl+Shift+O: Outlook")
+        shortcutGui.Add("Text",, "Alt+Ctrl+Shift+C: Teams")
+        shortcutGui.Add("Text",, "Alt+Ctrl+Shift+I: Rider")
     } else {
-        gui.Add("Text",, "Alt+Ctrl+Shift+G: Steam")
-        gui.Add("Text",, "Alt+Ctrl+Shift+C: Discord")
-        gui.Add("Text",, "Alt+Ctrl+Shift+I: Visual Studio")
+        shortcutGui.Add("Text",, "Alt+Ctrl+Shift+G: Steam")
+        shortcutGui.Add("Text",, "Alt+Ctrl+Shift+C: Discord")
+        shortcutGui.Add("Text",, "Alt+Ctrl+Shift+I: Visual Studio")
     }
 
-    gui.Show("w400 h400", "Shortcuts Window")
+    shortcutGui.Show("w400 h400", "Shortcuts Window")
 }
 
 OpenOrFocusProgram(programPath, exeName) {
