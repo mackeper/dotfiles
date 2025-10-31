@@ -19,3 +19,17 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.keymap.set("n", "q", ":cclose<CR>", { buffer = true, desc = "Close Quickfix List" })
     end,
 })
+
+vim.keymap.set("n", "<leader>xg", function()
+    local staged = vim.fn.systemlist("git diff --cached --name-only")
+    local unstaged = vim.fn.systemlist("git diff --name-only")
+    local untracked = vim.fn.systemlist("git ls-files --others --exclude-standard")
+    local files = vim.tbl_extend("force", staged, unstaged, untracked)
+    vim.fn.setqflist({}, "r", {
+        title = "Git Changes",
+        items = vim.tbl_map(function(file)
+            return { filename = file }
+        end, files)
+    })
+    vim.cmd("copen")
+end, { desc = "Git Changes to Quickfix" })

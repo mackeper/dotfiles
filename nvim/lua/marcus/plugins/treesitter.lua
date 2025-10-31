@@ -33,7 +33,6 @@ return {
                 "regex",
                 "rust",
                 "scss",
-                "scss",
                 "toml",
                 "vim",
                 "vimdoc",
