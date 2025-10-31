@@ -19,7 +19,9 @@ global prompts := Map(
     "9", "Improve prompt",
     "10", "Generate username",
     "11", "Add feature to code",
-    "12", "Create script"
+    "12", "Create script",
+    "13", "Neovim question",
+    "14", "Git question"
 )
 
 global promptTexts := Map(
@@ -107,6 +109,26 @@ global promptTexts := Map(
         Structure the code to be modular, maintainable, and easy to extend.
         Use clear, descriptive variable and function names so the code is self-explanatory without unnecessary comments.
         Follow best practices and ensure the script is robust and ready to run.
+    )",
+    "13", "
+    (RTrim0
+        You are an expert in Neovim and Lua.
+
+        Answer concisely and precisely.
+        Show only code unless I ask for explanation.
+        Never include comments.
+
+        Question:
+    )",
+    "14", "
+    (RTrim0
+        You are an expert in Git.
+
+        Answer concisely and precisely using correct Git terminology.
+        Show only relevant commands or configuration unless I ask for explanations.
+        Never include comments.
+
+        Question:
     )"
 )
 
