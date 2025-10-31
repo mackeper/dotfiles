@@ -138,9 +138,10 @@ return {
                     return { buffer = event.buf, silent = true, nowait = true, noremap = true, desc = desc }
                 end
 
-                -- Enable completion triggered by <c-x><c-o>
                 -- vim.api.nvim_buf_set_option(event.buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
+                -- <C-x><C-o> to show completion
+                -- <C-w>d to show lsp diagnostics
                 vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
                 vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
                 vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
@@ -196,45 +197,45 @@ return {
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         local ensure_installed = {
-            "asm_lsp", -- Assembly
-            "bashls", -- bash
-            "clangd", -- c
-            "cssls", -- css
+            "asm_lsp",  -- Assembly
+            "bashls",   -- bash
+            "clangd",   -- c
+            "cssls",    -- css
             "dockerls", -- docker
-            "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
+            "elmls",    -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
             "eslint",
             -- "fsautocomplete", -- F#
-            "gopls", -- Go
-            "hls", -- Haskell
-            "html", -- HTML
-            "jsonls", -- Json
-            "lua_ls", -- Lua
-            "marksman", -- Markdown
-            "ocamllsp", -- OCaml
+            "gopls",         -- Go
+            "hls",           -- Haskell
+            "html",          -- HTML
+            "jsonls",        -- Json
+            "lua_ls",        -- Lua
+            "marksman",      -- Markdown
+            "ocamllsp",      -- OCaml
             -- "omnisharp", -- C#
-            "pylsp", -- Python
+            "pylsp",         -- Python
             -- "pyright", -- Python
-            "roslyn", -- C#
+            "roslyn",        -- C#
             "rust_analyzer", -- Rust
-            "sqlls", -- SQL
-            "svelte", -- Svelte
-            "ts_ls", -- JavaScript / TypeScript
-            "yamlls", -- yaml
+            "sqlls",         -- SQL
+            "svelte",        -- Svelte
+            "ts_ls",         -- JavaScript / TypeScript
+            "yamlls",        -- yaml
         }
 
         local ensure_installed_tools = {
-            "elm-format", -- elm
-            "stylua", -- lua
-            "csharpier", -- csharp
-            "fourmolu", -- Haskell
-            "isort", -- Python
-            "black", -- Python
-            "prettierd", -- JavaScript / TypeScript
-            "prettier", -- JavaScript / TypeScript
-            "shfmt", -- bash
-            "markdownlint", -- Markdown
+            "elm-format",        -- elm
+            "stylua",            -- lua
+            "csharpier",         -- csharp
+            "fourmolu",          -- Haskell
+            "isort",             -- Python
+            "black",             -- Python
+            "prettierd",         -- JavaScript / TypeScript
+            "prettier",          -- JavaScript / TypeScript
+            "shfmt",             -- bash
+            "markdownlint",      -- Markdown
             "markdownlint-cli2", -- Markdown
-            "ocamlformat", -- OCaml
+            "ocamlformat",       -- OCaml
         }
 
         if jit.os == "Windows" then
