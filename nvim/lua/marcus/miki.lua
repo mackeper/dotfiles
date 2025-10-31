@@ -6,30 +6,61 @@ if jit.os == "Windows" then
     vim.g.miki_root = "C:/git/wiki"
 end
 
-vim.g.miki_journal_root = vim.g.miki_root .. "98_Journal"
+vim.g.miki_journal_root = vim.g.miki_root .. "/" .. "98_Journal"
 
-local file_pickers = {
+--- @class Miki
+--- @field config table Configuration options for Miki
+---
+--- Depends on:
+---  rg (ripgrep) for tag searching
+---  telescope.nvim or mini.pick for file picking
+local Miki = {}
+
+Miki._file_pickers = {
     telescope = "telescope",
     minipick = "minipick",
 }
 
-local config = {
+Miki.config = {
     wiki_root = vim.g.miki_root,
     journal_root = vim.g.miki_journal_root,
+    keymaps = {
+        index = "<leader>mi",
+        current = "<leader>mc",
+
+        find_page = "<leader>mf",
+        find_tag = "<leader>mt",
+
+        journal_today = "<leader>mjj",
+        journal_previous_day = "<leader>mjp",
+        journal_next_day = "<leader>mjn",
+
+        toggle_checkbox = "<M-t>",
+    },
     autolist = {
         enabled = true,
     },
     spellcheck = {
-        enabled = true,
+        enabled = false,
     },
-    file_picker = file_pickers.minipick,
+    file_picker = Miki._file_pickers.minipick,
 }
+
+local default_opts = { noremap = true, silent = true }
 
 --------------------------------------------------------------
 ---------------------- Functions -----------------------------
 --------------------------------------------------------------
-local function _miki_get_tags()
-    local command = 'rg --no-heading --no-filename -o ":\\w+:" "' .. config.wiki_root .. '"'
+Miki._map = function(mode, key, result, opts)
+    vim.keymap.set(mode, key, result, vim.tbl_extend("force", default_opts, opts or {}))
+end
+
+Miki._normalize_path = function(path)
+    return path:gsub("\\", "/")
+end
+
+Miki._get_tags = function()
+    local command = 'rg --no-heading --no-filename -o ":\\w+:" "' .. Miki.config.wiki_root .. '"'
     local handle = io.popen(command, "r")
     if not handle then
         return
@@ -55,30 +86,30 @@ local function _miki_get_tags()
     return tags
 end
 
-local function _miki_find_pages()
-    if config.file_picker == "telescope" then
+Miki._find_pages = function()
+    if Miki.config.file_picker == "telescope" then
         require("telescope.builtin").find_files({
-            cwd = config.wiki_root,
+            cwd = Miki.config.wiki_root,
             hidden = false,
         })
-    elseif config.file_picker == "minipick" then
+    elseif Miki.config.file_picker == "minipick" then
         require("mini.pick").builtin.files({}, {
             source = {
-                cwd = config.wiki_root,
+                cwd = Miki.config.wiki_root,
             },
         })
     else
-        vim.notify("Invalid file picker: " .. config.file_picker, vim.log.levels.ERROR)
+        vim.notify("Invalid file picker: " .. Miki.config.file_picker, vim.log.levels.ERROR)
     end
 end
 
-local function _miki_find_tags_telescope()
+Miki._find_tags_telescope = function()
     local pickers = require("telescope.pickers")
     local finders = require("telescope.finders")
     local conf = require("telescope.config").values
     local builtin = require("telescope.builtin")
 
-    local tags = _miki_get_tags()
+    local tags = Miki._get_tags()
     pickers
         .new({}, {
             prompt_title = "Tags",
@@ -104,9 +135,9 @@ local function _miki_find_tags_telescope()
         :find()
 end
 
-local function _miki_find_tags_minipick()
+Miki._find_tags_minipick = function()
     local mini_pick = require("mini.pick")
-    local tags = _miki_get_tags()
+    local tags = Miki._get_tags()
     if not tags then
         return
     end
@@ -130,58 +161,118 @@ local function _miki_find_tags_minipick()
     })
 end
 
-local function _miki_find_tags()
-    if config.file_picker == "telescope" then
-        _miki_find_tags_telescope()
-    elseif config.file_picker == "minipick" then
-        _miki_find_tags_minipick()
+Miki._find_tags = function()
+    if Miki.config.file_picker == "telescope" then
+        Miki._find_tags_telescope()
+    elseif Miki.config.file_picker == "minipick" then
+        Miki._find_tags_minipick()
     else
-        vim.notify("Invalid file picker: " .. config.file_picker, vim.log.levels.ERROR)
+        vim.notify("Invalid file picker: " .. Miki.config.file_picker, vim.log.levels.ERROR)
     end
 end
 
-local function _miki_open_page(page)
+Miki._open_page = function(page)
     local path = vim.g.miki_root .. "/" .. page .. ".md"
     vim.cmd("edit " .. path)
+end
+
+-- Journal functions
+Miki._open_journal_entry = function(date)
+    local path = Miki.config.journal_root .. "/" .. date .. ".md"
+    vim.notify("Opening journal entry: " .. path, vim.log.levels.INFO)
+    vim.cmd("edit " .. path)
+end
+
+Miki._open_journal = function()
+    local date = os.date("%Y-%m-%d")
+    Miki._open_journal_entry(date)
+end
+
+
+Miki._navigate_journal = function(direction)
+    local files = vim.fn.globpath(Miki.config.journal_root, "*.md", false, true)
+    table.sort(files)
+    local current_file = Miki._normalize_path(vim.fn.expand("%:p"))
+
+    for i, file in ipairs(files) do
+        files[i] = Miki._normalize_path(file)
+    end
+
+    local current_idx = vim.fn.index(files, current_file)
+    local target_idx = current_idx + direction
+
+    if target_idx >= 0 and target_idx < #files then
+        vim.cmd.edit(files[target_idx + 1])
+    else
+        local msg = direction > 0 and "next" or "previous"
+        vim.notify("No " .. msg .. " journal entry found", vim.log.levels.WARN)
+    end
+end
+
+Miki._open_journal_next = function()
+    Miki._navigate_journal(1)
+end
+
+Miki._open_journal_previous = function()
+    Miki._navigate_journal(-1)
+end
+
+Miki._add_page_link = function()
+    require("mini.pick").builtin.files({}, {
+        source = {
+            cwd = Miki.config.wiki_root,
+            choose = function(item)
+                item = Miki._normalize_path(item)
+                local title = item:match("([^/]+)%.md$")
+                local link = "[" .. title .. "](" .. item .. ")"
+                require("mini.pick").stop()
+                vim.schedule(function()
+                    vim.api.nvim_put({ link }, "c", true, true)
+                end)
+            end,
+        },
+    })
 end
 
 --------------------------------------------------------------
 ---------------------- Commands ------------------------------
 --------------------------------------------------------------
 vim.api.nvim_create_user_command("MikiCurrent", function()
-    _miki_open_page("01_Work/current")
+    Miki._open_page("01_Work/current")
 end, {})
 
 vim.api.nvim_create_user_command("MikiIndex", function()
-    _miki_open_page("index")
+    Miki._open_page("index")
 end, {})
 
-vim.api.nvim_create_user_command("MikiJournal", function()
-    -- TODO make this open today's journal entry
-    vim.cmd("edit " .. vim.g.miki_root .. vim.g.miki_journal_root .. "/index.md")
-end, {})
+vim.api.nvim_create_user_command("MikiJournal", Miki._open_journal, {})
+vim.api.nvim_create_user_command("MikiJournalPrevious", Miki._open_journal_previous, {})
+vim.api.nvim_create_user_command("MikiJournalNext", Miki._open_journal_next, {})
 
-vim.api.nvim_create_user_command("MikiAddLink", function() end, {})
+vim.api.nvim_create_user_command("MikiAddLink", Miki._add_page_link, {})
 
 
 --------------------------------------------------------------
 ---------------------- Keymaps -------------------------------
 --------------------------------------------------------------
 -- stylua: ignore start
-vim.keymap.set("n", "<leader>mi", ":MikiIndex<CR>", { desc = "Miki: Open Index", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>mc", ":MikiCurrent<CR>", { desc = "Miki: Open Current", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>mj", ":MikiJournal<CR>", { desc = "Miki: Open Journal", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>mf", _miki_find_pages,
-    { desc = "Miki: Find Page", noremap = true, silent = true, buffer = false })
-vim.keymap.set("n", "<leader>mt", _miki_find_tags, { desc = "Miki: Find Tag", noremap = true, silent = true })
-vim.keymap.set("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki: Copy page path to clipboard" })
+Miki._map("n", Miki.config.keymaps.index, ":MikiIndex<CR>", { desc = "Miki: Open Index" })
+Miki._map("n", Miki.config.keymaps.current, ":MikiCurrent<CR>", { desc = "Miki: Open Current" })
 
-local function add_autolist_keymaps()
-    vim.keymap.set("n", "<leader>msc", function()
-        vim.api.nvim_put({ "- [ ] " }, "c", true, true)
-        vim.cmd("startinsert") -- Enter insert mode
-    end, { desc = "Create checkbox", noremap = true, silent = true })
-    vim.keymap.set("n", "<leader>mst", function()
+Miki._map("n", Miki.config.keymaps.journal_today, ":MikiJournal<CR>", { desc = "Miki: Open Journal" })
+Miki._map("n", Miki.config.keymaps.journal_previous_day, ":MikiJournalPrevious<CR>",
+    { desc = "Miki: Open Previous Journal Entry" })
+Miki._map("n", Miki.config.keymaps.journal_next_day, ":MikiJournalNext<CR>", { desc = "Miki: Open Next Journal Entry" })
+
+Miki._map("n", Miki.config.keymaps.find_page, Miki._find_pages, { desc = "Miki: Find Page" })
+Miki._map("n", Miki.config.keymaps.find_tag, Miki._find_tags, { desc = "Miki: Find Tag" })
+Miki._map("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki: Copy page path to clipboard" })
+
+Miki._map("n", "<leader>mla", ":MikiAddLink<CR>", { desc = "Miki: Add Page Link" })
+
+Miki._add_autolist_keymaps = function()
+    Miki.autolist = {}
+    Miki.autolist.toggle_checkbox = function()
         local line = vim.api.nvim_get_current_line()
         if line:match("%- %[ %]") then
             local toggled = line:gsub("%- %[ %]", "- [x]")
@@ -190,11 +281,18 @@ local function add_autolist_keymaps()
             local toggled = line:gsub("%- %[x%]", "- [ ]")
             vim.api.nvim_set_current_line(toggled)
         end
-    end, { desc = "Miki: Toggle checkbox", noremap = true, silent = true })
+    end
+
+    Miki._map("n", "<leader>msc", function()
+        vim.api.nvim_put({ "- [ ] " }, "c", true, true)
+        vim.cmd("startinsert")
+    end, { desc = "Create checkbox" })
+
+    Miki._map("n", Miki.config.keymaps.toggle_checkbox, Miki.autolist.toggle_checkbox, { desc = "Miki: Toggle checkbox" })
 end
 -- stylua: ignore end
 
-vim.keymap.set("n", "<leader>mu", function()
+Miki._map("n", "<leader>mu", function()
     local ps1_path = vim.g.miki_root .. "/parse_url.ps1"
     local handle = io.popen('pwsh -NoProfile -NoLogo -File "' .. ps1_path .. '"')
     if not handle then
@@ -211,11 +309,11 @@ end, { desc = "Miki: paste TFS url" })
 --------------------------------------------------------------
 ----------------------- Features -----------------------------
 --------------------------------------------------------------
-if config.autolist.enabled then
-    add_autolist_keymaps()
+if Miki.config.autolist.enabled then
+    Miki._add_autolist_keymaps()
 end
 
-if config.spellcheck.enabled then
+if Miki.config.spellcheck.enabled then
     --autocmd for markdown files
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "markdown",

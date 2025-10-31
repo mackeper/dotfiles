@@ -23,7 +23,7 @@ function Copy-AhkFiles {
     if (-not (Test-Path $From)) { throw "Source path not found: $From" }
     if (-not (Test-Path $To)) { New-Item -ItemType Directory -Path $To | Out-Null }
 
-    $files = Get-ChildItem -Path $From -Filter '*.ahk' -File -Recurse
+    $files = Get-ChildItem -Path $From -Filter '*.ahk' -File
     if ($ExcludeRaysearch) {
         $files = $files | Where-Object { $_.Name -ne 'raysearch.ahk' }
     }

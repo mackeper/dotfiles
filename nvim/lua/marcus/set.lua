@@ -28,9 +28,6 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- UI Style
--- vim.opt.winborder = "rounded" -- Does not work well with wilder
-
 -- Wrap lines
 vim.opt.wrap = false
 
@@ -51,9 +48,9 @@ vim.opt.showmode = false
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 5
 vim.opt.breakindent = true
+-- vim.opt.winborder = "rounded" -- Does not work well with wilder
 
 vim.opt.list = true
--- vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.listchars = { tab = "󰅂 ", trail = "·", nbsp = "␣" }
 
 vim.api.nvim_create_autocmd("WinEnter", {
