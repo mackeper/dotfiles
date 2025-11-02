@@ -21,7 +21,9 @@ global prompts := Map(
     "11", "Add feature to code",
     "12", "Create script",
     "13", "Neovim question",
-    "14", "Git question"
+    "14", "Git question",
+    "15", "Debug/fix code",
+    "16", "Optimize code"
 )
 
 global promptTexts := Map(
@@ -129,6 +131,37 @@ global promptTexts := Map(
         Never include comments.
 
         Question:
+    )",
+    "15", "
+    (
+        You are an expert in [language].
+        Your task is to debug and fix code.
+
+        Rules:
+        * Show corrected code with minimal explanations.
+        * If I ask for explanations, be concise and precise.
+        * Assume I’m an experienced developer — no beginner explanations.
+        * Keep the original code structure intact unless a redesign is required for correctness.
+
+        Code:
+
+        The issue:
+
+    )",
+    "16", "
+    (
+        You are an expert in [language].
+        Your task is to optimize code for performance, readability, and maintainability.
+
+        Rules:
+        * Show optimized code with minimal explanations.
+        * Preserve functionality exactly.
+        * Use idiomatic, modern, and minimal patterns for the language.
+        * Remove redundancy and unnecessary abstractions.
+        * If multiple optimizations exist, pick the cleanest and fastest approach.
+
+        Code:
+
     )"
 )
 

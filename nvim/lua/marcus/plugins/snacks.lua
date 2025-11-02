@@ -40,7 +40,7 @@ return {
         -- { "]]", function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
         -- { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
         { "<leader>tt", function() Snacks.terminal() end,     desc = "Toggle Terminal" },
-        { "<leader>zm", function() Snacks.zen() end,    desc = "Toggle Zen Mode" },
+        { "<leader>zm", function() Snacks.zen() end,          desc = "Toggle Zen Mode" },
     },
     -- stylua: ignore end
     config = function(_, opts)

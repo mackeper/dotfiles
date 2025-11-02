@@ -64,7 +64,7 @@ isWorkMode := true
     Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +MikiIndex "+normal G"'
 }
 ^+J::{
-    Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +WikiJournal "+normal G"'
+    Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +MikiJournal "+normal G"'
 }
 ^+C::{
     Run 'wt.exe -p "PowerShell" -d "C:\git\wiki" nvim +MikiCurrent "+normal G"'
