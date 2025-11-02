@@ -37,8 +37,24 @@
 
 ; Ctrl+Alt+G -> Generate a new GUID (uppercase, without braces), copy it to clipboard, and paste at cursor
 ^!g:: {
+    old_clipboard := A_Clipboard
     guid := ComObject("Scriptlet.TypeLib").GUID
     guid := StrUpper(StrReplace(StrReplace(guid, "{"), "}"))
     A_Clipboard := guid
     Send "^v"
+    Sleep 100
+    A_Clipboard := old_clipboard
 }
+
+::mvh::{
+    old_clipboard := A_Clipboard
+    A_Clipboard := "
+    (LTrim
+        Med vänlig hälsning,
+        Marcus Östling
+        )"
+    Send "^v"
+    Sleep 100
+    A_Clipboard := old_clipboard
+}
+

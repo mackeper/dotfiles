@@ -1,5 +1,6 @@
 return {
     "lervag/wiki.vim",
+    enabled = false,
     lazy = false,
     init = function()
         -- You have to manually create the wiki root folder
@@ -77,12 +78,12 @@ return {
         end, {})
     end,
     keys = {
-        { "<leader>wp", "<cmd>WikiPages<cr>", desc = "Wiki pages" },
-        { "<leader>wjj", "<cmd>WikiJournal<cr>", desc = "Wiki journal" },
-        { "<leader>wjn", "<cmd>WikiJournalNext<cr>", desc = "Wiki journal next" },
-        { "<leader>wjp", "<cmd>WikiJournalPrev<cr>", desc = "Wiki journal previous" },
-        { "<leader>wjw", "<cmd>WikiJournalToWeek<cr>", desc = "Wiki journal week" },
+        { "<leader>wp",  "<cmd>WikiPages<cr>",          desc = "Wiki pages" },
+        { "<leader>wjj", "<cmd>WikiJournal<cr>",        desc = "Wiki journal" },
+        { "<leader>wjn", "<cmd>WikiJournalNext<cr>",    desc = "Wiki journal next" },
+        { "<leader>wjp", "<cmd>WikiJournalPrev<cr>",    desc = "Wiki journal previous" },
+        { "<leader>wjw", "<cmd>WikiJournalToWeek<cr>",  desc = "Wiki journal week" },
         { "<leader>wjm", "<cmd>WikiJournalToMonth<cr>", desc = "Wiki journal month" },
-        { "<leader>wt", "<cmd>WikiTags<cr>", desc = "Wiki tags" },
+        { "<leader>wt",  "<cmd>WikiTags<cr>",           desc = "Wiki tags" },
     },
 }

@@ -13,6 +13,10 @@ vim.g.miki_journal_root = vim.g.miki_root .. "/" .. "98_Journal"
 ---
 --- Depends on:
 ---  rg (ripgrep) for tag searching
+---  fd (fd-find) for file searching (https://github.com/sharkdp/fd)
+---    - `apt install fd-find` on Debian-based systems
+---    - `pacman -S fd` on Arch-based systems
+---    - `choco install fd` on Windows with Chocolatey
 ---  telescope.nvim or mini.pick for file picking
 local Miki = {}
 
@@ -36,6 +40,63 @@ Miki.config = {
         journal_next_day = "<leader>mjn",
 
         toggle_checkbox = "<M-t>",
+
+        add_page_link = "<leader>ml",
+        add_page = "<leader>ma",
+        move_page = "<leader>mm",
+        follow_link = "<CR>",
+    },
+    journal = {
+        date_format = "%Y-%m-%d",
+        today_template = {
+            "# {date} - {weekday} - w{week}",
+            "",
+            "## ✨ Highlights (Things that went well today)",
+            "",
+            "- ",
+            "",
+            "## 🌑 Lowlights (Challenges or negatives from today)",
+            "",
+            "- ",
+            "",
+            "## 📈 Improvements (How I could do better tomorrow)",
+            "",
+            "- ",
+            "",
+            "## ✅ Tasks",
+            "",
+            "- [ ] ",
+            "",
+            "## 💭 Random thoughts, ideas, or observations",
+            "",
+            "- ",
+        },
+    },
+    page = {
+        add_page_template = {
+            "# {current_file_name_no_ext_capitalized}",
+            "",
+        },
+    },
+    template_replacements = {
+        ["{current_file_path}"] = function() return vim.fn.expand("%:p") end,
+        ["{current_file_name}"] = function() return vim.fn.expand("%:t") end,
+        ["{current_file_name_no_ext}"] = function() return vim.fn.expand("%:t:r") end,
+        ["{current_file_name_no_ext_capitalized}"] = function()
+            local name = vim.fn.expand("%:t:r")
+            return name:gsub("(%a)([%w]*)", function(first, rest)
+                return first:upper() .. rest:lower()
+            end):gsub("_", " "):gsub("-", " ")
+        end,
+        ["{date}"] = function() return os.date("%Y-%m-%d") end,
+        ["{time}"] = function() return os.date("%H:%M") end,
+        ["{weekday}"] = function() return os.date("%A") end,
+        ["{week}"] = function() return os.date("%W") end, -- Week number
+        ["{day}"] = function() return os.date("%d") end,
+        ["{month}"] = function() return os.date("%B") end,
+        ["{year}"] = function() return os.date("%Y") end,
+        ["{dayofyear}"] = function() return os.date("%j") end,
+        ["{timestamp}"] = function() return os.date("%Y-%m-%d %H:%M:%S") end,
     },
     autolist = {
         enabled = true,
@@ -173,14 +234,38 @@ end
 
 Miki._open_page = function(page)
     local path = vim.g.miki_root .. "/" .. page .. ".md"
-    vim.cmd("edit " .. path)
+    vim.cmd.edit(path)
+end
+
+Miki._add_page_with_template = function(path, template_lines)
+    local file_exists = vim.fn.filereadable(path) == 1
+
+    if not file_exists then
+        vim.opt.swapfile = false
+    end
+
+    vim.cmd.edit(path)
+
+    if not file_exists then
+        local processed_template = {}
+        for _, line in ipairs(template_lines) do
+            local processed = line
+            for placeholder, func in pairs(Miki.config.template_replacements) do
+                processed = processed:gsub(placeholder, func())
+            end
+            table.insert(processed_template, processed)
+        end
+        vim.api.nvim_buf_set_lines(0, 0, -1, false, processed_template)
+        vim.bo.modified = false
+    end
+
+    vim.opt.swapfile = true
 end
 
 -- Journal functions
 Miki._open_journal_entry = function(date)
     local path = Miki.config.journal_root .. "/" .. date .. ".md"
-    vim.notify("Opening journal entry: " .. path, vim.log.levels.INFO)
-    vim.cmd("edit " .. path)
+    Miki._add_page_with_template(path, Miki.config.journal.today_template)
 end
 
 Miki._open_journal = function()
@@ -222,12 +307,36 @@ Miki._add_page_link = function()
         source = {
             cwd = Miki.config.wiki_root,
             choose = function(item)
-                item = Miki._normalize_path(item)
+                item = Miki._normalize_path(item):gsub("^/", ""):gsub("^", "./")
                 local title = item:match("([^/]+)%.md$")
                 local link = "[" .. title .. "](" .. item .. ")"
                 require("mini.pick").stop()
                 vim.schedule(function()
                     vim.api.nvim_put({ link }, "c", true, true)
+                end)
+            end,
+        },
+    })
+end
+
+Miki._add_page = function()
+    local directories = vim.fn.systemlist("fd --type d --base-directory " .. Miki.config.wiki_root)
+    for i, dir in ipairs(directories) do
+        directories[i] = Miki._normalize_path(dir):gsub("^/", "")
+    end
+    require("mini.pick").start({
+        source = {
+            items = directories,
+            cwd = Miki.config.wiki_root,
+            choose = function(item)
+                item = Miki.config.wiki_root .. "/" .. item:gsub("/$", "")
+                require("mini.pick").stop()
+                vim.ui.input({ prompt = "New page name (without .md): " }, function(input)
+                    local path = item .. "/" .. input .. ".md"
+                    vim.notify("Creating new page: " .. path, vim.log.levels.INFO)
+                    vim.schedule(function()
+                        Miki._add_page_with_template(path, Miki.config.page.add_page_template)
+                    end)
                 end)
             end,
         },
@@ -250,6 +359,7 @@ vim.api.nvim_create_user_command("MikiJournalPrevious", Miki._open_journal_previ
 vim.api.nvim_create_user_command("MikiJournalNext", Miki._open_journal_next, {})
 
 vim.api.nvim_create_user_command("MikiAddLink", Miki._add_page_link, {})
+vim.api.nvim_create_user_command("MikiAddPage", Miki._add_page, {})
 
 
 --------------------------------------------------------------
@@ -268,7 +378,8 @@ Miki._map("n", Miki.config.keymaps.find_page, Miki._find_pages, { desc = "Miki: 
 Miki._map("n", Miki.config.keymaps.find_tag, Miki._find_tags, { desc = "Miki: Find Tag" })
 Miki._map("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki: Copy page path to clipboard" })
 
-Miki._map("n", "<leader>mla", ":MikiAddLink<CR>", { desc = "Miki: Add Page Link" })
+Miki._map("n", Miki.config.keymaps.add_page_link, ":MikiAddLink<CR>", { desc = "Miki: Add Page Link" })
+Miki._map("n", Miki.config.keymaps.add_page, ":MikiAddPage<CR>", { desc = "Miki: Add New Page" })
 
 Miki._add_autolist_keymaps = function()
     Miki.autolist = {}
@@ -280,13 +391,11 @@ Miki._add_autolist_keymaps = function()
         elseif line:match("%- %[x%]") then
             local toggled = line:gsub("%- %[x%]", "- [ ]")
             vim.api.nvim_set_current_line(toggled)
+        else
+            vim.api.nvim_put({ "- [ ] " }, "c", true, true)
+            vim.cmd.startinsert()
         end
     end
-
-    Miki._map("n", "<leader>msc", function()
-        vim.api.nvim_put({ "- [ ] " }, "c", true, true)
-        vim.cmd("startinsert")
-    end, { desc = "Create checkbox" })
 
     Miki._map("n", Miki.config.keymaps.toggle_checkbox, Miki.autolist.toggle_checkbox, { desc = "Miki: Toggle checkbox" })
 end
@@ -331,9 +440,9 @@ end
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "markdown",
     callback = function()
-        vim.cmd("setlocal tabstop=2")
-        vim.cmd("setlocal shiftwidth=2")
-        vim.cmd("setlocal softtabstop=2")
+        vim.bo.tabstop = 2
+        vim.bo.shiftwidth = 2
+        vim.bo.softtabstop = 2
     end,
 })
 
