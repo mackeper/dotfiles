@@ -77,6 +77,135 @@ return {
             })
         )
 
+        table.insert(
+            snippets,
+            snippet("date", {
+                func(function()
+                    return os.date("%Y-%m-%d")
+                end),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("note_technical", {
+                text({
+                    "# Technical Note",
+                    "",
+                    "## Related Links",
+                    "",
+                    "- [[related-note]]",
+                    "",
+                    "## Overview",
+                    "",
+                    "Brief summary of the technical topic or issue.",
+                    "",
+                    "## Core Concepts",
+                    "",
+                    "List or explain the main principles, APIs, or algorithms involved.",
+                    "",
+                    "## Implementation Details",
+                    "",
+                    "Explain how it’s implemented in code — include module paths, functions, etc.",
+                    "",
+                    "## References",
+                    "",
+                    "- Source documentation or external references.",
+                }),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("note_meeting", {
+                func(function()
+                    return "# ... Meeting — " .. os.date("%Y-%m-%d")
+                end),
+                text({
+                    "",
+                    "**Attendees:** Names **Related:** [[related-note]]",
+                    "",
+                    "---",
+                    "",
+                    "## Context",
+                    "",
+                    "Why this meeting happened — what problem or feature triggered it.",
+                    "",
+                    "## Discussion Summary",
+                    "",
+                    "Key points and decisions made.",
+                    "",
+                    "## Action Items",
+                    "",
+                    "- [ ] Task 1 — owner",
+                    "- [ ] Task 2 — owner",
+                    "",
+                    "## Notes",
+                    "",
+                    "Free-form observations or sketches.",
+                }),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("note_paper", {
+                text({
+                    "# Full Paper/Topic Title",
+                    "",
+                    "**Source:** link or reference  **Date Added:** YYYY-MM-DD  **Tags:** #research #topic  **Related:** [[related-note]]",
+                    "",
+                    "---",
+                    "",
+                    "## Summary",
+                    "",
+                    "Concise description of what this paper is about.",
+                    "",
+                    "## Key Insights",
+                    "",
+                    "- Main ideas or findings.",
+                    "- Why it matters for our system or product.",
+                    "",
+                    "## Notes & Quotes",
+                    "",
+                    "> Important excerpts or paraphrases.",
+                    "",
+                    "## Application",
+                    "",
+                    "How this could influence code, design, or workflow.",
+                }),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("note_reflection", {
+                text({
+                    "# Habit & System Review — Date or Theme",
+                    "",
+                    "**Date:** YYYY-MM-DD  **Context:** What triggered this reflection?",
+                    "",
+                    "---",
+                    "",
+                    "## What’s Working",
+                    "",
+                    "Short notes on effective habits, routines, or tools.",
+                    "",
+                    "## What’s Not Working",
+                    "",
+                    "Issues, friction points, recurring problems.",
+                    "",
+                    "## Adjustments",
+                    "",
+                    "Planned improvements or experiments.",
+                    "",
+                    "## Insights",
+                    "",
+                    "Broader lessons or mental models worth keeping.",
+                }),
+            })
+        )
+
         ls.add_snippets("markdown", snippets)
 
         ---- Setup nvim-cmp ----
