@@ -46,6 +46,9 @@ return {
             shfmt = {
                 prepend_args = { "-i", "4" },
             },
+            ["markdownlint"] = {
+                stdin = false,
+            },
         },
     },
     init = function()

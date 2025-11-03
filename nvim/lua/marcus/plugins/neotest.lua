@@ -1,5 +1,5 @@
 return {
-    enabled = false,
+    enabled = true,
     "nvim-neotest/neotest",
     dependencies = {
         "nvim-lua/plenary.nvim",
@@ -15,7 +15,7 @@ return {
     opts = function()
         return {
             adapters = {
-                require("neotest-rust"),
+                -- require("neotest-rust"),
                 require("neotest-dotnet"),
             },
         }
