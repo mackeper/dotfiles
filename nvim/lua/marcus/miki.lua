@@ -29,7 +29,7 @@ Miki.config = {
     wiki_root = vim.g.miki_root,
     journal_root = vim.g.miki_journal_root,
     keymaps = {
-        index = "<leader>mi",
+        index = "<leader>mw",
         current = "<leader>mc",
 
         find_page = "<leader>mf",
@@ -74,7 +74,7 @@ Miki.config = {
     },
     page = {
         add_page_template = {
-            "# {current_file_name_no_ext_capitalized}",
+            "# {current_file_name_pretty}",
             "",
         },
     },
@@ -82,11 +82,12 @@ Miki.config = {
         ["{current_file_path}"] = function() return vim.fn.expand("%:p") end,
         ["{current_file_name}"] = function() return vim.fn.expand("%:t") end,
         ["{current_file_name_no_ext}"] = function() return vim.fn.expand("%:t:r") end,
-        ["{current_file_name_no_ext_capitalized}"] = function()
+        ["{current_file_name_pretty}"] = function()
             local name = vim.fn.expand("%:t:r")
-            return name:gsub("(%a)([%w]*)", function(first, rest)
+            local result = name:gsub("(%a)([%w]*)", function(first, rest)
                 return first:upper() .. rest:lower()
             end):gsub("_", " "):gsub("-", " ")
+            return result
         end,
         ["{date}"] = function() return os.date("%Y-%m-%d") end,
         ["{time}"] = function() return os.date("%H:%M") end,
@@ -203,11 +204,24 @@ Miki._find_tags_minipick = function()
         return
     end
 
+    local custom_mappings = {
+        add_tag = {
+            char = '<C-a>',
+            func = function()
+                local current_item = mini_pick.get_picker_matches().current
+                mini_pick.stop()
+                vim.schedule(function()
+                    vim.api.nvim_put({ current_item }, "c", true, true)
+                end)
+            end,
+        },
+    }
+
     mini_pick.start({
+        mappings = custom_mappings,
         source = {
             items = tags,
             choose = function(item)
-                vim.notify("Searching for tag: " .. item, vim.log.levels.INFO)
                 mini_pick.stop()
                 mini_pick.builtin.grep({
                     tool = "rg",
