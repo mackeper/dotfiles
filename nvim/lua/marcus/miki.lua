@@ -79,25 +79,51 @@ Miki.config = {
         },
     },
     template_replacements = {
-        ["{current_file_path}"] = function() return vim.fn.expand("%:p") end,
-        ["{current_file_name}"] = function() return vim.fn.expand("%:t") end,
-        ["{current_file_name_no_ext}"] = function() return vim.fn.expand("%:t:r") end,
+        ["{current_file_path}"] = function()
+            return vim.fn.expand("%:p")
+        end,
+        ["{current_file_name}"] = function()
+            return vim.fn.expand("%:t")
+        end,
+        ["{current_file_name_no_ext}"] = function()
+            return vim.fn.expand("%:t:r")
+        end,
         ["{current_file_name_pretty}"] = function()
             local name = vim.fn.expand("%:t:r")
             local result = name:gsub("(%a)([%w]*)", function(first, rest)
                 return first:upper() .. rest:lower()
-            end):gsub("_", " "):gsub("-", " ")
+            end)
+                :gsub("_", " ")
+                :gsub("-", " ")
             return result
         end,
-        ["{date}"] = function() return os.date("%Y-%m-%d") end,
-        ["{time}"] = function() return os.date("%H:%M") end,
-        ["{weekday}"] = function() return os.date("%A") end,
-        ["{week}"] = function() return os.date("%W") end, -- Week number
-        ["{day}"] = function() return os.date("%d") end,
-        ["{month}"] = function() return os.date("%B") end,
-        ["{year}"] = function() return os.date("%Y") end,
-        ["{dayofyear}"] = function() return os.date("%j") end,
-        ["{timestamp}"] = function() return os.date("%Y-%m-%d %H:%M:%S") end,
+        ["{date}"] = function()
+            return os.date("%Y-%m-%d")
+        end,
+        ["{time}"] = function()
+            return os.date("%H:%M")
+        end,
+        ["{weekday}"] = function()
+            return os.date("%A")
+        end,
+        ["{week}"] = function()
+            return os.date("%W")
+        end, -- Week number
+        ["{day}"] = function()
+            return os.date("%d")
+        end,
+        ["{month}"] = function()
+            return os.date("%B")
+        end,
+        ["{year}"] = function()
+            return os.date("%Y")
+        end,
+        ["{dayofyear}"] = function()
+            return os.date("%j")
+        end,
+        ["{timestamp}"] = function()
+            return os.date("%Y-%m-%d %H:%M:%S")
+        end,
     },
     autolist = {
         enabled = true,
@@ -206,7 +232,7 @@ Miki._find_tags_minipick = function()
 
     local custom_mappings = {
         add_tag = {
-            char = '<C-a>',
+            char = "<C-a>",
             func = function()
                 local current_item = mini_pick.get_picker_matches().current
                 mini_pick.stop()
@@ -286,7 +312,6 @@ Miki._open_journal = function()
     local date = os.date("%Y-%m-%d")
     Miki._open_journal_entry(date)
 end
-
 
 Miki._navigate_journal = function(direction)
     local files = vim.fn.globpath(Miki.config.journal_root, "*.md", false, true)
@@ -459,5 +484,3 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.bo.softtabstop = 2
     end,
 })
-
-vim.notify("miki.lua loaded", vim.log.levels.INFO)

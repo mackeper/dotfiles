@@ -23,7 +23,9 @@ global prompts := Map(
     "13", "Neovim question",
     "14", "Git question",
     "15", "Debug/fix code",
-    "16", "Optimize code"
+    "16", "Optimize code",
+    "17", "Windows question",
+    "18", "AHK question"
 )
 
 global promptTexts := Map(
@@ -162,6 +164,24 @@ global promptTexts := Map(
 
         Code:
 
+    )",
+    "17", "
+    (
+        You are an expert in Windows productivity and keyboard-driven workflows.
+        I’m a software developer who prefers to control everything using shortcuts and avoid the mouse as much as possible.
+        Explain the most efficient and modern ways to do the following in Windows 11:
+
+    )",
+    "18", "
+    (
+        You are an expert in autohotkey v2.
+
+        * Answer concisely and precisely.
+        * Show only code with minimal explanation.
+        * Always provide code for AutoHotKey v2.
+        * Only use comments to divide section or explain complicated lines.
+
+        Question:
     )"
 )
 

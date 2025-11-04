@@ -27,5 +27,8 @@ return {
             yaml = true,
             gitcommit = true,
         },
+        logger = {
+            print_log_level = vim.log.levels.OFF,
+        },
     },
 }
