@@ -30,7 +30,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
         --     on_exit = function() end,
         -- })
 
-        vim.fn.jobstart({ "git", "-C", cwd, "add", filename }, {
+        vim.fn.jobstart({ "git", "-C", cwd, "add", "." }, {
             on_exit = function()
                 vim.fn.jobstart({ "git", "-C", cwd, "commit", "-m", commit_msg }, {
                     on_exit = function()

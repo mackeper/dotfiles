@@ -4,7 +4,7 @@ vim.g.maplocalleader = " "
 
 -- statusline
 vim.opt.laststatus = 3
-vim.opt.showtabline = 2
+vim.opt.showtabline = 1
 vim.opt.showcmd = true
 
 -- Line numbers
