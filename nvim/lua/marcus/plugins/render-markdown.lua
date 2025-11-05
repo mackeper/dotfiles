@@ -11,24 +11,16 @@ return {
             enabled = false,
         },
         heading = {
-            icons = { "󰎤 ", "󰎧 ", "󰎪 ", "󰎭 ", "󰎱 ", "󰎳 " },
             position = "inline",
             width = "block",
             min_width = 64,
             right_pad = 1,
         },
-        link = {
-            footnote = {
-                icon = "",
-            },
-            image = "",
-            email = "",
-            hyperlink = "",
-            url = "",
-            wiki = {
-                icon = "",
-            },
-            custom = {},
+        code = {
+            border = "thick",
+        },
+        latex = {
+            enabled = true, -- Needs utftex or latex2text
         },
     },
     dependencies = {

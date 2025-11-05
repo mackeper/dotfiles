@@ -206,6 +206,46 @@ return {
             })
         )
 
+        table.insert(
+            snippets,
+            snippet("note", {
+                text({ "> [!NOTE]", "> " }),
+                insert(1, "Useful information that users should know, even when skimming content."),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("tip", {
+                text({ "> [!TIP]", "> " }),
+                insert(1, "Helpful advice for doing things better or more easily."),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("important", {
+                text({ "> [!IMPORTANT]", "> " }),
+                insert(1, "Key information users need to know to achieve their goal."),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("warning", {
+                text({ "> [!WARNING]", "> " }),
+                insert(1, "Urgent info that needs immediate user attention to avoid problems."),
+            })
+        )
+
+        table.insert(
+            snippets,
+            snippet("caution", {
+                text({ "> [!CAUTION]", "> " }),
+                insert(1, "Advises about risks or negative outcomes of certain actions."),
+            })
+        )
+
         ls.add_snippets("markdown", snippets)
 
         ---- Setup nvim-cmp ----
@@ -326,45 +366,45 @@ return {
 
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         local ensure_installed = {
-            "asm_lsp",  -- Assembly
-            "bashls",   -- bash
-            "clangd",   -- c
-            "cssls",    -- css
+            "asm_lsp", -- Assembly
+            "bashls", -- bash
+            "clangd", -- c
+            "cssls", -- css
             "dockerls", -- docker
-            "elmls",    -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
+            "elmls", -- elm, npm install -g elm elm-test elm-format @elm-tooling/elm-language-server
             "eslint",
             -- "fsautocomplete", -- F#
-            "gopls",         -- Go
-            "hls",           -- Haskell
-            "html",          -- HTML
-            "jsonls",        -- Json
-            "lua_ls",        -- Lua
-            "marksman",      -- Markdown
-            "ocamllsp",      -- OCaml
+            "gopls", -- Go
+            "hls", -- Haskell
+            "html", -- HTML
+            "jsonls", -- Json
+            "lua_ls", -- Lua
+            "marksman", -- Markdown
+            "ocamllsp", -- OCaml
             -- "omnisharp", -- C#
-            "pylsp",         -- Python
+            "pylsp", -- Python
             -- "pyright", -- Python
-            "roslyn",        -- C#
+            "roslyn", -- C#
             "rust_analyzer", -- Rust
-            "sqlls",         -- SQL
-            "svelte",        -- Svelte
-            "ts_ls",         -- JavaScript / TypeScript
-            "yamlls",        -- yaml
+            "sqlls", -- SQL
+            "svelte", -- Svelte
+            "ts_ls", -- JavaScript / TypeScript
+            "yamlls", -- yaml
         }
 
         local ensure_installed_tools = {
-            "elm-format",        -- elm
-            "stylua",            -- lua
-            "csharpier",         -- csharp
-            "fourmolu",          -- Haskell
-            "isort",             -- Python
-            "black",             -- Python
-            "prettierd",         -- JavaScript / TypeScript
-            "prettier",          -- JavaScript / TypeScript
-            "shfmt",             -- bash
-            "markdownlint",      -- Markdown
+            "elm-format", -- elm
+            "stylua", -- lua
+            "csharpier", -- csharp
+            "fourmolu", -- Haskell
+            "isort", -- Python
+            "black", -- Python
+            "prettierd", -- JavaScript / TypeScript
+            "prettier", -- JavaScript / TypeScript
+            "shfmt", -- bash
+            "markdownlint", -- Markdown
             "markdownlint-cli2", -- Markdown
-            "ocamlformat",       -- OCaml
+            "ocamlformat", -- OCaml
         }
 
         if jit.os == "Windows" then
