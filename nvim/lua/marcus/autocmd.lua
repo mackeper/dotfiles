@@ -1,3 +1,12 @@
+-- https://neovim.io/doc/user/lua-guide.html#lua-guide-autocommand-create
+vim.api.nvim_create_autocmd("TextYankPost", {
+    callback = function()
+        vim.highlight.on_yank({ timeout = 1000 })
+    end,
+    desc = "Briefly highlight yanked text",
+})
+
+-- Auto-commit and push on buffer write for allowed repositories
 local allowed_repos = { "notes", "wiki" }
 local function is_repo_allowed(repo_name)
     for _, name in ipairs(allowed_repos) do
@@ -51,10 +60,45 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     end,
 })
 
+-- Disable automatic end-of-line insertion for .props files
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     pattern = "*.props",
     callback = function()
         vim.opt_local.fixendofline = false
         vim.opt_local.endofline = false
+    end,
+})
+
+-- Highlight cursor line only in active window
+vim.api.nvim_create_autocmd("WinEnter", {
+    callback = function()
+        vim.opt.cursorline = true
+    end,
+})
+vim.api.nvim_create_autocmd("WinLeave", {
+    callback = function()
+        vim.opt.cursorline = false
+    end,
+})
+
+-- Restore cursor position when reopening files
+vim.api.nvim_create_autocmd("BufReadPost", {
+    callback = function(args)
+        local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+        local line_count = vim.api.nvim_buf_line_count(args.buf)
+        if mark[1] > 0 and mark[1] <= line_count then
+            vim.api.nvim_win_set_cursor(0, mark)
+            vim.schedule(function()
+                vim.cmd("normal! zz")
+            end)
+        end
+    end,
+})
+
+-- no auto continue comments on new line
+vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("no_auto_comment", {}),
+    callback = function()
+        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
     end,
 })
