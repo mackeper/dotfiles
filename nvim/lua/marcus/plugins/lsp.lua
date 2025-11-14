@@ -2,6 +2,7 @@ return {
     "neovim/nvim-lspconfig",
     enabled = true,
     -- event = { "BufReadPost", "BufNewFile" },
+    event = { "VeryLazy" },
     dependencies = {
         { "williamboman/mason.nvim" },
         { "williamboman/mason-lspconfig.nvim" },
@@ -264,6 +265,9 @@ return {
             window = {
                 completion = cmp.config.window.bordered(),
             },
+            performance = {
+                max_view_entries = 10,
+            },
             snippet = {
                 expand = function(args)
                     ls.lsp_expand(args.body)
@@ -300,27 +304,31 @@ return {
         vim.api.nvim_create_autocmd("LspAttach", {
             desc = "LSP keybindings",
             callback = function(event)
-                local client = vim.lsp.get_client_by_id(event.data.client_id)
-                local builtin = require("telescope.builtin")
+                -- local client = vim.lsp.get_client_by_id(event.data.client_id)
 
                 local function opts(desc)
                     return { buffer = event.buf, silent = true, nowait = true, noremap = true, desc = desc }
+                end
+
+                -- Move to telescope
+                local telescope_enabled, telescope = pcall(require, "telescope.builtin")
+                if telescope_enabled then
+                    vim.keymap.set("n", "gd", telescope.lsp_definitions, opts("Definition"))
+                    vim.keymap.set("n", "gi", telescope.lsp_implementations, opts("Implementation"))
+                    vim.keymap.set("n", "gr", telescope.lsp_references, opts("References"))
+                    vim.keymap.set("n", "gs", telescope.lsp_workspace_symbols, opts("Workspace symbols"))
+                    vim.keymap.set("n", "<leader>jd", telescope.diagnostics, opts("Diagnostic"))
+                    vim.keymap.set("n", "<leader>je", function()
+                        telescope.diagnostics({ severity = vim.diagnostic.severity.ERROR })
+                    end, opts("Diagnostic (errors)"))
                 end
 
                 -- vim.api.nvim_buf_set_option(event.buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
                 -- <C-x><C-o> to show completion
                 -- <C-w>d to show lsp diagnostics
-                vim.keymap.set("n", "gd", builtin.lsp_definitions, opts("Definition"))
-                vim.keymap.set("n", "gi", builtin.lsp_implementations, opts("Implementation"))
-                vim.keymap.set("n", "gr", builtin.lsp_references, opts("References"))
                 vim.keymap.set("n", "gh", vim.lsp.buf.hover, opts("Hover / Quick info"))
                 vim.keymap.set("n", "gH", vim.lsp.buf.signature_help, opts("Signature help"))
-                vim.keymap.set("n", "gs", builtin.lsp_workspace_symbols, opts("Workspace symbols"))
-                vim.keymap.set("n", "<leader>jd", builtin.diagnostics, opts("Diagnostic"))
-                vim.keymap.set("n", "<leader>je", function()
-                    builtin.diagnostics({ severity = vim.diagnostic.severity.ERROR })
-                end, opts("Diagnostic (errors)"))
                 vim.keymap.set("n", "<leader>.", vim.lsp.buf.code_action, opts("Code action"))
                 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename"))
             end,
