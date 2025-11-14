@@ -32,9 +32,9 @@ return {
 
         require("mini.surround").setup({
             mappings = {
-                add = "<leader>sa", -- Add surrounding in Normal and Visual modes
-                delete = "<leader>sd", -- Delete surrounding
-                replace = "<leader>sr", -- Replace surrounding
+                add = "<leader>sa",            -- Add surrounding in Normal and Visual modes
+                delete = "<leader>sd",         -- Delete surrounding
+                replace = "<leader>sr",        -- Replace surrounding
                 update_n_lines = "<leader>sn", -- Update `n_lines`
             },
         })
@@ -74,18 +74,13 @@ return {
         vim.api.nvim_create_autocmd("FileType", {
             pattern = {
                 "NvimTree",
-                "Trouble",
-                "alpha",
-                "dashboard",
                 "help",
                 "lazy",
                 "lazyterm",
                 "mason",
-                "neo-tree",
                 "notify",
                 "snacks_dashboard",
                 "toggleterm",
-                "trouble",
             },
             callback = function()
                 vim.b.miniindentscope_disable = true

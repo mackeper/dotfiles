@@ -18,6 +18,10 @@ vim.g.miki_journal_root = vim.g.miki_root .. "/" .. "98_Journal"
 ---    - `pacman -S fd` on Arch-based systems
 ---    - `choco install fd` on Windows with Chocolatey
 ---  telescope.nvim or mini.pick for file picking
+---
+---  I have disabled Copilot for markkdown files.
+---  It tend to be more distracting than helpful when writing
+---  down my own thoughts.
 local Miki = {}
 
 Miki._file_pickers = {
@@ -91,8 +95,8 @@ Miki.config = {
         ["{current_file_name_pretty}"] = function()
             local name = vim.fn.expand("%:t:r")
             local result = name:gsub("(%a)([%w]*)", function(first, rest)
-                return first:upper() .. rest:lower()
-            end)
+                    return first:upper() .. rest:lower()
+                end)
                 :gsub("_", " ")
                 :gsub("-", " ")
             return result

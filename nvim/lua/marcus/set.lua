@@ -53,25 +53,6 @@ vim.opt.breakindent = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "󰅂 ", trail = "·", nbsp = "␣" }
 
-vim.api.nvim_create_autocmd("WinEnter", {
-    callback = function()
-        vim.opt.cursorline = true
-    end,
-})
-vim.api.nvim_create_autocmd("WinLeave", {
-    callback = function()
-        vim.opt.cursorline = false
-    end,
-})
-
--- https://neovim.io/doc/user/lua-guide.html#lua-guide-autocommand-create
-vim.api.nvim_create_autocmd("TextYankPost", {
-    callback = function()
-        vim.highlight.on_yank({ timeout = 1000 })
-    end,
-    desc = "Briefly highlight yanked text",
-})
-
 -- Windows
 vim.opt.splitbelow = true
 vim.opt.splitright = true
