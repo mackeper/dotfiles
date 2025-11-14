@@ -11,7 +11,9 @@ function prompt {
     $gitInfo = ''
     if (git rev-parse --is-inside-work-tree 2>$null) {
         $branch = git rev-parse --abbrev-ref HEAD 2>$null
-        $gitInfo = & { git diff --quiet 2>$null; if ($LASTEXITCODE -eq 0) { "" } else { " $([char]27)[38;5;9m~$([char]27)[0m" } }
+        git diff --quiet 2>$null; $hasDiff = $LASTEXITCODE -ne 0
+        git diff --cached --quiet 2>$null; $hasStaged = $LASTEXITCODE -ne 0
+        if ($hasDiff -or $hasStaged) { $gitInfo = " $([char]27)[38;5;9m~$([char]27)[0m" }
     }
     $display = if ($branch) { "$([char]27)[38;5;15m ($([char]27)[38;5;10m$branch$gitInfo$([char]27)[38;5;15m)" } else { "" }
     "$([char]27)[38;5;10mPS$([char]27)[0m $([char]27)[38;5;15m$path$display$([char]27)[0m > "
@@ -30,11 +32,13 @@ Set-Alias ll Get-ChildItem
 Set-Alias la 'Get-ChildItem -Force'
 
 # --- Git Aliases ---
-Remove-Alias gc, gco, gcb, gl, gp, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
+Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
 
 function gc  { git commit -ev @args }
 function gco { git checkout @args }
 function gcb { git checkout -b @args }
+function gd { git diff @($args.Count ? $args : ".") }
+function gdca { git diff --cached @($args.Count ? $args : ".") }
 function gl  { git pull @args }
 function gp  { git push @args }
 function gst { git status @args }
@@ -140,11 +144,14 @@ function Show-StartMessage {
     $title = "$([char]27)[38;5;14mWelcome, $user@$hostname$([char]27)[0m"
     Write-Host "$title`n"
 
-    Write-Host "$([char]27)[38;5;10mPSReadLine / FZF Keybindings:$([char]27)[0m"
+    Write-Host "$([char]27)[38;5;10mKeyBindings:$([char]27)[0m"
     Write-Host "  Ctrl+f  → FZF file search"
     Write-Host "  Ctrl+s  → FZF solution (.sln) search"
     Write-Host "  Ctrl+p  → FZF directory search"
     Write-Host "  Ctrl+g  → lazygit"
+    Write-Host ""
+    Write-Host "$([char]27)[38;5;10mUseful functions:$([char]27)[0m"
+    Write-Host "  tabs - Open preset tabs"
     Write-Host ""
 }
 

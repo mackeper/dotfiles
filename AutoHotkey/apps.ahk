@@ -22,9 +22,9 @@ isWorkMode := true
         OpenOrFocusProgram("D:\\Documents\\Software\\Security\\KeePass-2.50\\KeePass.exe", "KeePass.exe")
     }
 }
-^!+W::{
-        OpenOrFocusProgram("C:\\Program Files\\Microsoft Office\\root\\Office16\WINWORD.EXE", "WINWORD.EXE")
-}
+;^!+W::{
+;        OpenOrFocusProgram("C:\\Program Files\\Microsoft Office\\root\\Office16\WINWORD.EXE", "WINWORD.EXE")
+;}
 
 
 
@@ -48,9 +48,9 @@ isWorkMode := true
 }
 
 ; Communication apps
-^!+M::{
-    OpenOrFocusProgram("C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE", "OUTLOOK.EXE")
-}
+;^!+M::{
+;    OpenOrFocusProgram("C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE", "OUTLOOK.EXE")
+;}
 ^!+C::{
     if isWorkMode {
         OpenOrFocusProgram("C:\\Program Files\\WindowsApps\\MSTeams_25044.2208.3471.2155_x64__8wekyb3d8bbwe\\ms-teams.exe", "ms-teams.exe")
