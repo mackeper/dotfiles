@@ -42,6 +42,8 @@ Miki.config = {
         journal_today = "<leader>mjj",
         journal_previous_day = "<leader>mjp",
         journal_next_day = "<leader>mjn",
+        journal_week = "<leader>mjw",
+        journal_month = "<leader>mjm",
 
         toggle_checkbox = "<M-t>",
 
@@ -133,6 +135,14 @@ Miki.config = {
         enabled = true,
     },
     spellcheck = {
+        enabled = false,
+    },
+    writing_settings = {
+        enabled = true,
+        textwidth = 80,
+        wrapmargin = 10,
+    },
+    copilot = {
         enabled = false,
     },
     file_picker = Miki._file_pickers.minipick,
@@ -345,6 +355,20 @@ Miki._open_journal_previous = function()
     Miki._navigate_journal(-1)
 end
 
+Miki._open_journal_week = function()
+    local current_week = os.date("%W")
+    local files = vim.fn.globpath(Miki.config.journal_root, "*.md", false, true)
+    table.sort(files)
+    for _, file in ipairs(files) do
+        local file_week = vim.fn.strftime("%W", vim.fn.getftime(file))
+        if file_week == current_week then
+            vim.cmd.edit(file)
+            return
+        end
+    end
+end
+Miki._open_journal_month = function() end
+
 Miki._add_page_link = function()
     require("mini.pick").builtin.files({}, {
         source = {
@@ -400,6 +424,8 @@ end, {})
 vim.api.nvim_create_user_command("MikiJournal", Miki._open_journal, {})
 vim.api.nvim_create_user_command("MikiJournalPrevious", Miki._open_journal_previous, {})
 vim.api.nvim_create_user_command("MikiJournalNext", Miki._open_journal_next, {})
+vim.api.nvim_create_user_command("MikiJournalWeek", Miki._open_journal_week, {})
+vim.api.nvim_create_user_command("MikiJournalMonth", Miki._open_journal_month, {})
 
 vim.api.nvim_create_user_command("MikiAddLink", Miki._add_page_link, {})
 vim.api.nvim_create_user_command("MikiAddPage", Miki._add_page, {})
@@ -412,18 +438,24 @@ vim.api.nvim_create_user_command("MikiAddPage", Miki._add_page, {})
 Miki._map("n", Miki.config.keymaps.index, ":MikiIndex<CR>", { desc = "Miki: Open Index" })
 Miki._map("n", Miki.config.keymaps.current, ":MikiCurrent<CR>", { desc = "Miki: Open Current" })
 
+-- Journal
 Miki._map("n", Miki.config.keymaps.journal_today, ":MikiJournal<CR>", { desc = "Miki: Open Journal" })
 Miki._map("n", Miki.config.keymaps.journal_previous_day, ":MikiJournalPrevious<CR>",
     { desc = "Miki: Open Previous Journal Entry" })
 Miki._map("n", Miki.config.keymaps.journal_next_day, ":MikiJournalNext<CR>", { desc = "Miki: Open Next Journal Entry" })
+Miki._map("n", Miki.config.keymaps.journal_week, ":MikiJournalWeek<CR>", { desc = "Miki: Open Week Journal" })
+Miki._map("n", Miki.config.keymaps.journal_month, ":MikiJournalMonth<CR>", { desc = "Miki: Open Month Journal" })
 
+-- Find
 Miki._map("n", Miki.config.keymaps.find_page, Miki._find_pages, { desc = "Miki: Find Page" })
 Miki._map("n", Miki.config.keymaps.find_tag, Miki._find_tags, { desc = "Miki: Find Tag" })
 Miki._map("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki: Copy page path to clipboard" })
 
+-- Page
 Miki._map("n", Miki.config.keymaps.add_page_link, ":MikiAddLink<CR>", { desc = "Miki: Add Page Link" })
 Miki._map("n", Miki.config.keymaps.add_page, ":MikiAddPage<CR>", { desc = "Miki: Add New Page" })
 
+-- Autolist
 Miki._add_autolist_keymaps = function()
     Miki.autolist = {}
     Miki.autolist.toggle_checkbox = function()
@@ -455,7 +487,7 @@ Miki._map("n", "<leader>mu", function()
     handle:close()
     local text = result or ""
     text = tostring(text):gsub("\r?\n$", "")
-    vim.api.nvim_put({ text }, "c", true, true)
+    vim.api.nvim_put({ " " .. text }, "c", true, true)
 end, { desc = "Miki: paste TFS url" })
 
 --------------------------------------------------------------
@@ -466,12 +498,36 @@ if Miki.config.autolist.enabled then
 end
 
 if Miki.config.spellcheck.enabled then
-    --autocmd for markdown files
     vim.api.nvim_create_autocmd("FileType", {
         pattern = "markdown",
         callback = function()
             vim.cmd("setlocal spell")
             vim.cmd("setlocal spelllang=en_us,sv")
+        end,
+    })
+end
+
+if Miki.config.writing_settings.enabled then
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function()
+            vim.bo.wrapmargin = Miki.config.writing_settings.wrapmargin
+            vim.bo.formatoptions = vim.bo.formatoptions .. "t"
+            vim.wo.linebreak = true
+            vim.bo.textwidth = Miki.config.writing_settings.textwidth
+        end,
+    })
+end
+if not Miki.config.copilot.enabled then
+    vim.api.nvim_create_autocmd("BufReadPre", {
+        pattern = "*",
+        callback = function(args)
+            if string.find(args.file, Miki.config.wiki_root) then
+                local ok, copilot = pcall(require, "copilot.command")
+                if ok then
+                    copilot.disable()
+                end
+            end
         end,
     })
 end

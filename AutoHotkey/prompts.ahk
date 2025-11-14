@@ -25,7 +25,8 @@ global prompts := Map(
     "15", "Debug/fix code",
     "16", "Optimize code",
     "17", "Windows question",
-    "18", "AHK question"
+    "18", "AHK question",
+    "19", "Tech question"
 )
 
 global promptTexts := Map(
@@ -182,6 +183,17 @@ global promptTexts := Map(
         * Only use comments to divide section or explain complicated lines.
 
         Question:
+    )",
+    "19", "
+    (
+        You are an expert in [TECH]
+
+        Answer concisely and precisely using correct terminology.
+        Show only relevant commands or configuration unless I ask for explanations.
+        Never include comments.
+
+        Question:
+
     )"
 )
 
