@@ -120,7 +120,7 @@ global promptTexts := Map(
         You are an expert in Neovim and Lua.
 
         Answer concisely and precisely.
-        Show only code unless I ask for explanation.
+        Show code with minimal explanation.
         Never include comments.
 
         Question:

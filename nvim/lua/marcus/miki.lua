@@ -12,14 +12,16 @@ vim.g.miki_journal_root = vim.g.miki_root .. "/" .. "98_Journal"
 --- @field config table Configuration options for Miki
 ---
 --- Depends on:
----  rg (ripgrep) for tag searching
----  fd (fd-find) for file searching (https://github.com/sharkdp/fd)
----    - `apt install fd-find` on Debian-based systems
----    - `pacman -S fd` on Arch-based systems
----    - `choco install fd` on Windows with Chocolatey
----  telescope.nvim or mini.pick for file picking
+---   rg (ripgrep) for tag searching
+---   fd (fd-find) for file searching (https://github.com/sharkdp/fd)
+---     - `apt install fd-find` on Debian-based systems
+---     - `pacman -S fd` on Arch-based systems
+---     - `choco install fd` on Windows with Chocolatey
+--- Available file pickers:
+---   - telescope.nvim
+---   - mini.pick
 ---
----  I have disabled Copilot for markkdown files.
+---  I have disabled Copilot for markdown files.
 ---  It tend to be more distracting than helpful when writing
 ---  down my own thoughts.
 local Miki = {}
@@ -27,6 +29,8 @@ local Miki = {}
 Miki._file_pickers = {
     telescope = "telescope",
     minipick = "minipick",
+    -- TODO: Implement snacks picker
+    snacks = "snacks",
 }
 
 Miki.config = {
@@ -40,8 +44,8 @@ Miki.config = {
         find_tag = "<leader>mt",
 
         journal_today = "<leader>mjj",
-        journal_previous_day = "<leader>mjp",
-        journal_next_day = "<leader>mjn",
+        journal_previous_day = "[j",
+        journal_next_day = "]j",
         journal_week = "<leader>mjw",
         journal_month = "<leader>mjm",
 
@@ -158,7 +162,41 @@ Miki._map = function(mode, key, result, opts)
 end
 
 Miki._normalize_path = function(path)
+    path = path:sub(1, 1):upper() .. path:sub(2)
     return path:gsub("\\", "/")
+end
+
+-- Compute the relative path from base to target
+-- by finding the common ancestor directory
+Miki._relative_path = function(base, target)
+    local norm_base = Miki._normalize_path(vim.fn.fnamemodify(base, ":p:h"))
+    local norm_target = Miki._normalize_path(vim.fn.fnamemodify(target, ":p:h"))
+
+    local function is_subpath(sub, path)
+        return path:sub(1, #sub) == sub
+    end
+
+    local sub_path = norm_base
+    local relative_path = ""
+    local found_common = false
+    for _ = 1, 10 do
+        if is_subpath(sub_path, norm_target) then
+            found_common = true
+            break
+        end
+        sub_path = vim.fn.fnamemodify(sub_path, ":h")
+        relative_path = relative_path .. "../"
+    end
+
+    if not found_common then
+        vim.notify("Could not find common path between " .. base .. " and " .. target, vim.log.levels.ERROR)
+        return target
+    end
+
+    local final_path = Miki._normalize_path(vim.fn.fnamemodify(target, ":p"))
+    final_path = final_path:sub(#sub_path + 2) -- +2 to remove the trailing slash
+    final_path = relative_path .. final_path
+    return final_path
 end
 
 Miki._get_tags = function()
@@ -199,6 +237,10 @@ Miki._find_pages = function()
             source = {
                 cwd = Miki.config.wiki_root,
             },
+        })
+    elseif Miki.config.file_picker == "snacks" then
+        require("snacks").picker.files({
+            dirs = { Miki.config.wiki_root, },
         })
     else
         vim.notify("Invalid file picker: " .. Miki.config.file_picker, vim.log.levels.ERROR)
@@ -370,13 +412,22 @@ end
 Miki._open_journal_month = function() end
 
 Miki._add_page_link = function()
+    local current_file = Miki._normalize_path(vim.fn.expand("%:p"))
+    vim.notify("Current file: " .. current_file, vim.log.levels.DEBUG)
     require("mini.pick").builtin.files({}, {
         source = {
             cwd = Miki.config.wiki_root,
             choose = function(item)
                 item = Miki._normalize_path(item):gsub("^/", ""):gsub("^", "./")
+                vim.notify("Current file: " .. current_file, vim.log.levels.DEBUG)
+                vim.notify("Target file: " .. item, vim.log.levels.DEBUG)
+                local relative_path = Miki._relative_path(current_file, item)
                 local title = item:match("([^/]+)%.md$")
-                local link = "[" .. title .. "](" .. item .. ")"
+                if title == "index" then
+                    title = vim.fn.fnamemodify(vim.fn.fnamemodify(item, ":h"), ":t")
+                end
+                title = title:gsub("_", " "):gsub("-", " ")
+                local link = "[" .. title .. "](<" .. relative_path .. ">)"
                 require("mini.pick").stop()
                 vim.schedule(function()
                     vim.api.nvim_put({ link }, "c", true, true)
@@ -384,6 +435,24 @@ Miki._add_page_link = function()
             end,
         },
     })
+end
+
+Miki._follow_markdown_link = function()
+    local line = vim.api.nvim_get_current_line()
+    local link = line:match('%[.-%]%((.-)%)')
+    if link then
+        if link:match('^/') or link:match('^%a:') then
+            vim.cmd('edit ' .. link)
+        else
+            local current_file = vim.api.nvim_buf_get_name(0)
+            local current_dir = vim.fn.fnamemodify(current_file, ':h')
+            link = link:gsub("^<", ""):gsub(">$", "")
+            local full_path = current_dir .. '/' .. link
+            vim.cmd('edit ' .. full_path)
+        end
+    else
+        vim.cmd('normal! gf')
+    end
 end
 
 Miki._add_page = function()
@@ -428,6 +497,7 @@ vim.api.nvim_create_user_command("MikiJournalWeek", Miki._open_journal_week, {})
 vim.api.nvim_create_user_command("MikiJournalMonth", Miki._open_journal_month, {})
 
 vim.api.nvim_create_user_command("MikiAddLink", Miki._add_page_link, {})
+vim.api.nvim_create_user_command("MikiFollowLink", Miki._follow_markdown_link, {})
 vim.api.nvim_create_user_command("MikiAddPage", Miki._add_page, {})
 
 
@@ -454,6 +524,9 @@ Miki._map("n", "<leader>mpp", [[:let @+=expand("%:p")<CR>]], { desc = "Miki: Cop
 -- Page
 Miki._map("n", Miki.config.keymaps.add_page_link, ":MikiAddLink<CR>", { desc = "Miki: Add Page Link" })
 Miki._map("n", Miki.config.keymaps.add_page, ":MikiAddPage<CR>", { desc = "Miki: Add New Page" })
+
+-- Link
+Miki._map("n", Miki.config.keymaps.follow_link, Miki._follow_markdown_link, { desc = "Miki: Follow Link" })
 
 -- Autolist
 Miki._add_autolist_keymaps = function()
@@ -544,3 +617,5 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.bo.softtabstop = 2
     end,
 })
+
+return Miki
