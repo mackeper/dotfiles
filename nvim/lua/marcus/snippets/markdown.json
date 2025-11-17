@@ -45,18 +45,6 @@
             "- [ ] b"
         ]
     },
-    "title": {
-        "prefix": "title",
-        "body": [
-            "# ${TM_FILENAME_BASE/((^.)|([-_.]+))/${2:/upcase}${3:+ }/g}"
-        ]
-    },
-    "titleDate": {
-        "prefix": "titleDate",
-        "body": [
-            "# ${TM_FILENAME_BASE/((^.)|([-_.]+))/${2:/upcase}${3:+ }/g} ($CURRENT_DATE-$CURRENT_MONTH-$CURRENT_YEAR $CURRENT_HOUR:$CURRENT_MINUTE)"
-        ]
-    },
     "math": {
         "prefix": "math",
         "body": [
