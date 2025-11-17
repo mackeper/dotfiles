@@ -1,3 +1,13 @@
+# --- PowerShell Profile ---
+# by Marcus
+
+# --- Perferred tools ---
+# - eza: choco install eza -y
+# - fzf: choco install fzf -y
+# - lazygit: choco install lazygit -y
+# - delta: choco install delta -y
+# - neovim: https://github.com/neovim/neovim/releases
+
 # --- General ---
 Set-PSReadLineOption -EditMode Vi
 Set-PSReadLineOption -PredictionSource History
