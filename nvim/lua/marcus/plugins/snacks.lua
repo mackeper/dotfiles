@@ -35,7 +35,8 @@ return {
         picker = {
             enabled = true,
             layout = "telescope",
-        }
+            layout_narrow = "dropdown",
+        },
     },
     -- stylua: ignore start
     keys = {
@@ -69,23 +70,33 @@ return {
             vim.keymap.set(mode, key, func, { desc = description, noremap = true, silent = true })
         end
 
+        local function get_layout()
+            return vim.o.columns >= 160 and opts.picker.layout or opts.picker.layout_narrow
+        end
+
         if opts.picker.enabled then
+            local function picker_with_layout(picker_fn)
+                return function(...)
+                    return picker_fn({ layout = get_layout(), ... })
+                end
+            end
+
             local function config_picker()
                 return Snacks.picker.files({
-                    dirs = { vim.fn.stdpath("config"), },
+                    dirs = { vim.fn.stdpath("config") },
+                    layout = get_layout(),
                 })
             end
-            -- stylua: ignore start
-            map("n", "<leader>jf", Snacks.picker.smart, "Smart Find Files")
-            map("n", "<leader>jg", Snacks.picker.git_grep, "Git Grep")
-            map("n", "<leader>jh", Snacks.picker.help, "Find help")
-            map("n", "<leader>jm", Snacks.picker.man, "Find man pages")
-            map("n", "<leader>jp", Snacks.picker.pickers, "Find picker")
-            map("n", "<leader>jr", Snacks.picker.recent, "Find recent files")
-            map("n", "<leader>jj", Snacks.picker.resume, "Resume last picker")
-            map("n", "<leader>jb", Snacks.picker.buffers, "Find buffers")
+
+            map("n", "<leader>jf", picker_with_layout(Snacks.picker.smart), "Smart Find Files")
+            map("n", "<leader>jg", picker_with_layout(Snacks.picker.git_grep), "Git Grep")
+            map("n", "<leader>jh", picker_with_layout(Snacks.picker.help), "Find help")
+            map("n", "<leader>jm", picker_with_layout(Snacks.picker.man), "Find man pages")
+            map("n", "<leader>jp", picker_with_layout(Snacks.picker.pickers), "Find picker")
+            map("n", "<leader>jr", picker_with_layout(Snacks.picker.recent), "Find recent files")
+            map("n", "<leader>jj", picker_with_layout(Snacks.picker.resume), "Resume last picker")
+            map("n", "<leader>jb", picker_with_layout(Snacks.picker.buffers), "Find buffers")
             map("n", "<leader>jc", config_picker, "Find files")
-            -- stylua: ignore end
         end
     end,
 }
