@@ -81,6 +81,35 @@ Miki.config = {
             "",
             "- ",
         },
+        week_template = {
+            "# Week {week} - {year}",
+            "",
+            "**Period:** {start_date} to {end_date}",
+            "",
+            "## ✨ Week Highlights",
+            "",
+            "- ",
+            "",
+            "## 🌑 Week Lowlights",
+            "",
+            "- ",
+            "",
+            "## 📈 Key Learnings & Improvements",
+            "",
+            "- ",
+            "",
+            "## ✅ Completed Tasks",
+            "",
+            "- ",
+            "",
+            "## 🎯 Goals for Next Week",
+            "",
+            "- [ ] ",
+            "",
+            "## 💭 Weekly Reflection",
+            "",
+            "",
+        },
     },
     page = {
         add_page_template = {
@@ -401,13 +430,29 @@ Miki._open_journal_week = function()
     local current_week = os.date("%W")
     local files = vim.fn.globpath(Miki.config.journal_root, "*.md", false, true)
     table.sort(files)
-    for _, file in ipairs(files) do
-        local file_week = vim.fn.strftime("%W", vim.fn.getftime(file))
-        if file_week == current_week then
-            vim.cmd.edit(file)
-            return
+    local function get_week_from_filename(filename)
+        -- assumes filename format is YYYY-MM-DD.md
+        local year, month, day = filename:match("(%d+)%-(%d+)%-(%d+)")
+        if not year or not month or not day then
+            return nil
         end
+        local t = os.time { year = year, month = month, day = day }
+        vim.notify("Week number: " .. os.date("%W", t), vim.log.levels.DEBUG)
+        local week_number = tonumber(os.date("%W", t))
+        return week_number
     end
+    local path = Miki.config.journal_root .. "/2025-w" .. os.date("%W") .. ".md"
+    Miki._add_page_with_template(path, Miki.config.journal.week_template)
+    return
+    -- for _, file in ipairs(files) do
+    --     local filename = vim.fn.fnamemodify(file, ":t")
+    --     local file_week = get_week_from_filename(filename)
+    --     vim.notify("File: " .. filename .. " Week: " .. tostring(file_week), vim.log.levels.DEBUG)
+    --     if file_week == current_week then
+    --         -- vim.cmd.edit(file)
+    --         return
+    --     end
+    -- end
 end
 Miki._open_journal_month = function() end
 
