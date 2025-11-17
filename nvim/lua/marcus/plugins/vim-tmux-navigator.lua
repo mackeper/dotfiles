@@ -1,5 +1,5 @@
 return {
-    enabled = false,
+    enabled = true,
     "christoomey/vim-tmux-navigator",
     event = "BufReadPre",
     cmd = {
@@ -10,11 +10,11 @@ return {
         "TmuxNavigatePrevious",
     },
     keys = {
-        { "<C-LEFT>",  "<CMD>TmuxNavigateLeft<cr>" },
-        { "<C-DOWN>",  "<CMD>TmuxNavigateDown<cr>" },
-        { "<C-UP>",    "<CMD>TmuxNavigateUp<cr>" },
+        { "<C-LEFT>", "<CMD>TmuxNavigateLeft<cr>" },
+        { "<C-DOWN>", "<CMD>TmuxNavigateDown<cr>" },
+        { "<C-UP>", "<CMD>TmuxNavigateUp<cr>" },
         { "<C-RIGHT>", "<CMD>TmuxNavigateRight<cr>" },
-        { "<M-\\>",    "<CMD>TmuxNavigatePrevious<cr>" },
+        { "<M-\\>", "<CMD>TmuxNavigatePrevious<cr>" },
     },
     config = function()
         vim.g.tmux_navigator_no_mappings = 1

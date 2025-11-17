@@ -51,6 +51,14 @@ return {
                 },
             }
 
+            vim.cmd([[
+            augroup TransparentBackground
+            autocmd!
+            autocmd ColorScheme * highlight Normal ctermbg=none guibg=none
+            autocmd ColorScheme * highlight NonText ctermbg=none guibg=none
+            augroup END
+]])
+
             load_colorscheme(unpack(colorschemes.material_deep_ocean))
         end,
     },

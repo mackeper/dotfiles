@@ -42,7 +42,7 @@ Set-Alias ll Get-ChildItem
 Set-Alias la 'Get-ChildItem -Force'
 
 # --- Git Aliases ---
-Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
+Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gpn, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
 
 function gc  { git commit -ev @args }
 function gco { git checkout @args }
@@ -51,6 +51,7 @@ function gd { git diff @($args.Count ? $args : ".") }
 function gdca { git diff --cached @($args.Count ? $args : ".") }
 function gl  { git pull @args }
 function gp  { git push @args }
+function gpn { & git push --set-upstream origin (git branch --show-current) }
 function gst { git status @args }
 function gb  { git branch @args }
 function ga  { git add @args }

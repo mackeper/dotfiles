@@ -34,7 +34,7 @@ return {
         zen = {},
         picker = {
             enabled = true,
-            layout = "telescope",
+            layout = "default",
             layout_narrow = "dropdown",
         },
     },
