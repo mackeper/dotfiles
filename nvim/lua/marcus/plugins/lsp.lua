@@ -228,10 +228,14 @@ return {
         vim.api.nvim_create_user_command("MasonToolsInstallAll", function()
             setup_mason_lspconfig(ensure_installed_tools)
         end, {
-            desc = "Install all LSP servers",
+            desc = "Install all tools",
         })
 
-        require("mason-tool-installer").setup({})
+        require("mason-tool-installer").setup({
+            auto_update = false,
+            run_on_start = false,
+            run_on_config = false,
+        })
 
         vim.lsp.config("clangd", {
             settings = {
