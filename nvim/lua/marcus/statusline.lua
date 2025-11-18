@@ -11,7 +11,7 @@ local function hl(group, text)
 end
 
 local function copilot_indicator()
-    local client = vim.lsp.get_active_clients({ name = "copilot" })[1]
+    local client = vim.lsp.get_clients({ name = "copilot" })[1]
     if client == nil then
         return ""
     end
@@ -37,7 +37,7 @@ end
 local function lsp_name()
     local msg = "No Active Lsp"
     local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
-    local clients = vim.lsp.get_active_clients()
+    local clients = vim.lsp.get_clients()
     if next(clients) == nil then
         return msg
     end

@@ -37,7 +37,7 @@ return {
             { "<leader>s", group = "Surround / Session" },
             { "<leader>t", group = "Tabs" },
             { "<leader>w", group = "Window" },
-            { "<leader>x", group = "Trouble" },
+            { "<leader>x", group = "Quickfix List" },
             { "<leader>z", group = "Mode" },
             { "<leader>zc", desc = "Cloak" },
             { "gi", desc = "Go to implementation" },
