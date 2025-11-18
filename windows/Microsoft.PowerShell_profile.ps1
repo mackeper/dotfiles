@@ -9,10 +9,17 @@
 # - neovim: https://github.com/neovim/neovim/releases
 
 # --- General ---
+
+$OnViModeChange = [scriptblock]{
+    Write-Host -NoNewLine $(if ($args[0] -eq 'Command') {"`e[1 q"} else {"`e[5 q"})
+}
 Set-PSReadLineOption -EditMode Vi
+Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $OnViModeChange
+
 Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -BellStyle None
+
 
 # --- Prompt ---
 function prompt {
