@@ -1,13 +1,13 @@
 -- Define custom highlight groups
-vim.api.nvim_set_hl(0, 'StatusLineWhiteBold', { fg = vim.api.nvim_get_hl(0, {name = 'White'}).fg, bold = true })
+vim.api.nvim_set_hl(0, "StatusLineWhiteBold", { fg = vim.api.nvim_get_hl(0, { name = "White" }).fg, bold = true })
 
 -- Settings
-local divider = '  '
+local divider = "  "
 
 -- Helper functions
 local function hl(group, text)
-    -- %%#GroupName#Text%*
-    return string.format('%%#%s#%s%%*', group, text)
+    -- %%#GroupName#fext%*
+    return string.format("%%#%s#%s%%*", group, text)
 end
 
 local function copilot_indicator()
@@ -57,26 +57,26 @@ local function left()
         i = "White",
         v = "Blue",
         V = "Blue",
-        [''] = "Blue",
+        [""] = "Blue",
     }
     local mode = hl(mode_color[vim.api.nvim_get_mode().mode], vim.api.nvim_get_mode().mode:upper())
-    local filename = vim.fn.expand('%:t')
-    local git_branch = vim.b.gitsigns_head or '' -- Requires gitsigns.nvim
+    local filename = vim.fn.expand("%:t")
+    local git_branch = vim.b.gitsigns_head or "" -- Requires gitsigns.nvim
 
     local components = {
         " ",
         mode,
-        hl("StatusLineWhiteBold", filename ~= '' and filename or '[No Name]'),
-        vim.bo.modified and hl("White", '[+]') or '',
-        vim.bo.readonly and hl("Red", '[RO]') or '',
-        hl("Blue", vim.bo.filetype ~= '' and vim.bo.filetype or 'no ft'),
-        hl("Yellow", git_branch ~= '' and ' ' .. git_branch or ''),
+        hl("StatusLineWhiteBold", filename ~= "" and filename or "[No Name]"),
+        vim.bo.modified and hl("White", "[+]") or "",
+        vim.bo.readonly and hl("Red", "[RO]") or "",
+        hl("Blue", vim.bo.filetype ~= "" and vim.bo.filetype or "no ft"),
+        hl("Yellow", git_branch ~= "" and " " .. git_branch or ""),
         hl("Cyan", " " .. lsp_name()),
     }
 
     local cleaned_components = {}
     for _, comp in ipairs(components) do
-        if comp ~= '' then
+        if comp ~= "" then
             table.insert(cleaned_components, comp)
         end
     end
@@ -86,28 +86,34 @@ end
 
 local function center()
     local components = {
-        vim.diagnostic.get(0, {severity = vim.diagnostic.severity.ERROR})[1] and hl("Red", ' ' .. #vim.diagnostic.get(0, {severity = vim.diagnostic.severity.ERROR})) or '',
-        vim.diagnostic.get(0, {severity = vim.diagnostic.severity.WARN})[1] and hl("Yellow", ' ' .. #vim.diagnostic.get(0, {severity = vim.diagnostic.severity.WARN})) or '',
-        vim.diagnostic.get(0, {severity = vim.diagnostic.severity.INFO})[1] and hl("Blue", ' ' .. #vim.diagnostic.get(0, {severity = vim.diagnostic.severity.INFO})) or '',
+        vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })[1]
+                and hl("Red", " " .. #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR }))
+            or "",
+        vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN })[1]
+                and hl("Yellow", " " .. #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.WARN }))
+            or "",
+        vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO })[1]
+                and hl("Blue", " " .. #vim.diagnostic.get(0, { severity = vim.diagnostic.severity.INFO }))
+            or "",
     }
     return table.concat(components, divider)
 end
 
 local function right()
-    local line = vim.fn.line('.')
-    local col = vim.fn.col('.')
-    local total_lines = vim.fn.line('$')
+    local line = vim.fn.line(".")
+    local col = vim.fn.col(".")
+    local total_lines = vim.fn.line("$")
     local components = {
         hl("Cyan", copilot_indicator()),
-        hl("Blue", string.format('Ln %d, Col %d', line, col)),
-        hl("Yellow", string.format('%d', total_lines)),
+        hl("Blue", string.format("Ln %d, Col %d", line, col)),
+        hl("Yellow", string.format("%d", total_lines)),
     }
     return table.concat(components, divider)
 end
 
 -- Assemble statusline
 function _G.statusline()
-    return left() .. '%=' .. center() .. '%=' .. right()
+    return left() .. "%=" .. center() .. "%=" .. right()
 end
 
 vim.opt.statusline = "%!v:lua.statusline()"
