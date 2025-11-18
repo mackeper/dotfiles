@@ -1,3 +1,10 @@
+-- Define custom highlight groups
+vim.api.nvim_set_hl(0, 'StatusLineWhiteBold', { fg = vim.api.nvim_get_hl(0, {name = 'White'}).fg, bold = true })
+
+-- Settings
+local divider = '  '
+
+-- Helper functions
 local function hl(group, text)
     -- %%#GroupName#Text%*
     return string.format('%%#%s#%s%%*', group, text)
@@ -43,8 +50,9 @@ local function lsp_name()
     return msg
 end
 
+-- Statusline sections
 local function left()
-    mode_color = {
+    local mode_color = {
         n = "Green",
         i = "White",
         v = "Blue",
@@ -58,7 +66,7 @@ local function left()
     local components = {
         " ",
         mode,
-        hl("White", filename ~= '' and filename or '[No Name]'),
+        hl("StatusLineWhiteBold", filename ~= '' and filename or '[No Name]'),
         vim.bo.modified and hl("White", '[+]') or '',
         vim.bo.readonly and hl("Red", '[RO]') or '',
         hl("Blue", vim.bo.filetype ~= '' and vim.bo.filetype or 'no ft'),
@@ -73,7 +81,7 @@ local function left()
         end
     end
 
-    return table.concat(cleaned_components, ' ')
+    return table.concat(cleaned_components, divider)
 end
 
 local function center()
@@ -81,9 +89,8 @@ local function center()
         vim.diagnostic.get(0, {severity = vim.diagnostic.severity.ERROR})[1] and hl("Red", ' ' .. #vim.diagnostic.get(0, {severity = vim.diagnostic.severity.ERROR})) or '',
         vim.diagnostic.get(0, {severity = vim.diagnostic.severity.WARN})[1] and hl("Yellow", ' ' .. #vim.diagnostic.get(0, {severity = vim.diagnostic.severity.WARN})) or '',
         vim.diagnostic.get(0, {severity = vim.diagnostic.severity.INFO})[1] and hl("Blue", ' ' .. #vim.diagnostic.get(0, {severity = vim.diagnostic.severity.INFO})) or '',
-        
     }
-    return table.concat(components, ' ')
+    return table.concat(components, divider)
 end
 
 local function right()
@@ -95,9 +102,10 @@ local function right()
         hl("Blue", string.format('Ln %d, Col %d', line, col)),
         hl("Yellow", string.format('%d', total_lines)),
     }
-    return table.concat(components, ' ')
+    return table.concat(components, divider)
 end
 
+-- Assemble statusline
 function _G.statusline()
     return left() .. '%=' .. center() .. '%=' .. right()
 end
