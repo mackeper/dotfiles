@@ -5,6 +5,7 @@ return {
     { "Shatur/neovim-ayu", enabled = false },
     { "projekt0n/github-nvim-theme", enabled = false },
     { "marko-cerovac/material.nvim", enabled = true },
+    -- { "vague2k/vague.nvim", enabled = true },
     {
         "scottmckendry/cyberdream.nvim",
         priority = 1000,
@@ -47,17 +48,25 @@ return {
                     "material",
                     function()
                         vim.g.material_style = "deep ocean"
+
+                        vim.cmd([[
+                            augroup TransparentBackground
+                            autocmd!
+                            autocmd ColorScheme * highlight Normal ctermbg=none guibg=none
+                            autocmd ColorScheme * highlight NonText ctermbg=none guibg=none
+                            augroup END
+                        ]])
+                    end,
+                },
+                vague = {
+                    "vague",
+                    function()
+                        require("vague").setup({
+                            transparency = true,
+                        })
                     end,
                 },
             }
-
-            vim.cmd([[
-            augroup TransparentBackground
-            autocmd!
-            autocmd ColorScheme * highlight Normal ctermbg=none guibg=none
-            autocmd ColorScheme * highlight NonText ctermbg=none guibg=none
-            augroup END
-]])
 
             load_colorscheme(unpack(colorschemes.material_deep_ocean))
         end,

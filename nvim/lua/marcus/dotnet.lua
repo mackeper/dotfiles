@@ -29,7 +29,7 @@ vim.api.nvim_create_autocmd("FileType", {
             end
             return project
         end
-        ------
+
         vim.keymap.set("n", "<leader>ibc", function()
             vim.cmd("make " .. (get_current_project() or ""))
         end, { desc = "Dotnet: Build current project" })

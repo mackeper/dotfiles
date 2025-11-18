@@ -6,7 +6,9 @@ local insert = ls.insert_node
 local func = ls.function_node
 
 return {
-    snippet("fnlua", {
+    snippet({
+        trig = "func",
+    }, {
         text("function "),
         insert(1, "name"),
         text("("),
