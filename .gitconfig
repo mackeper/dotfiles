@@ -29,8 +29,15 @@
     line-numbers = true
 
 [merge]
+    tool = nvimdiff
     conflictstyle = diff3
+[mergetool]
+    keepBackup = false
+    trustExitCode = false
+    prompt = true
 
+[mergetool "vimdiff"]
+    layout = LOCAL,MERGED,REMOTE
 [diff]
     colorMoved = default
 

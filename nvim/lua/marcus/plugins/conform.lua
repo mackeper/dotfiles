@@ -31,6 +31,7 @@ return {
             python = { "isort", "black" },
             rust = { "rustfmt" },
             sh = { "shfmt" },
+            go = { "gofmt" },
 
             ["_"] = { "trim_whitespace" },
         },

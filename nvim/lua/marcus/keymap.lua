@@ -88,29 +88,8 @@ vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 -- Terminal
 vim.keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
--- Run file
-local function runFile()
-    vim.cmd("silent w")
-    if vim.bo.filetype == "python" then
-        vim.cmd("!python3 %")
-    elseif vim.bo.filetype == "lua" then
-        vim.cmd("exec '!lua " .. vim.fn.expand("%") .. "'")
-    elseif vim.bo.filetype == "cs" then
-        vim.cmd("!dotnet run")
-    elseif vim.bo.filetype == "sh" then
-        vim.cmd("!bash %")
-    elseif vim.bo.filetype == "c" then
-        vim.cmd("make")
-    elseif vim.bo.filetype == "ocaml" then
-        vim.cmd("dune build")
-    elseif vim.bo.filetype == "go" then
-        vim.cmd("!go run %")
-    else
-        print("Cannot run file of type: " .. vim.bo.filetype)
-    end
-end
-vim.keymap.set("n", "<leader>ef", runFile, { desc = "Run file" })
-
+-- Compile / Make, the makeprg is set up in autocmd.lua
+vim.keymap.set("n", "<leader>im", ":make<CR>", { desc = "Make" })
 -- Code
 vim.api.nvim_create_user_command("GetUuid", function()
     local random = math.random
