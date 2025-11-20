@@ -19,6 +19,7 @@ return {
                 "css",
                 "cpp",
                 "dockerfile",
+                "diff",
                 "elm",
                 "gitignore",
                 "go",

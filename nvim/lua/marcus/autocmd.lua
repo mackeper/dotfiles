@@ -113,3 +113,25 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.formatoptions:remove({ "c", "r", "o" })
     end,
 })
+
+-- Set makeprg based on filetype
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "*",
+    callback = function()
+        local makeprg_map = {
+            c = "make",
+            cpp = "make",
+            ocaml = "dune build",
+            python = "python3 %",
+            lua = "lua %",
+            go = "go build .",
+            cs = "dotnet run",
+            sh = "bash %",
+            ps1 = "pwsh %",
+        }
+        local prg = makeprg_map[vim.bo.filetype]
+        if prg then
+            vim.opt.makeprg = prg
+        end
+    end,
+})
