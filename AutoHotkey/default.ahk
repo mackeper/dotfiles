@@ -22,10 +22,6 @@
         WinSetTransparent(180, "A")  ; Semi-transparent
 }
 
-^SPACE::{  ; Ctrl + Space
-    WinSetAlwaysOnTop(-1, "A")
-}
-
 ; Reload all scripts
 ^!r:: {  ; Ctrl + Alt + R
     DetectHiddenWindows true
