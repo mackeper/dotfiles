@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git Commit Guidelines
+
+- Do NOT include Claude Code attribution or co-author credits in commit messages
+- Keep commit messages concise and focused on the changes made
+
 ## Repository Overview
 
 This is a multi-platform dotfiles repository supporting Linux (Ubuntu, Android/Termux), Windows, and macOS configurations. The primary focus is on terminal environments with vim/neovim, tmux, zsh, and git workflow optimizations.
