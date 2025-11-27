@@ -19,13 +19,13 @@ vim.opt.expandtab = true
 vim.opt.smartindent = true
 -- JavaScript / TypeScript
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "javascript", "typescript" },
-    callback = function()
-        print("Setting JavaScript/TypeScript indent")
-        vim.opt_local.tabstop = 2
-        vim.opt_local.softtabstop = 2
-        vim.opt_local.shiftwidth = 2
-    end,
+	pattern = { "javascript", "typescript" },
+	callback = function()
+		print("Setting JavaScript/TypeScript indent")
+		vim.opt_local.tabstop = 2
+		vim.opt_local.softtabstop = 2
+		vim.opt_local.shiftwidth = 2
+	end,
 })
 
 -- Wrap lines
@@ -51,7 +51,7 @@ vim.opt.breakindent = true
 -- vim.opt.winborder = "rounded" -- Does not work well with wilder
 
 vim.opt.list = true
-vim.opt.listchars = { tab = "󰅂 ", trail = "·", nbsp = "␣" }
+vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 
 -- Windows
 vim.opt.splitbelow = true
@@ -59,11 +59,11 @@ vim.opt.splitright = true
 
 -- Vertical split help
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = "help",
-    callback = function()
-        vim.cmd("wincmd L")
-        vim.cmd("vert resize 100")
-    end,
+	pattern = "help",
+	callback = function()
+		vim.cmd("wincmd L")
+		vim.cmd("vert resize 100")
+	end,
 })
 
 -- Misc
@@ -77,18 +77,18 @@ vim.opt.undofile = true
 -- Clipboard
 vim.opt.clipboard = "unnamedplus"
 if vim.fn.has("wsl") then
-    vim.g.clipboard = {
-        name = "WslClipboard",
-        copy = {
-            ["+"] = "win32yank.exe -i --crlf",
-            ["*"] = "win32yank.exe -i --crlf",
-        },
-        paste = {
-            ["+"] = "win32yank.exe -o --lf",
-            ["*"] = "win32yank.exe -o --lf",
-        },
-        cache_enabled = 0,
-    }
+	vim.g.clipboard = {
+		name = "WslClipboard",
+		copy = {
+			["+"] = "win32yank.exe -i --crlf",
+			["*"] = "win32yank.exe -i --crlf",
+		},
+		paste = {
+			["+"] = "win32yank.exe -o --lf",
+			["*"] = "win32yank.exe -o --lf",
+		},
+		cache_enabled = 0,
+	}
 end
 
 -- Spellcheck (z=) for suggestions
@@ -96,16 +96,16 @@ vim.opt.spell = false
 vim.opt.spelllang = "en_us"
 
 -- Terminal
--- vim.g.terminal_emulator = "powershell"
--- vim.opt.shell = "powershell"
 if jit.os == "Windows" then
-    vim.opt.shellpipe = ">"
-    vim.opt.shellredir = ">"
+	vim.opt.shellpipe = ">"
+	vim.opt.shellredir = ">"
+	vim.g.terminal_emulator = "powershell"
+	vim.opt.shell = "powershell"
 end
 vim.api.nvim_create_autocmd("TermOpen", {
-    pattern = "*",
-    callback = function()
-        vim.cmd("startinsert")
-        vim.cmd("setlocal nonumber norelativenumber")
-    end,
+	pattern = "*",
+	callback = function()
+		vim.cmd("startinsert")
+		vim.cmd("setlocal nonumber norelativenumber")
+	end,
 })

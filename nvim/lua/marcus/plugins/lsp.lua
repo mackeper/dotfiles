@@ -18,8 +18,6 @@ return {
         { "WhoIsSethDaniel/mason-tool-installer.nvim" },
     },
     config = function()
-        local cmp = require("cmp")
-        local cmp_lsp = require("cmp_nvim_lsp")
         ---@diagnostic disable-next-line: missing-fields
         require("neodev").setup({ -- Before lspconfig
             override = function(_, library)
@@ -29,6 +27,8 @@ return {
         })
 
         ---- Setup nvim-cmp ----
+        local cmp = require("cmp")
+        -- local cmp_lsp = require("cmp_nvim_lsp")
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
         cmp.setup({
             mapping = cmp.mapping.preset.insert({
@@ -122,22 +122,22 @@ return {
         })
 
         -- Setup defaults
-        local capabilities = vim.tbl_deep_extend(
-            "force",
-            {},
-            vim.lsp.protocol.make_client_capabilities(),
-            cmp_lsp.default_capabilities()
-        )
-
-        local default_setup = function(server)
-            vim.lsp.config(server, {
-                settings = {
-                    [server] = {
-                        capabilities = capabilities,
-                    },
-                },
-            })
-        end
+        -- local capabilities = vim.tbl_deep_extend(
+        --     "force",
+        --     {},
+        --     vim.lsp.protocol.make_client_capabilities(),
+        --     cmp_lsp.default_capabilities()
+        -- )
+        --
+        -- local default_setup = function(server)
+        --     vim.lsp.config(server, {
+        --         settings = {
+        --             [server] = {
+        --                 capabilities = capabilities,
+        --             },
+        --         },
+        --     })
+        -- end
 
         -- Add border to lsp handlers
         local border = "rounded"
@@ -226,15 +226,9 @@ return {
         end
 
         vim.api.nvim_create_user_command("MasonToolsInstallAll", function()
-            setup_mason_lspconfig(ensure_installed_tools)
+            setup_mason_tool_installer(ensure_installed_tools)
         end, {
             desc = "Install all tools",
-        })
-
-        require("mason-tool-installer").setup({
-            auto_update = false,
-            run_on_start = false,
-            run_on_config = false,
         })
 
         vim.lsp.config("clangd", {
