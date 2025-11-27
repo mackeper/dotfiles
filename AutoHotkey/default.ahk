@@ -54,3 +54,24 @@
     A_Clipboard := old_clipboard
 }
 
+; Copy as path
+; Alt+Shift+C
+!+c::{
+    if WinActive("ahk_class CabinetWClass") || WinActive("ahk_class ExploreWClass") {
+        Send "+{AppsKey}a"
+        ToolTip("Path copied", , , 1)
+        Sleep 800
+        ToolTip("", , , 1)
+    }
+}
+
+; Write version
+!+v::{
+    Send "9.1.0.60649"
+    Send "{Tab}"
+    Send "TrueBeamDriver2.0.0.60945"
+    Send "{Tab}"
+    Send "17.2.0.162"
+
+}
+
