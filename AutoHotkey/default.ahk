@@ -54,7 +54,7 @@
     A_Clipboard := old_clipboard
 }
 
-; Copy as path
+; Copy file as path (only for explorer.exe)
 ; Alt+Shift+C
 !+c::{
     if WinActive("ahk_class CabinetWClass") || WinActive("ahk_class ExploreWClass") {
@@ -65,6 +65,15 @@
     }
 }
 
+; Write current date and time
+; Alt+Shift+D
+!+d:: {
+    dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
+    user := A_UserName
+    SendText dt "`n" user
+}
+
+; ------------ Testing -------------
 ; Write version
 !+v::{
     Send "9.1.0.60649"
@@ -72,6 +81,18 @@
     Send "TrueBeamDriver2.0.0.60945"
     Send "{Tab}"
     Send "17.2.0.162"
-
 }
 
+; Send "PASSED"
+; Alt+Shift+P
+!+p:: {
+    dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
+    SendText dt "`nPASSED"
+}
+
+; Send "FAILED"
+; Alt+Shift+F
+!+F:: {
+    dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
+    SendText dt "`nFAILED"
+}
