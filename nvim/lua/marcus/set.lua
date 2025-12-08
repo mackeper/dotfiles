@@ -76,7 +76,7 @@ vim.opt.undofile = true
 
 -- Clipboard
 vim.opt.clipboard = "unnamedplus"
-if vim.fn.has("wsl") then
+if vim.fn.has("wsl") ~= 0 then
     vim.g.clipboard = {
         name = "WslClipboard",
         copy = {

@@ -36,6 +36,13 @@ return {
             enabled = true,
             layout = "default",
             layout_narrow = "dropdown",
+            win = {
+                list = {
+                    keys = {
+                        ["q"] = "cancel",
+                    },
+                },
+            },
         },
     },
     -- stylua: ignore start
