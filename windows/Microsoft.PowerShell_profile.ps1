@@ -47,6 +47,7 @@ function ls([string]$path = ".") {
 }
 Set-Alias ll Get-ChildItem
 Set-Alias la 'Get-ChildItem -Force'
+Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 
 # --- Git Aliases ---
 Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gpn, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
