@@ -47,6 +47,7 @@ function ls([string]$path = ".") {
 }
 Set-Alias ll Get-ChildItem
 Set-Alias la 'Get-ChildItem -Force'
+Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 
 # --- Git Aliases ---
 Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gpn, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
@@ -71,16 +72,23 @@ function gcm {
     git checkout $branch @args
 }
 
+# ========================================
+#               Curl tools
+# ========================================
+function wttr { (Invoke-WebRequest "wttr.in/$(if($args){$args}else{'stockholm'})").Content }
+function cht { (Invoke-WebRequest "cht.sh/$args").Content }
 
-# --- Environment ---
+# ========================================
+#              Environment
+# ========================================
 $env:EDITOR = "nvim"
 $env:VISUAL = "nvim"
 $env:LESS = "-R"
 
-# --- Functions ---
-function which($cmd) {
-    Get-Command $cmd | Select-Object -ExpandProperty Source
-}
+# ========================================
+#               Functions
+# ========================================
+function which($cmd) { Get-Command $cmd | Select-Object -ExpandProperty Source }
 
 # TODO: Update with private / work
 function tabs() {
@@ -140,7 +148,7 @@ Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 Set-PSReadLineKeyHandler -Key Ctrl+p -ScriptBlock {
     $locations = @("D:\Documents\Projects", "D:\Documents\Software", "C:\git")
-    $directories = $locations | ForEach-Object { Get-ChildItem -Path $_ -Directory -Depth 2 }
+    $directories = $locations | ForEach-Object { if (Test-Path $_) {Get-ChildItem -Path $_ -Directory -Depth 2} }
     $directories | Select-Object -ExpandProperty FullName | Invoke-Fzf | Set-Location
 }
 
