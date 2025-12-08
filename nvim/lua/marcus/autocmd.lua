@@ -124,7 +124,7 @@ vim.api.nvim_create_autocmd("FileType", {
             ocaml = "dune build",
             python = "python3 %",
             lua = "lua %",
-            go = "go build .",
+            -- go = "go build .",
             cs = "dotnet run",
             sh = "bash %",
             ps1 = "pwsh %",

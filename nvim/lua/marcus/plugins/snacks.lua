@@ -36,6 +36,21 @@ return {
             enabled = true,
             layout = "default",
             layout_narrow = "dropdown",
+            win = {
+                input = {
+                    keys = {
+                        ["<c-u>"] = { "preview_scroll_up", mode = { "i", "n" } },
+                        ["<c-d>"] = { "preview_scroll_down", mode = { "i", "n" } },
+                    },
+                },
+                list = {
+                    keys = {
+                        ["q"] = "cancel",
+                        ["<c-u>"] = { "preview_scroll_up", mode = { "i", "n" } },
+                        ["<c-d>"] = { "preview_scroll_down", mode = { "i", "n" } },
+                    },
+                },
+            },
         },
     },
     -- stylua: ignore start
