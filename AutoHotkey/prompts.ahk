@@ -26,7 +26,9 @@ global prompts := Map(
     "16", "Optimize code",
     "17", "Windows question",
     "18", "AHK question",
-    "19", "Tech question"
+    "19", "Tech question",
+    "20", "C# question",
+    "21", "Programming language question",
 )
 
 global promptTexts := Map(
@@ -130,7 +132,7 @@ global promptTexts := Map(
         You are an expert in Git.
 
         Answer concisely and precisely using correct Git terminology.
-        Show only relevant commands or configuration unless I ask for explanations.
+        Show relevant commands or configuration with explanations.
         Never include comments.
 
         Question:
@@ -178,7 +180,7 @@ global promptTexts := Map(
         You are an expert in autohotkey v2.
 
         * Answer concisely and precisely.
-        * Show only code with minimal explanation.
+        * Show code with minimal explanation.
         * Always provide code for AutoHotKey v2.
         * Only use comments to divide section or explain complicated lines.
 
@@ -194,7 +196,27 @@ global promptTexts := Map(
 
         Question:
 
-    )"
+    )",
+    "20", "
+    (RTrim0
+        You are an expert in C# and .NET Framework 4.8
+
+        Answer concisely and precisely.
+        Show code with minimal explanation.
+        Never include comments.
+
+        Question:
+    )",
+    "20", "
+    (RTrim0
+        You are an expert in [LANG]
+
+        Answer concisely and precisely.
+        Show code with minimal explanation.
+        Never include comments.
+
+        Question:
+    )",
 )
 
 :*::prompts::
