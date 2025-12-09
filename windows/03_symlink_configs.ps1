@@ -28,6 +28,11 @@ $Symlinks = @(
         Path = "$env:LOCALAPPDATA\Microsoft\Windows Terminal\Fragments\dotfiles"
         Target = "$DotfilesRoot\WindowsTerminal\fragments"
         Description = "Windows Terminal fragments"
+    },
+    @{
+        Path = "$env:USERPROFILE\CLUADE.md"
+        Target = "$DotfilesRoot\CLUADE.md"
+        Description = "CLUADE.md"
     }
 )
 
