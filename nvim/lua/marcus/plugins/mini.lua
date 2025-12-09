@@ -61,6 +61,62 @@ return {
 
         -- Extend a/i text objects
         require("mini.ai").setup({})
+
+        -- Jump to character
+        require("mini.jump2d").setup({
+            mappings = {
+                start_jumping = "",
+            },
+        })
+        vim.keymap.set({ "n", "v" }, "s", "<CMD>lua MiniJump2d.start(MiniJump2d.builtin_opts.single_character)<CR>", { desc = "Jump to char" })
+
+        -- Show key clues
+        local miniclue = require("mini.clue")
+        miniclue.setup({
+            triggers = {
+                { mode = "n", keys = "<Leader>" },
+                { mode = "x", keys = "<Leader>" },
+                { mode = "n", keys = "g" },
+                { mode = "x", keys = "g" },
+            },
+            clues = {
+                { mode = "n", keys = "<Leader>a", desc = "+Autolist" },
+                { mode = "n", keys = "<Leader>b", desc = "+Buffers" },
+                { mode = "n", keys = "<Leader>c", desc = "+Copy" },
+                { mode = "n", keys = "<Leader>d", desc = "+Debug" },
+                { mode = "n", keys = "<Leader>e", desc = "+Explorer" },
+                { mode = "n", keys = "<Leader>g", desc = "+Git" },
+                { mode = "n", keys = "<Leader>gc", desc = "+Git Conflict" },
+                { mode = "n", keys = "<Leader>h", desc = "+Harpoon" },
+                { mode = "n", keys = "<Leader>i", desc = "+IDE" },
+                { mode = "n", keys = "<Leader>ib", desc = "+Build" },
+                { mode = "n", keys = "<Leader>ic", desc = "+Compile" },
+                { mode = "n", keys = "<Leader>it", desc = "+Test" },
+                { mode = "n", keys = "<Leader>j", desc = "+Telescope" },
+                { mode = "n", keys = "<Leader>jg", desc = "Git" },
+                { mode = "n", keys = "<Leader>l", desc = "+LSP" },
+                { mode = "n", keys = "<Leader>lt", desc = "Tools" },
+                { mode = "n", keys = "<Leader>o", desc = "+Open" },
+                { mode = "n", keys = "<Leader>p", desc = "+Copilot" },
+                { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
+                { mode = "n", keys = "<Leader>s", desc = "+Surround / Session" },
+                { mode = "n", keys = "<Leader>t", desc = "+Tabs" },
+                { mode = "n", keys = "<Leader>w", desc = "+Window" },
+                { mode = "n", keys = "<Leader>x", desc = "+Quickfix List" },
+                { mode = "n", keys = "<Leader>z", desc = "+Mode" },
+                { mode = "n", keys = "<Leader>zc", desc = "Cloak" },
+                { mode = "n", keys = "gi", desc = "Go to implementation" },
+                miniclue.gen_clues.builtin_completion(),
+                miniclue.gen_clues.g(),
+                miniclue.gen_clues.marks(),
+                miniclue.gen_clues.registers(),
+                miniclue.gen_clues.windows(),
+                miniclue.gen_clues.z(),
+            },
+            window = {
+                delay = 100,
+            },
+        })
     end,
     init = function()
         vim.api.nvim_create_autocmd("FileType", {
