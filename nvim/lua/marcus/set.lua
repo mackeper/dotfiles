@@ -97,10 +97,13 @@ vim.opt.spelllang = "en_us"
 
 -- Terminal
 if jit.os == "Windows" then
-	vim.opt.shellpipe = ">"
-	vim.opt.shellredir = ">"
-	vim.g.terminal_emulator = "powershell"
-	vim.opt.shell = "powershell"
+    vim.opt.shellpipe = ">"
+    vim.opt.shellredir = ">"
+    vim.g.terminal_emulator = "pwsh"
+    vim.o.shell = "pwsh"
+    vim.o.shellcmdflag = "-NoProfile -Command"
+    vim.o.shellquote = ""
+    vim.o.shellxquote = ""
 end
 vim.api.nvim_create_autocmd("TermOpen", {
 	pattern = "*",
