@@ -48,7 +48,10 @@ vim.opt.showmode = false
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 5
 vim.opt.breakindent = true
--- vim.opt.winborder = "rounded" -- Does not work well with wilder
+
+-- Cmdline completion
+vim.opt.wildmenu = true
+vim.opt.wildmode = "longest:full,full"
 
 vim.opt.list = true
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
