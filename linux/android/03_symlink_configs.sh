@@ -8,6 +8,7 @@ ln -sf "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
 ln -sf "$DOTFILES_ROOT/.gitconfig" "$HOME/.gitconfig"
 ln -sf "$DOTFILES_ROOT/.vimrc" "$HOME/.vimrc"
+ln -sf "$DOTFILES_ROOT/CLAUDE.md" "$HOME/CLAUDE.md"
 
 # Ensure .config directory exists
 mkdir -p "$HOME/.config"
@@ -29,3 +30,4 @@ echo "  - $SCRIPT_DIR/.tmux.conf -> $HOME/.tmux.conf"
 echo "  - $DOTFILES_ROOT/.gitconfig -> $HOME/.gitconfig"
 echo "  - $DOTFILES_ROOT/.vimrc -> $HOME/.vimrc"
 echo "  - $DOTFILES_ROOT/nvim -> $HOME/.config/nvim"
+echo "  - $DOTFILES_ROOT/CLAUDE.md -> $HOME/CLAUDE.md"
