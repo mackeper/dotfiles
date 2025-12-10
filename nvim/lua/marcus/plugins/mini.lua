@@ -1,7 +1,7 @@
 return {
     "echasnovski/mini.nvim",
     version = "*",
-    event = { "BufReadPost", "BufNewFile" },
+    event = VeryLazy,
     config = function()
         require("mini.comment").setup({
             mappings = {
@@ -74,25 +74,46 @@ return {
         local miniclue = require("mini.clue")
         miniclue.setup({
             triggers = {
-                { mode = "n", keys = "<Leader>" },
-                { mode = "x", keys = "<Leader>" },
-                { mode = "n", keys = "g" },
-                { mode = "x", keys = "g" },
+                -- Leader triggers
+                { mode = 'n', keys = '<Leader>' },
+                { mode = 'x', keys = '<Leader>' },
+
+                -- Built-in completion
+                { mode = 'i', keys = '<C-x>' },
+
+                -- `g` key
+                { mode = 'n', keys = 'g' },
+                { mode = 'x', keys = 'g' },
+
+                -- Marks
+                { mode = 'n', keys = "'" },
+                { mode = 'n', keys = '`' },
+                { mode = 'x', keys = "'" },
+                { mode = 'x', keys = '`' },
+
+                -- Registers
+                { mode = 'n', keys = '"' },
+                { mode = 'x', keys = '"' },
+                { mode = 'i', keys = '<C-r>' },
+                { mode = 'c', keys = '<C-r>' },
+
+                -- Window commands
+                { mode = 'n', keys = '<C-w>' },
+
+                -- `z` key
+                { mode = 'n', keys = 'z' },
+                { mode = 'x', keys = 'z' },
             },
             clues = {
-                { mode = "n", keys = "<Leader>a", desc = "+Autolist" },
-                { mode = "n", keys = "<Leader>b", desc = "+Buffers" },
                 { mode = "n", keys = "<Leader>c", desc = "+Copy" },
                 { mode = "n", keys = "<Leader>d", desc = "+Debug" },
                 { mode = "n", keys = "<Leader>e", desc = "+Explorer" },
                 { mode = "n", keys = "<Leader>g", desc = "+Git" },
                 { mode = "n", keys = "<Leader>gc", desc = "+Git Conflict" },
-                { mode = "n", keys = "<Leader>h", desc = "+Harpoon" },
                 { mode = "n", keys = "<Leader>i", desc = "+IDE" },
                 { mode = "n", keys = "<Leader>ib", desc = "+Build" },
                 { mode = "n", keys = "<Leader>ic", desc = "+Compile" },
                 { mode = "n", keys = "<Leader>it", desc = "+Test" },
-                { mode = "n", keys = "<Leader>j", desc = "+Telescope" },
                 { mode = "n", keys = "<Leader>jg", desc = "Git" },
                 { mode = "n", keys = "<Leader>l", desc = "+LSP" },
                 { mode = "n", keys = "<Leader>lt", desc = "Tools" },
