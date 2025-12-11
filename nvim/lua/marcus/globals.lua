@@ -25,5 +25,10 @@ vim.api.nvim_create_autocmd("FileType", {
             vim.cmd("luafile " .. vim.fn.expand("%"))
             print("Reloaded " .. vim.fn.expand("%:t"))
         end, { desc = "Reload current Lua file", buffer = true })
+        vim.keymap.set("v", "<leader><leader>", function()
+            local lines = vim.api.nvim_buf_get_lines(0, vim.fn.line("'<") - 1, vim.fn.line("'>"), false)
+            local code = table.concat(lines, "\n")
+            load(code)()
+        end, { silent = true })
     end,
 })

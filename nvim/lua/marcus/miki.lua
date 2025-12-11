@@ -130,8 +130,8 @@ Miki.config = {
         ["{current_file_name_pretty}"] = function()
             local name = vim.fn.expand("%:t:r")
             local result = name:gsub("(%a)([%w]*)", function(first, rest)
-                    return first:upper() .. rest:lower()
-                end)
+                return first:upper() .. rest:lower()
+            end)
                 :gsub("_", " ")
                 :gsub("-", " ")
             return result
@@ -269,7 +269,7 @@ Miki._find_pages = function()
         })
     elseif Miki.config.file_picker == "snacks" then
         require("snacks").picker.files({
-            dirs = { Miki.config.wiki_root, },
+            dirs = { Miki.config.wiki_root },
         })
     else
         vim.notify("Invalid file picker: " .. Miki.config.file_picker, vim.log.levels.ERROR)
@@ -436,7 +436,7 @@ Miki._open_journal_week = function()
         if not year or not month or not day then
             return nil
         end
-        local t = os.time { year = year, month = month, day = day }
+        local t = os.time({ year = year, month = month, day = day })
         vim.notify("Week number: " .. os.date("%W", t), vim.log.levels.DEBUG)
         local week_number = tonumber(os.date("%W", t))
         return week_number
@@ -484,19 +484,19 @@ end
 
 Miki._follow_markdown_link = function()
     local line = vim.api.nvim_get_current_line()
-    local link = line:match('%[.-%]%((.-)%)')
+    local link = line:match("%[.-%]%((.-)%)")
     if link then
-        if link:match('^/') or link:match('^%a:') then
-            vim.cmd('edit ' .. link)
+        if link:match("^/") or link:match("^%a:") then
+            vim.cmd("edit " .. link)
         else
             local current_file = vim.api.nvim_buf_get_name(0)
-            local current_dir = vim.fn.fnamemodify(current_file, ':h')
+            local current_dir = vim.fn.fnamemodify(current_file, ":h")
             link = link:gsub("^<", ""):gsub(">$", "")
-            local full_path = current_dir .. '/' .. link
-            vim.cmd('edit ' .. full_path)
+            local full_path = current_dir .. "/" .. link
+            vim.cmd("edit " .. full_path)
         end
     else
-        vim.cmd('normal! gf')
+        vim.cmd("normal! gf")
     end
 end
 
@@ -571,7 +571,13 @@ Miki._map("n", Miki.config.keymaps.add_page_link, ":MikiAddLink<CR>", { desc = "
 Miki._map("n", Miki.config.keymaps.add_page, ":MikiAddPage<CR>", { desc = "Miki: Add New Page" })
 
 -- Link
-Miki._map("n", Miki.config.keymaps.follow_link, Miki._follow_markdown_link, { desc = "Miki: Follow Link" })
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        Miki._map("n", Miki.config.keymaps.follow_link, Miki._follow_markdown_link,
+            { desc = "Miki: Follow Link", buffer = true })
+    end,
+})
 
 -- Autolist
 Miki._add_autolist_keymaps = function()

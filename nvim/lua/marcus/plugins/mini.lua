@@ -1,7 +1,7 @@
 return {
     "echasnovski/mini.nvim",
     version = "*",
-    event = VeryLazy,
+    event = "VeryLazy",
     config = function()
         require("mini.comment").setup({
             mappings = {
@@ -24,9 +24,9 @@ return {
 
         require("mini.surround").setup({
             mappings = {
-                add = "<leader>sa",            -- Add surrounding in Normal and Visual modes
-                delete = "<leader>sd",         -- Delete surrounding
-                replace = "<leader>sr",        -- Replace surrounding
+                add = "<leader>sa", -- Add surrounding in Normal and Visual modes
+                delete = "<leader>sd", -- Delete surrounding
+                replace = "<leader>sr", -- Replace surrounding
                 update_n_lines = "<leader>sn", -- Update `n_lines`
             },
         })
@@ -68,41 +68,46 @@ return {
                 start_jumping = "",
             },
         })
-        vim.keymap.set({ "n", "v" }, "s", "<CMD>lua MiniJump2d.start(MiniJump2d.builtin_opts.single_character)<CR>", { desc = "Jump to char" })
+        vim.keymap.set(
+            { "n", "v" },
+            "s",
+            "<CMD>lua MiniJump2d.start(MiniJump2d.builtin_opts.single_character)<CR>",
+            { desc = "Jump to char" }
+        )
 
         -- Show key clues
         local miniclue = require("mini.clue")
         miniclue.setup({
             triggers = {
                 -- Leader triggers
-                { mode = 'n', keys = '<Leader>' },
-                { mode = 'x', keys = '<Leader>' },
+                { mode = "n", keys = "<Leader>" },
+                { mode = "x", keys = "<Leader>" },
 
                 -- Built-in completion
-                { mode = 'i', keys = '<C-x>' },
+                { mode = "i", keys = "<C-x>" },
 
                 -- `g` key
-                { mode = 'n', keys = 'g' },
-                { mode = 'x', keys = 'g' },
+                { mode = "n", keys = "g" },
+                { mode = "x", keys = "g" },
 
                 -- Marks
-                { mode = 'n', keys = "'" },
-                { mode = 'n', keys = '`' },
-                { mode = 'x', keys = "'" },
-                { mode = 'x', keys = '`' },
+                { mode = "n", keys = "'" },
+                { mode = "n", keys = "`" },
+                { mode = "x", keys = "'" },
+                { mode = "x", keys = "`" },
 
                 -- Registers
-                { mode = 'n', keys = '"' },
-                { mode = 'x', keys = '"' },
-                { mode = 'i', keys = '<C-r>' },
-                { mode = 'c', keys = '<C-r>' },
+                { mode = "n", keys = '"' },
+                { mode = "x", keys = '"' },
+                { mode = "i", keys = "<C-r>" },
+                { mode = "c", keys = "<C-r>" },
 
                 -- Window commands
-                { mode = 'n', keys = '<C-w>' },
+                { mode = "n", keys = "<C-w>" },
 
                 -- `z` key
-                { mode = 'n', keys = 'z' },
-                { mode = 'x', keys = 'z' },
+                { mode = "n", keys = "z" },
+                { mode = "x", keys = "z" },
             },
             clues = {
                 { mode = "n", keys = "<Leader>c", desc = "+Copy" },

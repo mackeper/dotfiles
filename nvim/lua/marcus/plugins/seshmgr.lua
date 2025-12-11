@@ -4,7 +4,7 @@ return {
     event = "VeryLazy",
     opts = {
         telescope = {
-            enabled = true,
+            enabled = false,
         },
     },
     keys = {

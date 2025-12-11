@@ -29,7 +29,30 @@ vim.keymap.set("n", "<leader>xg", function()
         title = "Git Changes",
         items = vim.tbl_map(function(file)
             return { filename = file }
-        end, files)
+        end, files),
     })
     vim.cmd("copen")
 end, { desc = "Git Changes to Quickfix" })
+
+local function remove_qf_entry()
+    local idx = vim.fn.line(".")
+    local qflist = vim.fn.getqflist()
+    table.remove(qflist, idx)
+    vim.fn.setqflist({}, " ", { title = vim.fn.getqflist({ title = 0 }).title, items = qflist })
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "qf",
+    callback = function()
+        vim.keymap.set("n", "dd", remove_qf_entry, { buffer = true, silent = true })
+    end,
+})
+
+-- Style
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "qf",
+    callback = function()
+        vim.opt_local.number = true
+        vim.opt_local.signcolumn = "yes"
+    end,
+})
