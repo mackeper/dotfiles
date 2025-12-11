@@ -17,15 +17,19 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
+
+-- Style
+vim.o.winborder = "rounded"
+
 -- JavaScript / TypeScript
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "javascript", "typescript" },
-	callback = function()
-		print("Setting JavaScript/TypeScript indent")
-		vim.opt_local.tabstop = 2
-		vim.opt_local.softtabstop = 2
-		vim.opt_local.shiftwidth = 2
-	end,
+    pattern = { "javascript", "typescript" },
+    callback = function()
+        print("Setting JavaScript/TypeScript indent")
+        vim.opt_local.tabstop = 2
+        vim.opt_local.softtabstop = 2
+        vim.opt_local.shiftwidth = 2
+    end,
 })
 
 -- Wrap lines
@@ -53,6 +57,7 @@ vim.opt.breakindent = true
 vim.opt.wildmenu = true
 vim.opt.wildmode = "longest:full,full"
 
+-- Show invisible characters
 vim.opt.list = true
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 
@@ -62,11 +67,11 @@ vim.opt.splitright = true
 
 -- Vertical split help
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "help",
-	callback = function()
-		vim.cmd("wincmd L")
-		vim.cmd("vert resize 100")
-	end,
+    pattern = "help",
+    callback = function()
+        vim.cmd("wincmd L")
+        vim.cmd("vert resize 100")
+    end,
 })
 
 -- Misc
@@ -109,9 +114,9 @@ if jit.os == "Windows" then
     vim.o.shellxquote = ""
 end
 vim.api.nvim_create_autocmd("TermOpen", {
-	pattern = "*",
-	callback = function()
-		vim.cmd("startinsert")
-		vim.cmd("setlocal nonumber norelativenumber")
-	end,
+    pattern = "*",
+    callback = function()
+        vim.cmd("startinsert")
+        vim.cmd("setlocal nonumber norelativenumber")
+    end,
 })

@@ -103,8 +103,10 @@ return {
                 })
             end
 
-            map("n", "<leader>jf", picker_with_layout(Snacks.picker.smart), "Smart Find Files")
-            map("n", "<leader>jg", picker_with_layout(Snacks.picker.git_grep), "Git Grep")
+            map("n", "<leader>jf", picker_with_layout(Snacks.picker.files), "Find Files")
+            map("n", "<leader>js", picker_with_layout(Snacks.picker.smart), "Smart Find Files")
+            map("n", "<leader>jg", picker_with_layout(Snacks.picker.grep), "Grep")
+            map("n", "<leader>jG", picker_with_layout(Snacks.picker.git_grep), "Git Grep")
             map("n", "<leader>jh", picker_with_layout(Snacks.picker.help), "Find help")
             map("n", "<leader>jm", picker_with_layout(Snacks.picker.man), "Find man pages")
             map("n", "<leader>jp", picker_with_layout(Snacks.picker.pickers), "Find picker")
