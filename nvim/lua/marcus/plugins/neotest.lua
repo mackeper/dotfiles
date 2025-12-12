@@ -9,14 +9,15 @@ return {
 
         -- Adapter dependencies
         "rouge8/neotest-rust",
-        "Issafalcon/neotest-dotnet",
+        "Nsidorenco/neotest-vstest",
+        "fredrikaverpil/neotest-golang",
     },
     cmd = { "Neotest" },
     opts = function()
         return {
             adapters = {
-                -- require("neotest-rust"),
-                require("neotest-dotnet"),
+                require("neotest-vstest"),
+                require("neotest-golang"),
             },
         }
     end,
