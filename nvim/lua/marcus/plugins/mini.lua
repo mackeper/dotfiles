@@ -57,7 +57,11 @@ return {
         })
 
         require("mini.pick").setup({})
-        vim.keymap.set("n", "<leader>f", ":Pick files<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "<leader>f", ":Pick files<CR>", {
+            noremap = true,
+            silent = true,
+            desc = "Mini Pick files",
+        })
 
         -- Extend a/i text objects
         require("mini.ai").setup({})

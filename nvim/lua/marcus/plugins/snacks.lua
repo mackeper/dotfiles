@@ -73,7 +73,7 @@ return {
                 end
 
                 -- stylua: ignore start
-                vim.keymap.set("n", "gr", require("snacks.picker").lsp_references, map_opts("LSP References"))
+                vim.keymap.set("n", "grR", require("snacks.picker").lsp_references, map_opts("LSP References"))
                 vim.keymap.set("n", "gd", require("snacks.picker").lsp_definitions, map_opts("LSP Definitions"))
                 vim.keymap.set("n", "gi", require("snacks.picker").lsp_implementations, map_opts("LSP Implementations"))
                 vim.keymap.set("n", "<leader>jd", require("snacks.picker").diagnostics, map_opts("LSP Diagnostics"))

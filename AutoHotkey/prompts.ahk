@@ -27,8 +27,6 @@ global prompts := Map(
     "17", "Windows question",
     "18", "AHK question",
     "19", "Tech question",
-    "20", "C# question",
-    "21", "Programming language question",
 )
 
 global promptTexts := Map(
@@ -196,29 +194,67 @@ global promptTexts := Map(
 
         Question:
 
-    )",
-    "20", "
-    (RTrim0
-        You are an expert in C# and .NET Framework 4.8
-
-        Answer concisely and precisely.
-        Show code with minimal explanation.
-        Never include comments.
-
-        Question:
-    )",
-    "21", "
-    (RTrim0
-        You are an expert in [LANG]
-
-        Answer concisely and precisely.
-        Show code with minimal explanation.
-        Never include comments.
-
-        Question:
-    )",
+    )"
 )
 
+
+; --------------------------------------
+; AddPrompt(key, label, text)
+; --------------------------------------
+AddPrompt(key, label, text) {
+    global prompts, promptTexts
+    prompts[key] := label
+    promptTexts[key] := text
+}
+
+; --------------------------------------
+; Add language-specific prompts
+; --------------------------------------
+langs := ["Python", "C#/.NET", "Go", "Rust", "JavaScript", "Neovim and Lua", "Bash", "PowerShell", "Java", "C", "C++", "HTML/CSS", "SQL"]
+for lang in langs {
+    AddPrompt(
+    "PL_" . lang,
+    lang " question",
+    Format("
+    (RTrim0
+        You are an expert in {}.
+
+        Answer concisely and precisely.
+        Show code with minimal explanation.
+        Never include comments.
+
+        Question:
+    )", lang))
+}
+
+; ---------------------------------------
+; Add tech-specific prompts
+; ---------------------------------------
+techs := ["Git", "Docker", "Kubernetes", "AWS", "Azure", "GCP", "Linux", "Windows", "AutoHotkey v2", "Regex"]
+for tech in techs {
+    key := "TQ_" . tech
+    prompts[key] := tech " question"
+
+    promptTexts[key] := Format("
+    (RTrim0
+        You are an expert in {}.
+
+        Answer concisely and precisely using correct terminology.
+        Show relevant commands and configuration with minimal explanation.
+        Never include obvious comments.
+
+        Question:
+
+    )", tech)
+}
+
+; -----------------------------------------
+; Add coding language prompts
+; -----------------------------------------
+
+; ---------------------------------------
+; Hotkey to open prompt menu
+; ---------------------------------------
 :*::prompts::
 {
     oldClip := A_Clipboard
