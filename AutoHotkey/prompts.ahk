@@ -7,80 +7,26 @@
 #Requires AutoHotkey v2.0
 
 ; Define prompts globally
-global prompts := Map(
-    "1", "Explain concept (analogy)",
-    "2", "Summarize text",
-    "3", "Code review",
-    "4", "Refactor code",
-    "5", "Generate test cases",
-    "6", "Translate + preserve tone",
-    "7", "Rewrite formally",
-    "8", "Brainstorm ideas",
-    "9", "Improve prompt",
-    "10", "Generate username",
-    "11", "Add feature to code",
-    "12", "Create script",
-    "13", "Neovim question",
-    "14", "Git question",
-    "15", "Debug/fix code",
-    "16", "Optimize code",
-    "17", "Windows question",
-    "18", "AHK question",
-    "19", "Tech question",
-)
+global prompts := Map()
+global promptTexts := Map()
+global promptCounter := 0
 
-global promptTexts := Map(
-    "1", "
-    (RTrim0
-        I need to understand the concept of [CONCEPT].
+; --------------------------------------
+; AddPrompt(label, text)
+; --------------------------------------
+AddPrompt(label, text) {
+    global prompts, promptTexts, promptCounter
+    promptCounter++
+    key := String(promptCounter)
+    prompts[key] := label
+    promptTexts[key] := text
+}
 
-        Explain this concept to me using an analogy from a completely different field.
-
-        Break down the analogy, clearly mapping each key part of the concept to the corresponding part of the analogy.
-    )",
-    "2", "
-    (RTrim0
-        Summarize the following text concisely while preserving all essential details.
-        Text:
-        [PASTE HERE]
-    )",
-    "3", "
-    (RTrim0
-        Review the following code for correctness, readability, and efficiency. Suggest concrete improvements and potential pitfalls.
-        Code:
-        [PASTE HERE]
-    )",
-    "4", "
-    (RTrim0
-        Refactor the following code for clarity, maintainability, and idiomatic style without changing behavior.
-        Code:
-        [PASTE HERE]
-    )",
-    "5", "
-    (RTrim0
-        Generate a comprehensive set of unit tests for the following function or module, covering edge cases and failure paths.
-        Code:
-        [PASTE HERE]
-    )",
-    "6", "
-    (RTrim0
-        Translate the following text to [LANGUAGE], preserving tone, intent, and natural flow.
-        Text:
-        [PASTE HERE]
-    )",
-    "7", "
-    (RTrim0
-        Rewrite the following passage in a more formal, concise tone suitable for professional communication.
-        Text:
-        [PASTE HERE]
-    )",
-    "8", "
-    (RTrim0
-        Brainstorm several creative approaches or solutions for the following problem.
-        Problem:
-        [DESCRIBE HERE]
-    )",
-    "9", "
+; --------------------------------------
+; Add general prompts
+; --------------------------------------
+AddPrompt(
+    "Improve prompt", "
     (RTrim0
         I'm trying to get good results using the following prompt:
 
@@ -89,13 +35,94 @@ global promptTexts := Map(
         Your task is to write a better prompt that is more optimal for `[text model]` and would produce better results.
 
         Give me 3 variations.
-    )",
-    "10", "
+    )")
+
+AddPrompt(
+    "Generate username", "
     (RTrim0
         I'm creating a new username. I want it to be a combination of an adjective and an animal name, something catchy and memorable.
         The adjective and animal should both start with the same letter. Please provide me with 10 unique suggestions.
-    )",
-    "11", "
+    )")
+
+; --------------------------------------
+; Add research prompts
+; --------------------------------------
+AddPrompt(
+    "Explain concept (analogy)", "
+    (RTrim0
+        I need to understand the concept of [CONCEPT].
+
+        Explain this concept to me using an analogy from a completely different field.
+
+        Break down the analogy, clearly mapping each key part of the concept to the corresponding part of the analogy.
+    )")
+
+AddPrompt(
+    "Brainstorm ideas", "
+    (RTrim0
+        Brainstorm several creative approaches or solutions for the following problem.
+        Problem:
+        [DESCRIBE HERE]
+    )")
+
+
+;--------------------------------------
+; Add text related prompts
+; --------------------------------------
+AddPrompt(
+    "Summarize text", "
+    (RTrim0
+        Summarize the following text concisely while preserving all essential details.
+        Text:
+        [PASTE HERE]
+    )")
+
+AddPrompt(
+    "Translate + preserve tone", "
+    (RTrim0
+        Translate the following text to [LANGUAGE], preserving tone, intent, and natural flow.
+        Text:
+        [PASTE HERE]
+    )")
+
+AddPrompt(
+    "Rewrite formally", "
+    (RTrim0
+        Rewrite the following passage in a more formal, concise tone suitable for professional communication.
+        Text:
+        [PASTE HERE]
+    )")
+
+
+; --------------------------------------
+; Add technical prompts
+; --------------------------------------
+AddPrompt(
+    "Code review", "
+    (RTrim0
+        Review the following code for correctness, readability, and efficiency. Suggest concrete improvements and potential pitfalls.
+        Code:
+        [PASTE HERE]
+    )")
+
+AddPrompt(
+    "Refactor code", "
+    (RTrim0
+        Refactor the following code for clarity, maintainability, and idiomatic style without changing behavior.
+        Code:
+        [PASTE HERE]
+    )")
+
+AddPrompt(
+    "Generate test cases", "
+    (RTrim0
+        Generate a comprehensive set of unit tests for the following function or module, covering edge cases and failure paths.
+        Code:
+        [PASTE HERE]
+    )")
+
+AddPrompt(
+    "Add feature to code", "
     (RTrim0
         You are a coding assistant. I have this code:
         [CODE]
@@ -105,8 +132,10 @@ global promptTexts := Map(
 
         Update the code to include the feature. Make it clean, efficient, and maintainable.
         Highlight what was added or modified and briefly explain why. Note any assumptions or potential issues.
-    )",
-    "12", "
+    )")
+
+AddPrompt(
+    "Create script", "
     (RTrim0
         You are an expert in [SCRIPTING LANGUAGE]. Create a script that fulfills the following requirements precisely:
         [INSTRUCTIONS]
@@ -114,28 +143,10 @@ global promptTexts := Map(
         Structure the code to be modular, maintainable, and easy to extend.
         Use clear, descriptive variable and function names so the code is self-explanatory without unnecessary comments.
         Follow best practices and ensure the script is robust and ready to run.
-    )",
-    "13", "
-    (RTrim0
-        You are an expert in Neovim and Lua.
+    )")
 
-        Answer concisely and precisely.
-        Show code with minimal explanation.
-        Never include comments.
-
-        Question:
-    )",
-    "14", "
-    (RTrim0
-        You are an expert in Git.
-
-        Answer concisely and precisely using correct Git terminology.
-        Show relevant commands or configuration with explanations.
-        Never include comments.
-
-        Question:
-    )",
-    "15", "
+AddPrompt(
+    "Debug/fix code", "
     (
         You are an expert in [language].
         Your task is to debug and fix code.
@@ -143,15 +154,17 @@ global promptTexts := Map(
         Rules:
         * Show corrected code with minimal explanations.
         * If I ask for explanations, be concise and precise.
-        * Assume I’m an experienced developer — no beginner explanations.
+        * Assume I'm an experienced developer — no beginner explanations.
         * Keep the original code structure intact unless a redesign is required for correctness.
 
         Code:
 
         The issue:
 
-    )",
-    "16", "
+    )")
+
+AddPrompt(
+    "Optimize code", "
     (
         You are an expert in [language].
         Your task is to optimize code for performance, readability, and maintainability.
@@ -165,92 +178,203 @@ global promptTexts := Map(
 
         Code:
 
-    )",
-    "17", "
+    )")
+
+AddPrompt(
+    "Windows question", "
     (
         You are an expert in Windows productivity and keyboard-driven workflows.
-        I’m a software developer who prefers to control everything using shortcuts and avoid the mouse as much as possible.
+        I'm a software developer who prefers to control everything using shortcuts and avoid the mouse as much as possible.
         Explain the most efficient and modern ways to do the following in Windows 11:
 
-    )",
-    "18", "
-    (
-        You are an expert in autohotkey v2.
+    )")
 
-        * Answer concisely and precisely.
-        * Show code with minimal explanation.
-        * Always provide code for AutoHotKey v2.
-        * Only use comments to divide section or explain complicated lines.
+AddPrompt(
+    "Compare approaches", "
+    (RTrim0
+        Compare the following approaches for [PROBLEM/TASK]:
 
-        Question:
-    )",
-    "19", "
-    (
-        You are an expert in [TECH]
+        Approach 1:
+        [DESCRIBE OR PASTE]
 
-        Answer concisely and precisely using correct terminology.
-        Show only relevant commands or configuration unless I ask for explanations.
-        Never include comments.
+        Approach 2:
+        [DESCRIBE OR PASTE]
 
-        Question:
+        Evaluate trade-offs considering: performance, maintainability, scalability, complexity, and edge cases.
+        Recommend the better approach with clear reasoning.
+    )")
 
-    )"
-)
+AddPrompt(
+    "Convert between formats", "
+    (RTrim0
+        Convert the following data from [SOURCE_FORMAT] to [TARGET_FORMAT]:
 
+        Data:
+        [PASTE HERE]
 
-; --------------------------------------
-; AddPrompt(key, label, text)
-; --------------------------------------
-AddPrompt(key, label, text) {
-    global prompts, promptTexts
-    prompts[key] := label
-    promptTexts[key] := text
-}
+        Preserve structure and semantics. Handle type conversions appropriately.
+    )")
+
+AddPrompt(
+    "Name things", "
+    (RTrim0
+        I need a name for a [variable/function/class/project/module] that does the following:
+        [DESCRIBE PURPOSE]
+
+        Context:
+        [LANGUAGE/DOMAIN]
+
+        Provide 5-10 concise, descriptive, idiomatic naming options.
+        Follow naming conventions for the specified context.
+    )")
+
+AddPrompt(
+    "Architecture review", "
+    (RTrim0
+        Review the following system architecture/design:
+
+        [DESCRIBE OR PASTE ARCHITECTURE]
+
+        Analyze:
+        - Scalability and performance bottlenecks
+        - Reliability and fault tolerance
+        - Maintainability and complexity
+        - Security considerations
+        - Potential issues and suggested improvements
+
+        Be direct and prioritize critical issues.
+    )")
+
+AddPrompt(
+    "Security review", "
+    (RTrim0
+        Review the following code/configuration/architecture for security vulnerabilities:
+
+        [PASTE HERE]
+
+        Identify:
+        - Authentication/authorization issues
+        - Input validation and injection risks
+        - Data exposure and encryption gaps
+        - Common vulnerability patterns (OWASP Top 10)
+        - Specific exploits and mitigation strategies
+
+        Prioritize by severity.
+    )")
+
+AddPrompt(
+    "Simplify complexity", "
+    (RTrim0
+        The following code/design is too complex:
+
+        [PASTE HERE]
+
+        Simplify it by:
+        - Reducing cognitive load and nesting
+        - Eliminating unnecessary abstractions
+        - Improving readability and clarity
+        - Preserving functionality exactly
+
+        Show the simplified version with brief explanation of key changes.
+    )")
 
 ; --------------------------------------
 ; Add language-specific prompts
 ; --------------------------------------
-langs := ["Python", "C#/.NET", "Go", "Rust", "JavaScript", "Neovim and Lua", "Bash", "PowerShell", "Java", "C", "C++", "HTML/CSS", "SQL"]
+langs := ["Python", "C#/.NET", "Go", "Rust", "JavaScript",
+         "Neovim and Lua", "Bash", "PowerShell", "Java",
+         "C", "C++", "HTML/CSS", "SQL"]
 for lang in langs {
     AddPrompt(
-    "PL_" . lang,
-    lang " question",
-    Format("
-    (RTrim0
-        You are an expert in {}.
+        lang " question",
+        Format("
+        (RTrim0
+            You are an expert {} developer.
 
-        Answer concisely and precisely.
-        Show code with minimal explanation.
-        Never include comments.
+            Code Requirements:
+            - Idiomatic and production-ready
+            - Modern language features and best practices
+            - No comments except inline explanations of "why" for complex logic
+            - Focus on performance and readability
+            - Prefer standard library over dependencies
+            - Show only relevant code, not full file structure
 
-        Question:
-    )", lang))
+            Response Format:
+            - Code first, brief explanation only if necessary
+            - Assume expert-level knowledge
+            - No preamble or boilerplate
+
+            Question:
+
+        )", lang))
 }
 
 ; ---------------------------------------
 ; Add tech-specific prompts
 ; ---------------------------------------
-techs := ["Git", "Docker", "Kubernetes", "AWS", "Azure", "GCP", "Linux", "Windows", "AutoHotkey v2", "Regex"]
+techs := ["Git", "Docker", "Kubernetes", "AWS", "Azure",
+         "GCP", "Linux", "Windows", "AutoHotkey v2", "Regex",
+         "Nginx", "Apache", "Redis", "PostgreSQL", "MySQL",
+         "ZMK", "Home Assistant", "QMK"]
 for tech in techs {
-    key := "TQ_" . tech
-    prompts[key] := tech " question"
+    AddPrompt(
+        tech " question",
+        Format("
+        (RTrim0
+            You are an expert {} system administrator.
 
-    promptTexts[key] := Format("
-    (RTrim0
-        You are an expert in {}.
+            Command/Configuration Requirements:
+            - Idiomatic and production-ready
+            - Modern syntax and best practices
+            - Inline comments only to explain "why" for non-obvious choices
+            - Safe operations (avoid destructive commands without warnings)
+            - Cross-platform considerations when relevant
+            - Prefer built-in tools over third-party utilities
+            - Show only relevant commands/config, not full files
 
-        Answer concisely and precisely using correct terminology.
-        Show relevant commands and configuration with minimal explanation.
-        Never include obvious comments.
+            Response Format:
+            - Commands/config first, brief explanation only if necessary
+            - Assume expert-level knowledge
+            - No preamble or boilerplate
 
-        Question:
+            Question:
 
-    )", tech)
+        )", tech))
 }
 
-; -----------------------------------------
-; Add coding language prompts
-; -----------------------------------------
+; ---------------------------------------
+; Add tool-specific prompts
+; ---------------------------------------
+tools := ["rg", "fd", "bat", "fzf", "htop", "curl",
+          "wget", "jq", "awk", "sed", "tmux", "ssh",
+          "rsync", "ffmpeg", "systemd", "nftables",
+          "dotnet", "systemctl", "choco", "winget"]
+for tool in tools {
+    AddPrompt(
+        tool " question",
+        Format("
+        (RTrim0
+            You are an expert {} CLI Linux and Windows user.
+
+            Command Requirements:
+            - Idiomatic and production-ready syntax
+            - Modern flags and features over legacy alternatives
+            - Inline comments only to explain "why" for complex pipelines
+            - Safe operations (show --dry-run or confirmation flags when destructive)
+            - POSIX-compliant when possible for portability
+            - Composable commands (proper piping and chaining)
+            - Show only exact commands needed, not full scripts
+
+            Response Format:
+            - Commands first, brief explanation only if necessary
+            - Assume expert-level knowledge
+            - No preamble or boilerplate
+
+            Question:
+
+        )", tool))
+}
+
 
 ; ---------------------------------------
 ; Hotkey to open prompt menu
@@ -266,16 +390,16 @@ for tech in techs {
     guia.SetFont("s10")
     guia.BackColor := "1e1e1e"
 
-    guia.AddText("w300 Center cWhite", "Type to filter prompts:")
-    filterEdit := guia.AddEdit("w300")
+    guia.AddText("w500 Center cWhite", "Type to filter prompts:")
+    filterEdit := guia.AddEdit("w500")
 
     guia.SetFont("s12 Bold")
-    headerText := guia.AddText("w300 Background2d2d2d cWhite", "Key    Prompt")
+    headerText := guia.AddText("w500 Background2d2d2d cWhite", "Key    Prompt")
     guia.SetFont("s10")
-    promptList := guia.AddListView("w300 h200 -Multi -Hdr Background252525 cWhite", ["Key", "Prompt"])
+    promptList := guia.AddListView("w500 h400 -Multi -Hdr Background252525 cWhite", ["Key", "Prompt"])
 
-    promptList.ModifyCol(1, 40)
-    promptList.ModifyCol(2, 250)
+    promptList.ModifyCol(1, 60)
+    promptList.ModifyCol(2, 430)
     guiHwnd := guia.Hwnd
 
     UpdateList("")
