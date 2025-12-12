@@ -8,7 +8,6 @@ vim.keymap.set("n", "<leader>xd", function()
 end, { desc = "Diagnostics to Quickfix" })
 
 vim.keymap.set("n", "<leader>xl", ":lopen<CR>", { desc = "Open Location List" })
-vim.keymap.set("n", "<leader>xc", ":lclose<CR>", { desc = "Close Location List" })
 
 vim.keymap.set("n", "<leader>xs", ":grep <C-r><C-w><CR>:copen<CR>", { desc = "Search Word in Project" })
 

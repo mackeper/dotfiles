@@ -8,7 +8,29 @@
 # - delta: choco install delta -y
 # - neovim: https://github.com/neovim/neovim/releases
 
+function Show-StartMessage {
+    Clear-Host
+
+    $user = $env:USERNAME
+    $hostname = [System.Net.Dns]::GetHostName()
+
+    $title = "$([char]27)[38;5;14mWelcome, $user@$hostname$([char]27)[0m"
+    Write-Host "$title`n"
+
+    Write-Host "$([char]27)[38;5;10mKeyBindings:$([char]27)[0m"
+    Write-Host "  Ctrl+f  → FZF file search"
+    Write-Host "  Ctrl+s  → FZF solution (.sln) search"
+    Write-Host "  Ctrl+p  → FZF project search"
+    Write-Host "  Alt+c   → FZF directory search"
+    Write-Host "  Ctrl+g  → lazygit"
+    Write-Host ""
+    Write-Host "$([char]27)[38;5;10mUseful functions:$([char]27)[0m"
+    Write-Host "  tabs - Open preset tabs"
+    Write-Host ""
+}
+
 # --- General ---
+
 
 $OnViModeChange = [scriptblock]{
     Write-Host -NoNewLine $(if ($args[0] -eq 'Command') {"`e[1 q"} else {"`e[5 q"})
@@ -159,26 +181,6 @@ Set-PSReadLineKeyHandler -Key Ctrl+s -ScriptBlock {
 
 Set-PSReadLineKeyHandler -Key Ctrl+g -ScriptBlock {
     lazygit
-}
-
-function Show-StartMessage {
-    Clear-Host
-
-    $user = $env:USERNAME
-    $hostname = [System.Net.Dns]::GetHostName()
-
-    $title = "$([char]27)[38;5;14mWelcome, $user@$hostname$([char]27)[0m"
-    Write-Host "$title`n"
-
-    Write-Host "$([char]27)[38;5;10mKeyBindings:$([char]27)[0m"
-    Write-Host "  Ctrl+f  → FZF file search"
-    Write-Host "  Ctrl+s  → FZF solution (.sln) search"
-    Write-Host "  Ctrl+p  → FZF directory search"
-    Write-Host "  Ctrl+g  → lazygit"
-    Write-Host ""
-    Write-Host "$([char]27)[38;5;10mUseful functions:$([char]27)[0m"
-    Write-Host "  tabs - Open preset tabs"
-    Write-Host ""
 }
 
 Show-StartMessage
