@@ -50,7 +50,8 @@ local function opts(desc) return { silent = true, noremap = true, desc=desc } en
 local map = vim.keymap.set
 
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
-map("n", "<leader>ee", "<cmd>Explore<cr>", opts())
+map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
+map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
 map("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", opts("Toggle spell check"))
 
 map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
