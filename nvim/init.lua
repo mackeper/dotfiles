@@ -55,6 +55,7 @@ local map = vim.keymap.set
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
 map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
 map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
+map("n", "<leader>eu", "<cmd>lua require('undotree').toggle()<cr>", opts("Toggle undotree"))
 
 map("n", "<leader>es", "<cmd>lua MiniFiles.open()<cr>", opts("Open file explorer"))
 map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
@@ -82,6 +83,13 @@ map("n", "grf", vim.lsp.buf.format, opts("vim.lsp.buf.format()"))
 
 map("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", opts("Toggle spell check"))
 
+-- wiki
+local wiki = vim.fn.expand("~/git/wiki")
+if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+  wiki = "C:\\git\\wiki"
+end
+map("n", "<leader>w", "<cmd>edit " .. wiki .. "/index.md<CR>", opts("Open wiki"))
+
 -- =================
 --     Plugins
 -- =================
@@ -97,6 +105,7 @@ vim.pack.add({
     'https://github.com/nvim-treesitter/nvim-treesitter-context',   -- Show code context at time of buffer
     'https://github.com/github/copilot.vim',                        -- GitHub copilot :Copilot setup
     'https://github.com/CopilotC-Nvim/CopilotChat.nvim',            -- GitHub copilot chat :CopilotChat
+    'https://github.com/jiaoshijie/undotree',                       -- Visual undotree
 })
 
 -- Mini - A collection of plugins
@@ -177,9 +186,28 @@ require("mason").setup({})
 require("mason-lspconfig").setup({})
 require("mason-tool-installer").setup({
     ensure_installed = {
-        "lua-language-server",
-        "pylsp",
+        "bashls",
         "clangd",
+        "gopls",
+        "lua-language-server",
+        "powershell_es",
+        "pylsp",
+        "stylua",
+        "tinymist",
+        "ts_ls",
+        "prettierd",
+        "jsonls",
+        "yamlls",
+        "html",
+        "cssls",
+        "eslint",
+        "marksman",
+        "dockerls",
+        "rust_analyzer",
+        "vimls",
+        "shfmt",
+        "black",
+        "ruff",
     },
 })
 
