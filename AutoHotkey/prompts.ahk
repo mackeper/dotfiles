@@ -95,6 +95,65 @@ AddPrompt(
 
 
 ; --------------------------------------
+; Med-tech prompts
+; --------------------------------------
+AddPrompt(
+    "DICOM question",
+    "
+    (RTrim0
+        You are an expert in medical imaging standards.
+
+        Answer the following question about **DICOM (Digital Imaging and Communications in Medicine)** clearly and technically:
+
+        - Explain the relevant DICOM concepts (file format, network protocol, metadata, service classes).
+        - Include how medical imaging systems (e.g., CT, MRI, X-ray) use DICOM.
+        - If applicable, mention related APIs like DICOMweb (RESTful services for query/retrieve/store).
+        - Provide examples of typical use cases or commands where relevant.
+
+        Question:
+        [PASTE HERE]
+    )"
+)
+
+AddPrompt(
+    "FHIR question",
+    "
+    (RTrim0
+        You are an expert in healthcare interoperability and APIs.
+
+        Answer the following question about **FHIR (Fast Healthcare Interoperability Resources)** accurately:
+
+        - Explain relevant FHIR concepts (resources, RESTful API, formats like JSON/XML).
+        - If relevant, compare to other healthcare standards (e.g., HL7 v2/v3, CDA).
+        - Provide examples of typical use cases (EHR integration, mobile apps, clinical queries).
+        - Include example API request/response snippets when applicable.
+
+        Question:
+        [PASTE HERE]
+    )"
+)
+
+AddPrompt(
+    "Radiotherapy equipment question",
+    "
+    (RTrim0
+        You are an expert in radiation oncology technology and clinical workflow.
+
+        Answer the following question about **medical devices, imaging equipment, and treatment machines used in radiotherapy oncology**.
+
+        In your response:
+        - Define any technical terms in plain language (assume no medical background).
+        - Explain how the devices or systems are used in real clinical practice.
+        - Distinguish imaging equipment (e.g., CT scanners, on-board imagers) from treatment machines (e.g., linear accelerators, proton therapy, brachytherapy).
+        - Include safety, positioning, and planning considerations where relevant.
+        - Use examples, typical workflows, and common variants or brands when helpful.
+
+        Question:
+        [PASTE HERE]
+    )"
+)
+
+; --------------------------------------
 ; Add technical prompts
 ; --------------------------------------
 AddPrompt(
