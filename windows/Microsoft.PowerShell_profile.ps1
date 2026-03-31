@@ -1,9 +1,10 @@
 # --- PowerShell Profile ---
-# by Marcus
+# Author: Marcus
 
 # --- Perferred tools ---
 # - eza: choco install eza -y
 # - fzf: choco install fzf -y
+# - fd: choco install fd -y
 # - lazygit: choco install lazygit -y
 # - delta: choco install delta -y
 # - neovim: https://github.com/neovim/neovim/releases
@@ -13,25 +14,29 @@ function Show-StartMessage {
 
     $user = $env:USERNAME
     $hostname = [System.Net.Dns]::GetHostName()
+    $profileVersion = "0.2"
 
-    $title = "$([char]27)[38;5;14mWelcome, $user@$hostname$([char]27)[0m"
+    $title = "$([char]27)[38;5;14mWelcome, $user@$hostname (v$profileVersion)$([char]27)[0m"
     Write-Host "$title`n"
 
-    Write-Host "$([char]27)[38;5;10mKeyBindings:$([char]27)[0m"
+    Write-Host "$([char]27)[38;5;10mKey bindings:$([char]27)[0m"
     Write-Host "  Ctrl+f  → FZF file search"
     Write-Host "  Ctrl+s  → FZF solution (.sln) search"
-    Write-Host "  Ctrl+p  → FZF project search"
+    Write-Host "  Ctrl+j  → FZF project search"
     Write-Host "  Alt+c   → FZF directory search"
     Write-Host "  Ctrl+g  → lazygit"
     Write-Host ""
     Write-Host "$([char]27)[38;5;10mUseful functions:$([char]27)[0m"
-    Write-Host "  tabs - Open preset tabs"
+    Write-Host "  admin  → Open an elevated terminal"
+    Write-Host "  build  → Build current project"
+    Write-Host "  driver → Start/stop a treatment driver"
+    Write-Host "  tabs   → Open preset tabs"
     Write-Host ""
 }
 
-# --- General ---
-
-
+# ========================================
+#              Shell options
+# ========================================
 $OnViModeChange = [scriptblock]{
     Write-Host -NoNewLine $(if ($args[0] -eq 'Command') {"`e[1 q"} else {"`e[5 q"})
 }
@@ -43,7 +48,9 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -BellStyle None
 
 
-# --- Prompt ---
+# ========================================
+#              Prompt
+# ========================================
 function prompt {
     $path = (Get-Location).Path.Replace($HOME, '~')
     $branch = ''
@@ -67,11 +74,23 @@ function ls([string]$path = ".") {
         Get-ChildItem -Exclude ".*" $path | Format-Wide -AutoSize -ErrorAction SilentlyContinue
     }
 }
-Set-Alias ll Get-ChildItem
-Set-Alias la 'Get-ChildItem -Force'
+function ll {
+    if (Get-Command eza -ErrorAction SilentlyContinue) { eza -la --icons --git --group-directories-first @args }
+    else { Get-ChildItem -Force @args }
+}
+function lt {
+    if (Get-Command eza -ErrorAction SilentlyContinue) { eza --tree --level=2 --icons @args }
+    else { Get-ChildItem -Recurse -Depth 2 @args }
+}
+function la {
+    if (Get-Command eza -ErrorAction SilentlyContinue) { eza -la --icons @args }
+    else { Get-ChildItem -Force @args }
+}
 Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 
-# --- Git Aliases ---
+# ========================================
+#              Git Aliases
+# ========================================
 Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gpn, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
 
 function gc  { git commit -ev @args }
@@ -114,21 +133,66 @@ function which($cmd) { Get-Command $cmd | Select-Object -ExpandProperty Source }
 
 # TODO: Update with private / work
 function tabs() {
-    wt -w 0 nt --tabColor '#00FF00' --title Wiki --suppressApplicationTitle ` -d 'C:\git\wiki'
-    wt -w 0 split-pane -V --tabColor '#00FF00' --title Dotfiles --suppressApplicationTitle ` -d 'C:\git\dotfiles'
+    wt -w 0 nt --tabColor '#00FF00' --title Dotfiles --suppressApplicationTitle ` -d 'C:\git\dotfiles'
+    wt -w 0 split-pane -V --tabColor '#00FF00' --title Copilot --suppressApplicationTitle ` -d "$env:APPDATA\Code\User"
+    wt -w 0 split-pane -H --tabColor '#00FF00' --title Wiki --suppressApplicationTitle ` -d 'C:\git\wiki'
     wt -w 0 nt --tabColor '#0000ff' --title RayCare --suppressApplicationTitle -d 'C:\git\RayCare'
+    wt -w 0 split-pane -V --tabColor '#0000ff' --title RayCare --suppressApplicationTitle -d 'C:\git\RayCare' powershell -NoExit -File .\MonitorMicroservices.ps1
     wt -w 0 nt --tabColor '#0000ff' --title TreatmentDrivers --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers'
     wt -w 0 nt --tabColor '#0000ff' --title TreatAPI --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API'
     wt -w 0 nt --tabColor '#F000F0' --title RayCare2 --suppressApplicationTitle -d 'C:\git\RayCare2'
+    wt -w 0 split-pane -V --tabColor '#F000F0' --title RayCare2 --suppressApplicationTitle -d 'C:\git\RayCare2' powershell -NoExit -File .\MonitorMicroservices.ps1
     wt -w 0 nt --tabColor '#F000F0' --title TreatmentDrivers2 --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers2'
     wt -w 0 nt --tabColor '#F000F0' --title TreatAPI2 --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API2'
     wt -w 0 nt --tabColor '#ff0000' --title RayStation --suppressApplicationTitle -d 'C:\git\RayStation'
 }
 
+
+function Invoke-AdminAndStreamOutput {
+    param(
+        [string]$AdminCommand,
+        [string]$TempFile = $(Join-Path "C:/tmp" ("rc_build_" + [guid]::NewGuid().ToString() + ".txt"))
+    )
+
+    # Ensure temp directory exists
+    if (-not (Test-Path "C:/tmp")) {
+        New-Item -ItemType Directory -Path "C:/tmp" | Out-Null
+    }
+
+    # Start admin PowerShell to run command and write output to temp file
+    $psCommand = "$AdminCommand | Tee-Object -FilePath '$TempFile'"
+    $proc = Start-Process powershell.exe -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", $psCommand) -Verb RunAs -PassThru
+
+    Write-Host "Streaming output from $TempFile..."
+
+    $lastLength = 0
+    while ($proc.HasExited -eq $false) {
+        if (Test-Path $TempFile) {
+            $content = Get-Content $TempFile -Raw
+            if ($content.Length -gt $lastLength) {
+                Write-Host $content.Substring($lastLength)
+                $lastLength = $content.Length
+            }
+        }
+        Start-Sleep -Seconds 1
+        $proc.Refresh()
+    }
+
+    # Print any remaining output
+    if (Test-Path $TempFile) {
+        $content = Get-Content $TempFile -Raw
+        if ($content.Length -gt $lastLength) {
+            Write-Host $content.Substring($lastLength)
+        }
+    }
+
+    Remove-Item $TempFile -Force
+}
+
 # TODO: Better solution than folder specific?
 function Build {
     if ($PWD.Path -match "C:\\git\\RayCare\.TreatmentDrivers2?") {
-        Get-ChildItem -Path "C:\git\RayCare.TreatmentDrivers" -Filter *DomainModel.csproj -Recurse -Depth 3 -File | ForEach-Object { dotnet build $_.FullName }
+        Get-ChildItem -Filter *DomainModel.csproj -Recurse -Depth 5 -File | ForEach-Object { dotnet build $_.FullName }
         dotnet build "src\RayCare.TreatmentDrivers.sln"
     }
 
@@ -157,18 +221,21 @@ function install_module_if_missing($moduleName) {
     Import-Module $moduleName
 }
 
-# ---  Modules ---
+# ========================================
+#              Modules
+# ========================================
 install_module_if_missing -moduleName PSReadLine
 install_module_if_missing -moduleName PSFzf
 install_module_if_missing -moduleName Terminal-Icons
 
+$env:FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
 Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+f' -PSReadlineChordReverseHistory 'Ctrl+r'
 Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
-Set-PSReadLineKeyHandler -Key Ctrl+p -ScriptBlock {
+Set-PSReadLineKeyHandler -Key Ctrl+j -ScriptBlock {
     $locations = @("D:\Documents\Projects", "D:\Documents\Software", "C:\git")
     $directories = $locations | ForEach-Object { if (Test-Path $_) {Get-ChildItem -Path $_ -Directory -Depth 2} }
     $directories | Select-Object -ExpandProperty FullName | Invoke-Fzf | Set-Location
@@ -182,5 +249,114 @@ Set-PSReadLineKeyHandler -Key Ctrl+s -ScriptBlock {
 Set-PSReadLineKeyHandler -Key Ctrl+g -ScriptBlock {
     lazygit
 }
+
+# ========================================
+#              Mimic linux
+# ========================================
+function touch($file) { if (Test-Path $file) { (Get-Item $file).LastWriteTime = Get-Date } else { New-Item $file -ItemType File } }
+function grep {
+    if (Get-Command rg -ErrorAction SilentlyContinue) { rg --color=auto @args }
+    else { Select-String @args }
+}
+function head { param($n=10) $input | Select-Object -First $n }
+function tail {
+    param([int]$n = 10, [switch]$f)
+    if ($f) {
+        if ($args.Count -eq 0) { Write-Error "tail -f requires a file path"; return }
+        Get-Content $args[0] -Tail $n -Wait
+    } else {
+        if ($args.Count -gt 0) { Get-Content $args[0] | Select-Object -Last $n }
+        else { $input | Select-Object -Last $n }
+    }
+}
+
+function Start-TreatmentDriver {
+    param(
+        [Parameter(Position = 0)]
+        [ValidateSet('Start', 'Stop', IgnoreCase = $true)]
+        [string]$Command = 'Start',
+
+        [Parameter(Position = 1)]
+        [ValidateSet('CyberKnife', 'Oxray', 'ProBeat', 'ProBeatMarie', 'ProteusOne', 'StandardDriver', 'Tomo', 'TrueBeam', IgnoreCase = $true)]
+        [string]$Driver,
+
+        [switch]$Subscriptions
+    )
+
+    if (-not $Driver) {
+        $drivers = (Get-Command Start-TreatmentDriver).Parameters['Driver'].Attributes.ValidValues -join ', '
+        Write-Host "Usage: driver <Start|Stop> <Driver> [-Subscriptions]"
+        Write-Host "  Drivers: $drivers"
+        return
+    }
+
+    $map = @{
+        CyberKnife     = 'CyberKnife/RayCare.TreatmentDrivers.TDW1.CyberKnife'
+        Oxray          = 'Oxray/RayCare.TreatmentDrivers.TDW1.Oxray'
+        ProBeat        = 'ProBeat/RayCare.TreatmentDrivers.TDW2.ProBeat'
+        ProBeatMarie   = 'ProBeatMarie/RayCare.TreatmentDrivers.TDW2.Hitachi.ProBeatMarie'
+        ProteusOne     = 'ProteusOne/RayCare.TreatmentDrivers.TDW2.ProteusOne'
+        StandardDriver = 'StandardDriver/RayCare.TreatmentDrivers.TDW2.StandardDriver'
+        Tomo           = 'Tomo/RayCare.TreatmentDrivers.TDW1.Tomo'
+        TrueBeam       = 'TrueBeam/RayCare.TreatmentDrivers.RTX.TrueBeam'
+    }
+
+    $suffix = if ($Subscriptions) { ".Subscriptions.Host" } else { ".Host" }
+    $processName = "$($map[$Driver])$suffix".Split('/')[-1]
+
+    if ($Command -eq 'Stop') {
+        $procs = Get-Process -Name $processName -ErrorAction SilentlyContinue
+        if ($procs) {
+            $procs | Stop-Process -Force
+            Write-Host "Stopped $processName"
+        } else {
+            Write-Host "No running process found for $processName"
+        }
+        return
+    }
+
+    $repoRoot = $PWD.Path
+    while ($repoRoot -and -not (Test-Path (Join-Path $repoRoot 'src\drivers'))) {
+        $parent = Split-Path $repoRoot -Parent
+        if ($parent -eq $repoRoot) { $repoRoot = $null; break }
+        $repoRoot = $parent
+    }
+    if (-not $repoRoot) {
+        Write-Error "Could not find repo root. Navigate to a directory within the RayCare.TreatmentDrivers repo."
+        return
+    }
+
+    $base = "src/drivers/$($map[$Driver])"
+    $project = "$base$suffix"
+
+    Push-Location $repoRoot
+    try {
+        dotnet run --project $project
+    } finally {
+        Pop-Location
+    }
+}
+Set-Alias driver Start-TreatmentDriver
+
+function Invoke-AdminTerminal {
+    param(
+        [string]$Command = ""
+    )
+    $wt = Get-Command wt.exe -ErrorAction SilentlyContinue
+    $cwd = $PWD.Path
+
+    if ($wt) {
+        $wtArgs = @("-d", $cwd)
+        if ($Command) {
+            $wtArgs += "--command"
+            $wtArgs += $Command
+        }
+        Start-Process wt.exe -ArgumentList $wtArgs -Verb RunAs
+    } else {
+        $psCommand = $Command ? "$Command; cd '$cwd'" : "cd '$cwd'"
+        Start-Process powershell.exe -ArgumentList @("-NoExit", "-Command", $psCommand) -Verb RunAs
+    }
+}
+Set-Alias admin Invoke-AdminTerminal
 
 Show-StartMessage
