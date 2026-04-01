@@ -1,55 +1,56 @@
 -- Marcus try on a minimal init.lua
 --
 -- Philosophy:
---   - Use defaults for as much as possible
---   - One file
---   -
---
--- require("marcus")
+--   - Use defaults for as much as possible.
+--   - Try to reduce dependencies on plugins.
+--   - One file.
 
 -- =================
 --     Options
 -- =================
-vim.cmd.colorscheme('catppuccin')
+vim.cmd.colorscheme("catppuccin")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 vim.opt.clipboard = "unnamedplus" -- System clipboard
-vim.opt.undofile = true           -- Persistent undo
+vim.opt.undofile = true -- Persistent undo
 
-vim.opt.termguicolors = true      -- Enabled true color support
-vim.opt.scrolloff = 8             -- Keep X lines from top/bottom
-vim.opt.sidescrolloff = 5         -- Keep X characters from the side
-vim.opt.wrap = false              -- Disable wrap lines
+-- [bufnr] filepath [flags] | | [ft] (row,col-Vcol) tLines percentage%
+vim.opt.statusline = '[%n] %<%f %h%w%m%r%q%=%=%y %-14.(%l,%c%V%) %L %P'
+vim.opt.termguicolors = true -- Enabled true color support
+vim.opt.scrolloff = 8 -- Keep X lines from top/bottom
+vim.opt.sidescrolloff = 5 -- Keep X characters from the side
+vim.opt.wrap = false -- Disable wrap lines
 
-vim.opt.ignorecase = true         -- Ignore case in search patterns
-vim.opt.smartcase = true          -- Override ignorecase if search pattern contains uppercase letters
-vim.opt.hlsearch = true           -- Highlight search matches
-vim.opt.incsearch = true          -- Show search matches as you type
-vim.opt.inccommand = "split"      -- Show search substitution in split
+vim.opt.ignorecase = true -- Ignore case in search patterns
+vim.opt.smartcase = true -- Override ignorecase if search pattern contains uppercase letters
+vim.opt.hlsearch = true -- Highlight search matches
+vim.opt.incsearch = true -- Show search matches as you type
+vim.opt.inccommand = "split" -- Show search substitution in split
 
-vim.opt.tabstop = 4               -- Number of spaces that a <Tab> counts for
-vim.opt.softtabstop = 4           -- Number of spaces that a <Tab> counts for
-vim.opt.shiftwidth = 4            -- Number of spaces to use for each step of (auto)indent
-vim.opt.expandtab = true          -- Use spaces instead of tabs
-vim.opt.smartindent = true        -- Smart autoindenting when starting a new line
+vim.opt.tabstop = 4 -- Number of spaces that a <Tab> counts for
+vim.opt.softtabstop = 4 -- Number of spaces that a <Tab> counts for
+vim.opt.shiftwidth = 4 -- Number of spaces to use for each step of (auto)indent
+vim.opt.expandtab = true -- Use spaces instead of tabs
+vim.opt.smartindent = true -- Smart autoindenting when starting a new line
 
-vim.opt.wildmenu = true           -- Command line wild search
+vim.opt.wildmenu = true -- Command line wild search
 vim.opt.wildmode = "longest:full,full"
 
-vim.opt.autocomplete = true       -- Enable autocompletion
+vim.opt.autocomplete = true -- Enable autocompletion
 vim.opt.completeopt = "fuzzy,menu,menuone,preview"
-vim.opt.completetimeout = 100
 
-vim.opt.list = true               -- Show invisible characters
+vim.opt.list = true -- Show invisible characters
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 
-vim.opt.signcolumn = "yes"        -- Always show signcolumn. Why?
+vim.opt.signcolumn = "yes" -- Always show signcolumn. Why?
 
 -- =================
 --     Keymaps
 -- =================
-local function opts(desc) return { silent = true, noremap = true, desc = desc } end
+local function opts(desc)
+    return { silent = true, noremap = true, desc = desc }
+end
 local map = vim.keymap.set
 
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
@@ -57,11 +58,12 @@ map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
 map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
 map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle undotree"))
 
-map("n", "<leader>es", "<cmd>lua MiniFiles.open()<cr>", opts("Open file explorer"))
+map("n", "<leader>es", "<cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0), false)<cr>", opts("Open file explorer"))
 map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
 map("n", "<C-f>", "<cmd>Pick grep_live<cr>", opts())
 map("n", "<C-b>", "<cmd>Pick buffers<cr>", opts())
 map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
+map("n", "<C-r>", "<cmd>Pick visit_paths<cr>", opts())
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
 
 map("n", "<leader>gd", "<cmd>lua MiniDiff.toggle_overlay()<cr>", opts("Toggle git diff overlay"))
@@ -70,6 +72,11 @@ map("n", "n", "nzzzv", opts("Move to next match"))
 map("n", "N", "Nzzzv", opts("Move to previous match"))
 map("n", "<C-d>", "<C-d>zz", opts("Scroll down"))
 map("n", "<C-u>", "<C-u>zz", opts("Scroll up"))
+
+map("n", "<C-Left>",  "<C-w>h", opts("Window left"))
+map("n", "<C-Down>",  "<C-w>j", opts("Window down"))
+map("n", "<C-Up>",    "<C-w>k", opts("Window up"))
+map("n", "<C-Right>", "<C-w>l", opts("Window right"))
 
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
 map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to clipboard"))
@@ -83,50 +90,78 @@ map("n", "grf", vim.lsp.buf.format, opts("vim.lsp.buf.format()"))
 
 map("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", opts("Toggle spell check"))
 
+-- quickfix
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    map("n", "q", "<cmd>cclose<CR>", opts("Close quickfix"))
+    map("n", "dd", function()
+      local row = vim.fn.line(".")
+      local qf = vim.fn.getqflist()
+      table.remove(qf, row)
+      vim.fn.setqflist(qf, "r")
+      vim.cmd("copen")
+      local new_row = math.min(row, #qf)
+      if new_row > 0 then
+        vim.api.nvim_win_set_cursor(0, { new_row, 0 })
+      end
+    end, opts("Delete qf entry"))
+  end,
+})
+map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
+map("n", "<leader>cf", "<cmd>packadd cfilter<CR><cmd>Cfilter ", opts("Filter qf"))
+map("n", "<leader>cF", "<cmd>packadd cfilter<CR><cmd>Cfilter! ", opts("Filter qf inv"))
+
 -- wiki
 local wiki = vim.fn.expand("~/git/wiki")
 if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
-  wiki = "C:\\git\\wiki"
+    wiki = "C:\\git\\wiki"
 end
-map("n", "<leader>w", "<cmd>edit " .. wiki .. "/index.md<CR>", opts("Open wiki"))
+map("n", "<leader>ww", "<cmd>edit " .. wiki .. "/index.md<CR>", opts("Open wiki index"))
+map("n", "<leader>wj", "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>", opts("Open wiki journal"))
+map("n", "<leader>wc", "<cmd>edit " .. wiki .. "/01_Work/current.md<CR>", opts("Open wiki current work"))
+map("n", "<M-t>", function()
+  vim.cmd([[%s/\v- \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
+end, opts("Toggle checkbox"))
 
 -- =================
 --     Plugins
 -- =================
 vim.pack.add({
-    'https://github.com/nvim-lua/plenary.nvim',                     -- Common library
-    'https://github.com/nvim-mini/mini.nvim',                       -- Collection of plugins
-    'https://github.com/neovim/nvim-lspconfig',                     -- Default LSP configurations
-    'https://github.com/mason-org/mason.nvim',                      -- LSP/DAP/Linter/Formatter installer
-    'https://github.com/mason-org/mason-lspconfig.nvim',            -- Auto enable plugins installed by mason.nvim
-    'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim', -- Auto install tools installed by mason.nvim
-    -- 'hhttps://github.com/nvim-treesitter/nvim-treesitterttps://github.com/nvim-treesitter/nvim-treesitter',
-    -- 'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
-    -- 'https://github.com/nvim-treesitter/nvim-treesitter-context',   -- Show code context at time of buffer
-    'https://github.com/github/copilot.vim',                        -- GitHub copilot :Copilot setup
-    'https://github.com/CopilotC-Nvim/CopilotChat.nvim',            -- GitHub copilot chat :CopilotChat
+    "https://github.com/nvim-lua/plenary.nvim", -- Common library
+    "https://github.com/nvim-mini/mini.nvim", -- Collection of plugins
+    "https://github.com/neovim/nvim-lspconfig", -- Default LSP configurations
+    "https://github.com/mason-org/mason.nvim", -- LSP/DAP/Linter/Formatter installer
+    "https://github.com/mason-org/mason-lspconfig.nvim", -- Auto enable plugins installed by mason.nvim
+    "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Auto install tools installed by mason.nvim
+    "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
+    "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
 })
-vim.cmd("packadd nvim.undotree") -- Built in plugin, but not loaded by default.
+vim.cmd.packadd('cfilter') -- filder quickfix list.
+vim.cmd.packadd('nvim.undotree') -- UI to navigate undo tree.
+-- vim.cmd.packadd('nvim.difftool') -- not sure
 
 -- Mini - A collection of plugins
-require("mini.statusline").setup({}) -- Fancier statusline
-require("mini.pick").setup({})       -- Picker, e.g. :Pick files, :Pick grep_live
-require("mini.files").setup({        -- File explorer. :MiniFiles.open() g? to show info
+-- require("mini.statusline").setup({}) -- Fancier statusline
+require("mini.pick").setup({}) -- Picker, e.g. :Pick files, :Pick grep_live
+require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show info
     windows = {
         preview = true,
+        width_preview = 80,
     },
 })
-require("mini.extra").setup({})      -- Extra functionality. E.g. :Pick git_hunks
+require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
+require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
 
 vim.api.nvim_create_autocmd("BufReadPost", {
     once = true,
     callback = function()
         require("mini.cursorword").setup({}) -- Highlight word under cursor
-        require("mini.diff").setup({})       -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
-        require('mini.splitjoin').setup({})  -- Split and join code blocks. gS to toggle
-        require("mini.ai").setup({})         -- Extend a/i text objects
-        require("mini.surround").setup({})   -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
-        require("mini.align").setup({})      -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
+        require("mini.diff").setup({}) -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
+        require("mini.splitjoin").setup({}) -- Split and join code blocks. gS to toggle
+        require("mini.ai").setup({}) -- Extend a/i text objects
+        require("mini.surround").setup({}) -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
+        require("mini.align").setup({}) -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
         local hipatterns = require("mini.hipatterns")
         hipatterns.setup({
             highlighters = {
@@ -136,20 +171,20 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     end,
 })
 
-local miniclue = require('mini.clue')
+local miniclue = require("mini.clue")
 miniclue.setup({
     triggers = {
-        { mode = { 'n', 'x' }, keys = '<Leader>' },
-        { mode = 'n',          keys = '[' },
-        { mode = 'n',          keys = ']' },
-        { mode = 'i',          keys = '<C-x>' },
-        { mode = { 'n', 'x' }, keys = 'g' },
-        { mode = { 'n', 'x' }, keys = "'" },
-        { mode = { 'n', 'x' }, keys = '`' },
-        { mode = { 'n', 'x' }, keys = '"' },
-        { mode = { 'i', 'c' }, keys = '<C-r>' },
-        { mode = 'n',          keys = '<C-w>' },
-        { mode = { 'n', 'x' }, keys = 'z' },
+        { mode = { "n", "x" }, keys = "<Leader>" },
+        { mode = "n", keys = "[" },
+        { mode = "n", keys = "]" },
+        { mode = "i", keys = "<C-x>" },
+        { mode = { "n", "x" }, keys = "g" },
+        { mode = { "n", "x" }, keys = "'" },
+        { mode = { "n", "x" }, keys = "`" },
+        { mode = { "n", "x" }, keys = '"' },
+        { mode = { "i", "c" }, keys = "<C-r>" },
+        { mode = "n", keys = "<C-w>" },
+        { mode = { "n", "x" }, keys = "z" },
     },
     clues = {
         miniclue.gen_clues.square_brackets(),
@@ -159,29 +194,11 @@ miniclue.setup({
         miniclue.gen_clues.registers(),
         miniclue.gen_clues.windows(),
         miniclue.gen_clues.z(),
-        { mode = 'n', keys = '<Leader>g', desc = '+Git' },
-        { mode = 'n', keys = '<Leader>e', desc = '+Explorer/Edit' },
-        { mode = 'n', keys = '<Leader>c', desc = '+Copy' },
+        { mode = "n", keys = "<Leader>g", desc = "+Git" },
+        { mode = "n", keys = "<Leader>e", desc = "+Explorer/Edit" },
+        { mode = "n", keys = "<Leader>c", desc = "+Copy" },
     },
 })
-
--- Treesitter
-
--- require("nvim-treesitter").setup({})
--- require('nvim-treesitter.install').prefer_git = true
--- require("nvim-treesitter").install({
---     'bash',
---     'c',
---     'c_sharp',
---     'cpp',
---     'json',
---     'lua',
---     'markdown',
---     'markdown_inline',
---     'powershell',
---     'python',
---     'yaml',
--- })
 
 -- =================
 --       LSP
@@ -198,11 +215,17 @@ require("mason-tool-installer").setup({
         "stylua",
         "tinymist",
         "prettierd",
-        "jsonls",
-        "yamlls",
-        "marksman",
         "shfmt",
     },
+})
+
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(args)
+        local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+        if client:supports_method('textDocument/completion') then
+            vim.lsp.completion.enable(true, client.id, args.buf)
+        end
+    end
 })
 
 -- =================
@@ -217,26 +240,15 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Restore cursor position when reopening files
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufWinEnter" }, {
-    once = true,
-    callback = function(args)
-        local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
-        local line_count = vim.api.nvim_buf_line_count(args.buf)
-        if mark[1] > 0 and mark[1] <= line_count then
-            vim.api.nvim_win_set_cursor(0, mark)
-            vim.schedule(function()
-                vim.cmd("normal! zz")
-            end)
-        end
-    end,
-})
-
 vim.api.nvim_create_autocmd("BufReadPost", {
     callback = function()
         local mark = vim.api.nvim_buf_get_mark(0, '"')
         local lcount = vim.api.nvim_buf_line_count(0)
         if mark[1] > 0 and mark[1] <= lcount then
             pcall(vim.api.nvim_win_set_cursor, 0, mark)
+            vim.schedule(function()
+                vim.cmd("normal! zz")
+            end)
         end
     end,
 })
