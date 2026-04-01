@@ -55,7 +55,7 @@ local map = vim.keymap.set
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
 map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
 map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
-map("n", "<leader>eu", "<cmd>lua require('undotree').toggle()<cr>", opts("Toggle undotree"))
+map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle undotree"))
 
 map("n", "<leader>es", "<cmd>lua MiniFiles.open()<cr>", opts("Open file explorer"))
 map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
@@ -100,13 +100,13 @@ vim.pack.add({
     'https://github.com/mason-org/mason.nvim',                      -- LSP/DAP/Linter/Formatter installer
     'https://github.com/mason-org/mason-lspconfig.nvim',            -- Auto enable plugins installed by mason.nvim
     'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim', -- Auto install tools installed by mason.nvim
-    'https://github.com/nvim-treesitter/nvim-treesitter',
-    'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
-    'https://github.com/nvim-treesitter/nvim-treesitter-context',   -- Show code context at time of buffer
+    -- 'hhttps://github.com/nvim-treesitter/nvim-treesitterttps://github.com/nvim-treesitter/nvim-treesitter',
+    -- 'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
+    -- 'https://github.com/nvim-treesitter/nvim-treesitter-context',   -- Show code context at time of buffer
     'https://github.com/github/copilot.vim',                        -- GitHub copilot :Copilot setup
     'https://github.com/CopilotC-Nvim/CopilotChat.nvim',            -- GitHub copilot chat :CopilotChat
-    'https://github.com/jiaoshijie/undotree',                       -- Visual undotree
 })
+vim.cmd("packadd nvim.undotree") -- Built in plugin, but not loaded by default.
 
 -- Mini - A collection of plugins
 require("mini.statusline").setup({}) -- Fancier statusline
@@ -166,48 +166,42 @@ miniclue.setup({
 })
 
 -- Treesitter
-require("nvim-treesitter").setup({}) -- :TSUpdate to update parsers
+
+-- require("nvim-treesitter").setup({})
+-- require('nvim-treesitter.install').prefer_git = true
+-- require("nvim-treesitter").install({
+--     'bash',
+--     'c',
+--     'c_sharp',
+--     'cpp',
+--     'json',
+--     'lua',
+--     'markdown',
+--     'markdown_inline',
+--     'powershell',
+--     'python',
+--     'yaml',
+-- })
 
 -- =================
 --       LSP
 -- =================
--- Find LSPs: https://microsoft.github.io/language-server-protocol/implementors/servers/
-
--- - "gra" (Normal and Visual mode) is mapped to |vim.lsp.buf.code_action()|
--- - "gri" is mapped to |vim.lsp.buf.implementation()|
--- - "grn" is mapped to |vim.lsp.buf.rename()|
--- - "grr" is mapped to |vim.lsp.buf.references()|
--- - "grt" is mapped to |vim.lsp.buf.type_definition()|
--- - "grx" is mapped to |vim.lsp.codelens.run()|
--- - "gO" is mapped to |vim.lsp.buf.document_symbol()|
--- - CTRL-S (Insert mode) is mapped to |vim.lsp.buf.signature_help()|
-
 require("mason").setup({})
 require("mason-lspconfig").setup({})
 require("mason-tool-installer").setup({
     ensure_installed = {
         "bashls",
         "clangd",
-        "gopls",
         "lua-language-server",
         "powershell_es",
         "pylsp",
         "stylua",
         "tinymist",
-        "ts_ls",
         "prettierd",
         "jsonls",
         "yamlls",
-        "html",
-        "cssls",
-        "eslint",
         "marksman",
-        "dockerls",
-        "rust_analyzer",
-        "vimls",
         "shfmt",
-        "black",
-        "ruff",
     },
 })
 
