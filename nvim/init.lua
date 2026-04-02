@@ -91,6 +91,7 @@ map("n", "grf", vim.lsp.buf.format, opts("vim.lsp.buf.format()"))
 map("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", opts("Toggle spell check"))
 
 -- quickfix
+map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "qf",
   callback = function()
@@ -108,20 +109,17 @@ vim.api.nvim_create_autocmd("FileType", {
     end, opts("Delete qf entry"))
   end,
 })
-map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
-map("n", "<leader>cf", "<cmd>packadd cfilter<CR><cmd>Cfilter ", opts("Filter qf"))
-map("n", "<leader>cF", "<cmd>packadd cfilter<CR><cmd>Cfilter! ", opts("Filter qf inv"))
 
 -- wiki
 local wiki = vim.fn.expand("~/git/wiki")
 if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
     wiki = "C:\\git\\wiki"
 end
-map("n", "<leader>ww", "<cmd>edit " .. wiki .. "/index.md<CR>", opts("Open wiki index"))
-map("n", "<leader>wj", "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>", opts("Open wiki journal"))
-map("n", "<leader>wc", "<cmd>edit " .. wiki .. "/01_Work/current.md<CR>", opts("Open wiki current work"))
+map("n", "<leader>ww", "<cmd>edit " .. wiki .. "/index.md<CR>:lcd %:p:h<CR>", opts("Open wiki index"))
+map("n", "<leader>wj", "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>:lcd %:p:h<CR>", opts("Open wiki journal"))
+map("n", "<leader>wc", "<cmd>edit " .. wiki .. "/01_Work/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
 map("n", "<M-t>", function()
-  vim.cmd([[%s/\v- \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
+  vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
 end, opts("Toggle checkbox"))
 
 -- =================
