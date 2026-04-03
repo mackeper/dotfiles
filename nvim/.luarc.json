@@ -2,6 +2,7 @@
     "diagnostics.globals": [
         "vim",
         "Snacks",
-        "MiniIcons"
+        "MiniIcons",
+        "MiniSnippets"
     ]
 }

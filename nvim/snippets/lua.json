@@ -54,5 +54,10 @@
             "end"
         ],
         "description": "Create an if-else statement"
+    },
+    "hello": {
+        "prefix": "hello",
+        "body": "hello marcus",
+        "description": "Create a while loop"
     }
 }
