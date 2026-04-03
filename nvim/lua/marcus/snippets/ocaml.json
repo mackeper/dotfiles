@@ -1,9 +1,0 @@
-{
-    "header": {
-        "prefix": "header",
-        "body": [
-            "(* Author: Marcus Östling ID2202-2024 module0 *)"
-        ],
-        "description": "ID2202 header"
-    }
-}
