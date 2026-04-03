@@ -202,6 +202,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 gen_loader.from_lang(),
             },
         })
+        MiniSnippets.start_lsp_server()
         require("mini.icons").setup({})
         MiniIcons.tweak_lsp_kind()
 end,
