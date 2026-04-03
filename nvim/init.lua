@@ -5,109 +5,127 @@
 --   - Try to reduce dependencies on plugins.
 --   - One file.
 
--- =================
---     Options
--- =================
+-- ================================================
+--                   Options
+-- ================================================
 vim.cmd.colorscheme("catppuccin")
+
+-- Leader key
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.opt.clipboard = "unnamedplus" -- System clipboard
-vim.opt.undofile = true -- Persistent undo
-
+-- UI
 -- [bufnr] filepath [flags] | | [ft] (row,col-Vcol) tLines percentage%
-vim.opt.statusline = '[%n] %<%f %h%w%m%r%q%=%=%y %-14.(%l,%c%V%) %L %P'
+vim.opt.statusline = "[%n] %<%f %h%w%m%r%q%=%=%y %-14.(%l,%c%V%) %L %P"
 vim.opt.termguicolors = true -- Enabled true color support
-vim.opt.scrolloff = 8 -- Keep X lines from top/bottom
-vim.opt.sidescrolloff = 5 -- Keep X characters from the side
-vim.opt.wrap = false -- Disable wrap lines
+vim.opt.list = true -- Show invisible characters
+vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
+vim.opt.signcolumn = "yes" -- Always show signcolumn. Why?
+vim.opt.colorcolumn = "100"
 
+-- Editing
+vim.opt.clipboard = "unnamedplus" -- System clipboard
+vim.opt.wrap = false -- Disable wrap lines
+vim.opt.scrolloff = 8 -- Keep X lines from top/bottom
+vim.opt.sidescrolloff = 8 -- Keep X characters from the side
+vim.opt.undofile = true -- Persistent undo
+vim.opt.spelllang = { "en_us", "sv" }
+
+-- Search
 vim.opt.ignorecase = true -- Ignore case in search patterns
 vim.opt.smartcase = true -- Override ignorecase if search pattern contains uppercase letters
 vim.opt.hlsearch = true -- Highlight search matches
 vim.opt.incsearch = true -- Show search matches as you type
 vim.opt.inccommand = "split" -- Show search substitution in split
 
+-- Indentation
 vim.opt.tabstop = 4 -- Number of spaces that a <Tab> counts for
 vim.opt.softtabstop = 4 -- Number of spaces that a <Tab> counts for
 vim.opt.shiftwidth = 4 -- Number of spaces to use for each step of (auto)indent
 vim.opt.expandtab = true -- Use spaces instead of tabs
 vim.opt.smartindent = true -- Smart autoindenting when starting a new line
 
+-- Command
 vim.opt.wildmenu = true -- Command line wild search
 vim.opt.wildmode = "longest:full,full"
 
-vim.opt.autocomplete = true -- Enable autocompletion
-vim.opt.completeopt = "fuzzy,menu,menuone,preview"
+-- Completion
+-- vim.opt.autocomplete = true -- Enable autocompletion
+-- vim.opt.completeopt = "fuzzy,menu,menuone,preview"
 
-vim.opt.list = true -- Show invisible characters
-vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
-
-vim.opt.signcolumn = "yes" -- Always show signcolumn. Why?
-
--- =================
---     Keymaps
--- =================
+-- ================================================
+--                   Keymaps
+-- ================================================
 local function opts(desc)
     return { silent = true, noremap = true, desc = desc }
 end
 local map = vim.keymap.set
 
-map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
+-- Explorer
 map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
 map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
 map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle undotree"))
 
+-- Search
+map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
 map("n", "<leader>es", "<cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0), false)<cr>", opts("Open file explorer"))
 map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
 map("n", "<C-f>", "<cmd>Pick grep_live<cr>", opts())
 map("n", "<C-b>", "<cmd>Pick buffers<cr>", opts())
 map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
-map("n", "<C-r>", "<cmd>Pick visit_paths<cr>", opts())
+map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
+map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
+
+-- AI
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
 
+-- Git
 map("n", "<leader>gd", "<cmd>lua MiniDiff.toggle_overlay()<cr>", opts("Toggle git diff overlay"))
 
+-- Navigation
 map("n", "n", "nzzzv", opts("Move to next match"))
 map("n", "N", "Nzzzv", opts("Move to previous match"))
 map("n", "<C-d>", "<C-d>zz", opts("Scroll down"))
 map("n", "<C-u>", "<C-u>zz", opts("Scroll up"))
 
-map("n", "<C-Left>",  "<C-w>h", opts("Window left"))
-map("n", "<C-Down>",  "<C-w>j", opts("Window down"))
-map("n", "<C-Up>",    "<C-w>k", opts("Window up"))
+map("n", "<C-Left>", "<C-w>h", opts("Window left"))
+map("n", "<C-Down>", "<C-w>j", opts("Window down"))
+map("n", "<C-Up>", "<C-w>k", opts("Window up"))
 map("n", "<C-Right>", "<C-w>l", opts("Window right"))
-
-map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
-map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to clipboard"))
-map("n", "<leader>cd", [[:let @+=expand("%:h")<CR>]], opts("Copy file directory to clipboard"))
 
 map("n", "<tab>", ":bnext<CR>", opts("Next buffer"))
 map("n", "<S-tab>", ":bprevious<CR>", opts("Previous buffer"))
 
+-- Copying
+map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
+map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to clipboard"))
+map("n", "<leader>cd", [[:let @+=expand("%:h")<CR>]], opts("Copy file directory to clipboard"))
+
+-- LSP
 map("n", "grd", vim.lsp.buf.definition, opts("vim.lsp.buf.definition()"))
 map("n", "grf", vim.lsp.buf.format, opts("vim.lsp.buf.format()"))
 
-map("n", "<leader>zs", "<CMD>setlocal spell! spelllang=en_us<CR>", opts("Toggle spell check"))
+-- Spell check
+map("n", "<leader>zs", "<CMD>setlocal spell!<CR>", opts("Toggle spell check"))
 
--- quickfix
+-- Quickfix list
 map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "qf",
-  callback = function()
-    map("n", "q", "<cmd>cclose<CR>", opts("Close quickfix"))
-    map("n", "dd", function()
-      local row = vim.fn.line(".")
-      local qf = vim.fn.getqflist()
-      table.remove(qf, row)
-      vim.fn.setqflist(qf, "r")
-      vim.cmd("copen")
-      local new_row = math.min(row, #qf)
-      if new_row > 0 then
-        vim.api.nvim_win_set_cursor(0, { new_row, 0 })
-      end
-    end, opts("Delete qf entry"))
-  end,
+    pattern = "qf",
+    callback = function()
+        map("n", "q", "<cmd>cclose<CR>", opts("Close quickfix"))
+        map("n", "dd", function()
+            local row = vim.fn.line(".")
+            local qf = vim.fn.getqflist()
+            table.remove(qf, row)
+            vim.fn.setqflist(qf, "r")
+            vim.cmd("copen")
+            local new_row = math.min(row, #qf)
+            if new_row > 0 then
+                vim.api.nvim_win_set_cursor(0, { new_row, 0 })
+            end
+        end, opts("Delete qf entry"))
+    end,
 })
 
 -- wiki
@@ -116,15 +134,20 @@ if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
     wiki = "C:\\git\\wiki"
 end
 map("n", "<leader>ww", "<cmd>edit " .. wiki .. "/index.md<CR>:lcd %:p:h<CR>", opts("Open wiki index"))
-map("n", "<leader>wj", "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>:lcd %:p:h<CR>", opts("Open wiki journal"))
+map(
+    "n",
+    "<leader>wj",
+    "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>:lcd %:p:h<CR>",
+    opts("Open wiki journal")
+)
 map("n", "<leader>wc", "<cmd>edit " .. wiki .. "/01_Work/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
 map("n", "<M-t>", function()
-  vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
+    vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
 end, opts("Toggle checkbox"))
 
--- =================
---     Plugins
--- =================
+-- ================================================
+--                   Plugins
+-- ================================================
 vim.pack.add({
     "https://github.com/nvim-lua/plenary.nvim", -- Common library
     "https://github.com/nvim-mini/mini.nvim", -- Collection of plugins
@@ -134,10 +157,15 @@ vim.pack.add({
     "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Auto install tools installed by mason.nvim
     "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
     "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
+    -- {
+    --     src = "https://github.com/nvim-treesitter/nvim-treesitter",
+    --     branch = "master",
+    --     build = ":TSUpdate",
+    -- },
 })
-vim.cmd.packadd('cfilter') -- filder quickfix list.
-vim.cmd.packadd('nvim.undotree') -- UI to navigate undo tree.
--- vim.cmd.packadd('nvim.difftool') -- not sure
+vim.cmd.packadd("cfilter") -- filder quickfix list.
+vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
+vim.cmd.packadd("nvim.difftool") -- not sure
 
 -- Mini - A collection of plugins
 -- require("mini.statusline").setup({}) -- Fancier statusline
@@ -150,6 +178,7 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
 })
 require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
 require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
+-- TODO add snippets, sessions
 
 vim.api.nvim_create_autocmd("BufReadPost", {
     once = true,
@@ -166,7 +195,16 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 hex_color = hipatterns.gen_highlighter.hex_color(),
             },
         })
-    end,
+        require("mini.completion").setup({})
+        local gen_loader = require("mini.snippets").gen_loader
+        require("mini.snippets").setup({
+            snippets = {
+                gen_loader.from_lang(),
+            },
+        })
+        require("mini.icons").setup({})
+        MiniIcons.tweak_lsp_kind()
+end,
 })
 
 local miniclue = require("mini.clue")
@@ -195,12 +233,15 @@ miniclue.setup({
         { mode = "n", keys = "<Leader>g", desc = "+Git" },
         { mode = "n", keys = "<Leader>e", desc = "+Explorer/Edit" },
         { mode = "n", keys = "<Leader>c", desc = "+Copy" },
+        { mode = "n", keys = "<Leader>w", desc = "+Wiki" },
+        { mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
+        { mode = "n", keys = "<Leader>z", desc = "+Spell check" },
     },
 })
 
--- =================
---       LSP
--- =================
+-- ================================================
+--                     LSP
+-- ================================================
 require("mason").setup({})
 require("mason-lspconfig").setup({})
 require("mason-tool-installer").setup({
@@ -217,18 +258,18 @@ require("mason-tool-installer").setup({
     },
 })
 
-vim.api.nvim_create_autocmd('LspAttach', {
+vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-        if client:supports_method('textDocument/completion') then
+        if client:supports_method("textDocument/completion") then
             vim.lsp.completion.enable(true, client.id, args.buf)
         end
-    end
+    end,
 })
 
--- =================
---     Autocmds
--- =================
+-- ================================================
+--                 Autocmds
+-- ================================================
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function()
@@ -249,4 +290,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
             end)
         end
     end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "markdown", "text", "gitcommit" },
+    callback = function()
+        vim.opt_local.spell = true
+    end,
+    desc = "Enable wrap and spellcheck for certain filetypes",
 })
