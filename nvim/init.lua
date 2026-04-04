@@ -4,6 +4,12 @@
 --   - Use defaults for as much as possible.
 --   - Try to reduce dependencies on plugins.
 --   - One file.
+--
+-- TODO:
+--  - Terminal use
+--  - Replace blink.cmp with mini.completion if I can get it to work
+--  - More snippets, especially for markdown
+--  - mini.git?
 
 -- ================================================
 --                   Options
@@ -49,7 +55,7 @@ vim.opt.smartindent = true -- Smart autoindenting when starting a new line
 vim.opt.wildmenu = true -- Command line wild search
 vim.opt.wildmode = "longest:full,full"
 
--- Completion
+-- Completion (using blink.cmp)
 -- vim.opt.autocomplete = true -- Enable autocompletion
 -- vim.opt.completeopt = "fuzzy,menu,menuone,preview"
 
@@ -78,6 +84,11 @@ map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 
 -- AI
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
+vim.keymap.set('i', '<M-l>', 'copilot#Accept("\\<CR>")', {
+  expr = true,
+  replace_keycodes = false
+})
+vim.g.copilot_no_tab_map = true
 
 -- Git
 map("n", "<leader>gd", "<cmd>lua MiniDiff.toggle_overlay()<cr>", opts("Toggle git diff overlay"))
@@ -107,6 +118,10 @@ map("n", "grf", vim.lsp.buf.format, opts("vim.lsp.buf.format()"))
 
 -- Spell check
 map("n", "<leader>zs", "<CMD>setlocal spell!<CR>", opts("Toggle spell check"))
+
+-- Sessions
+map("n", "<leader>sl", "<CMD>lua MiniSessions.read(MiniSessions.get_latest())<CR>", opts("Load last session"))
+map("n", "<leader>ss", "<CMD>lua MiniSessions.select()<CR>", opts("Select session"))
 
 -- Quickfix list
 map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
@@ -145,6 +160,7 @@ map("n", "<M-t>", function()
     vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
 end, opts("Toggle checkbox"))
 
+
 -- ================================================
 --                   Plugins
 -- ================================================
@@ -157,6 +173,7 @@ vim.pack.add({
     "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Auto install tools installed by mason.nvim
     "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
     "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
+    "https://github.com/saghen/blink.cmp", -- Completion (cannot get mini.completion to work)
     -- {
     --     src = "https://github.com/nvim-treesitter/nvim-treesitter",
     --     branch = "master",
@@ -167,6 +184,23 @@ vim.cmd.packadd("cfilter") -- filder quickfix list.
 vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
 vim.cmd.packadd("nvim.difftool") -- not sure
 
+-- Blink
+vim.api.nvim_create_autocmd("BufReadPost", {
+    once = true,
+    callback = function()
+        require("blink.cmp").setup({
+            completion = {
+                documentation = {
+                    auto_show = true,
+                },
+            },
+            fuzzy = {
+                implementation = "lua",
+            },
+        })
+    end
+})
+
 -- Mini - A collection of plugins
 -- require("mini.statusline").setup({}) -- Fancier statusline
 require("mini.pick").setup({}) -- Picker, e.g. :Pick files, :Pick grep_live
@@ -175,10 +209,14 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
         preview = true,
         width_preview = 80,
     },
+    mappings = {
+        go_in = "<CR>",
+        go_out = "-",
+    }
 })
 require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
 require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
--- TODO add snippets, sessions
+require("mini.sessions").setup({}) -- Session management.
 
 vim.api.nvim_create_autocmd("BufReadPost", {
     once = true,
@@ -195,16 +233,17 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 hex_color = hipatterns.gen_highlighter.hex_color(),
             },
         })
-        require("mini.completion").setup({})
         local gen_loader = require("mini.snippets").gen_loader
         require("mini.snippets").setup({
             snippets = {
                 gen_loader.from_lang(),
             },
         })
-        MiniSnippets.start_lsp_server()
-        require("mini.icons").setup({})
-        MiniIcons.tweak_lsp_kind()
+
+        -- require("mini.completion").setup({})
+        -- MiniSnippets.start_lsp_server() -- needed by mini.completion?
+        -- require("mini.icons").setup({})
+        -- MiniIcons.tweak_lsp_kind()
 end,
 })
 
@@ -259,14 +298,14 @@ require("mason-tool-installer").setup({
     },
 })
 
-vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-        local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-        if client:supports_method("textDocument/completion") then
-            vim.lsp.completion.enable(true, client.id, args.buf)
-        end
-    end,
-})
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--     callback = function(args)
+--         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+--         if client:supports_method("textDocument/completion") then
+--             vim.lsp.completion.enable(true, client.id, args.buf)
+--         end
+--     end,
+-- })
 
 -- ================================================
 --                 Autocmds
@@ -299,4 +338,11 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt_local.spell = true
     end,
     desc = "Enable wrap and spellcheck for certain filetypes",
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+        MiniSessions.write(vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ".vim")
+    end,
+    desc = "Save the session",
 })
