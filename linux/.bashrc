@@ -40,6 +40,8 @@ alias ll='eza -la --icons --group-directories-first'
 alias la='eza -la --icons --group-directories-first'
 alias lt='eza --tree --level=2 --icons --group-directories-first'
 
+eval "$(zoxide init bash)" # `z` instead of `cd`
+
 # ---- Git ----
 alias ga='git add'     # Add files
 alias gd='git diff'    # Show changes
