@@ -7,3 +7,4 @@ CONFIG=~/.config/opencode
 ln -s "$DOTFILES/AGENTS.md" "$CONFIG/AGENTS.md"
 ln -s "$DOTFILES/commands" "$CONFIG/commands"
 ln -s "$DOTFILES/skills" "$CONFIG/skills"
+ln -s "$DOTFILES/agents" "$CONFIG/agents"
