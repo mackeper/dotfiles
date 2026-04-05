@@ -1,10 +1,8 @@
 [ -f "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh" ] && source "${XDG_DATA_HOME:-$HOME/.local/share}/zap/zap.zsh"
 plug "zsh-users/zsh-autosuggestions"
 plug "zsh-users/zsh-completions"
-plug "marlonrichert/zsh-autocomplete"
 plug "zsh-users/zsh-syntax-highlighting"
 plug "zap-zsh/fzf"
-plug "hlissner/zsh-autopair"
 
 [ -f .env ] && source .env
 
@@ -29,10 +27,7 @@ zstyle ':autocomplete:*' default-context history-incremental-search-backward
 zstyle ':autocomplete:*' min-input 1
 zstyle ':autocomplete:*' delay 0.1
 zstyle ':autocomplete:*:*' list-lines 5
-
-
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
-source <(carapace _carapace)
 
 # ---- nvim something fix ----
 # https://github.com/nvim-lua/plenary.nvim/issues/536
@@ -72,52 +67,6 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
 
-# Vim normal/insert mode cursor
-cursor_mode() {
-    # See https://ttssh2.osdn.jp/manual/4/en/usage/tips/vim.html for cursor shapes
-    cursor_block='\e[2 q'
-    cursor_beam='\e[6 q'
-
-    function zle-keymap-select {
-        if [[ ${KEYMAP} == vicmd ]] ||
-            [[ $1 = 'block' ]]; then
-            echo -ne $cursor_block
-        elif [[ ${KEYMAP} == main ]] ||
-            [[ ${KEYMAP} == viins ]] ||
-            [[ ${KEYMAP} = '' ]] ||
-            [[ $1 = 'beam' ]]; then
-            echo -ne $cursor_beam
-        fi
-    }
-
-    zle-line-init() {
-        echo -ne $cursor_beam
-    }
-
-    zle -N zle-keymap-select
-    zle -N zle-line-init
-}
-cursor_mode
-
-# Add vim text objects
-autoload -Uz select-bracketed select-quoted
-zle -N select-quoted
-zle -N select-bracketed
-for km in viopp visual; do
-  bindkey -M $km -- '-' vi-up-line-or-history
-  for c in {a,i}${(s..)^:-\'\"\`\|,./:;=+@}; do
-    bindkey -M $km $c select-quoted
-  done
-  for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
-    bindkey -M $km $c select-bracketed
-  done
-done
-
-# ---- Auto tmux ----
-if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-  # exec tmux new-session -A -s main
-fi
-
 # ---- Tools ----
 # FZF
 export FZF_DEFAULT_OPTS="--preview '[[ -f {} ]] && batcat -n --color=always {} || eza --icons --color=always --tree --level=1 {}'"
@@ -148,14 +97,9 @@ function cht() { curl "cht.sh/$1"; }
 alias ls='eza --icons'
 alias ll='eza -la --icons'
 alias lt='eza --tree --level=3 --icons'
-alias python='python3'
 
 # ---- Turn off all beeps ----
 unsetopt BEEP
-
-# ---- Keymaps ----
-# setxkbmap -option ctrl:nocaps
-# setxkbmap -layout us -variant altgr-intl
 
 # ---- Bindkeys ----
 lazygit_func () { eval 'lazygit' }
@@ -198,14 +142,3 @@ alias gpn='git push --set-upstream origin $(git branch --show-current)'
 alias grs='git restore'
 alias grss='git restore --staged'
 alias gst='git status'
-
-
-# BEGIN opam configuration
-# This is useful if you're using opam as it adds:
-#   - the correct directories to the PATH
-#   - auto-completion for the opam binary
-# This section can be safely removed at any time if needed.
-[[ ! -r '/home/marcus/.opam/opam-init/init.zsh' ]] || source '/home/marcus/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
-# END opam configuration
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
