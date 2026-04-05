@@ -160,6 +160,18 @@ map("n", "<M-t>", function()
     vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
 end, opts("Toggle checkbox"))
 
+-- Harpoon
+
+map('n', '<leader>a', function()
+    vim.cmd('$argadd %')
+    vim.cmd('argdedup')
+end, opts("Harpoon add"))
+map('n', '<leader>h', function() vim.cmd('silent! 1argument') end, opts("harpoon 1"))
+map('n', '<leader>j', function() vim.cmd('silent! 2argument') end, opts("harpoon 2"))
+map('n', '<leader>k', function() vim.cmd('silent! 3argument') end, opts("harpoon 3"))
+map('n', '<leader>n', function() vim.cmd('silent! 4argument') end, opts("harpoon 4"))
+map('n', '<leader>m', function() vim.cmd('silent! 5argument') end, opts("harpoon 5"))
+
 
 -- ================================================
 --                   Plugins
@@ -194,6 +206,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                     auto_show = true,
                 },
             },
+            signature = { enabled = true, },
             fuzzy = {
                 implementation = "lua",
             },
