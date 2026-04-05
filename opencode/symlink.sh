@@ -4,7 +4,7 @@ set -e
 DOTFILES=~/git/dotfiles/opencode
 CONFIG=~/.config/opencode
 
-ln -s "$DOTFILES/AGENTS.md" "$CONFIG/AGENTS.md"
-ln -s "$DOTFILES/commands" "$CONFIG/commands"
-ln -s "$DOTFILES/skills" "$CONFIG/skills"
-ln -s "$DOTFILES/agents" "$CONFIG/agents"
+ln -sf "$DOTFILES/AGENTS.md" "$CONFIG/AGENTS.md"
+ln -sf "$DOTFILES/commands" "$CONFIG/commands"
+ln -sf "$DOTFILES/skills" "$CONFIG/skills"
+ln -sf "$DOTFILES/agents" "$CONFIG/agents"
