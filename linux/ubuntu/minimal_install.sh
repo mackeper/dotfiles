@@ -35,6 +35,7 @@ apt_packages=(
     "eza"
 
     # Development
+    "vim"
     "make"
     "python3"
     "python3-pip"
