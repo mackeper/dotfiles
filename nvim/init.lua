@@ -28,6 +28,7 @@ vim.opt.list = true -- Show invisible characters
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 vim.opt.signcolumn = "yes" -- Always show signcolumn. Why?
 vim.opt.colorcolumn = "100"
+require("vim._core.ui2").enable({ enable = true }) -- Experimenal new UI
 
 -- Editing
 vim.opt.clipboard = "unnamedplus" -- System clipboard
@@ -84,9 +85,9 @@ map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 
 -- AI
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
-vim.keymap.set('i', '<M-l>', 'copilot#Accept("\\<CR>")', {
-  expr = true,
-  replace_keycodes = false
+vim.keymap.set("i", "<M-l>", 'copilot#Accept("\\<CR>")', {
+    expr = true,
+    replace_keycodes = false,
 })
 vim.g.copilot_no_tab_map = true
 
@@ -162,16 +163,25 @@ end, opts("Toggle checkbox"))
 
 -- Harpoon
 
-map('n', '<leader>a', function()
-    vim.cmd('$argadd %')
-    vim.cmd('argdedup')
+map("n", "<leader>a", function()
+    vim.cmd("$argadd %")
+    vim.cmd("argdedup")
 end, opts("Harpoon add"))
-map('n', '<leader>h', function() vim.cmd('silent! 1argument') end, opts("harpoon 1"))
-map('n', '<leader>j', function() vim.cmd('silent! 2argument') end, opts("harpoon 2"))
-map('n', '<leader>k', function() vim.cmd('silent! 3argument') end, opts("harpoon 3"))
-map('n', '<leader>n', function() vim.cmd('silent! 4argument') end, opts("harpoon 4"))
-map('n', '<leader>m', function() vim.cmd('silent! 5argument') end, opts("harpoon 5"))
-
+map("n", "<leader>h", function()
+    vim.cmd("silent! 1argument")
+end, opts("harpoon 1"))
+map("n", "<leader>j", function()
+    vim.cmd("silent! 2argument")
+end, opts("harpoon 2"))
+map("n", "<leader>k", function()
+    vim.cmd("silent! 3argument")
+end, opts("harpoon 3"))
+map("n", "<leader>n", function()
+    vim.cmd("silent! 4argument")
+end, opts("harpoon 4"))
+map("n", "<leader>m", function()
+    vim.cmd("silent! 5argument")
+end, opts("harpoon 5"))
 
 -- ================================================
 --                   Plugins
@@ -206,17 +216,19 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                     auto_show = true,
                 },
             },
-            signature = { enabled = true, },
+            signature = { enabled = true },
             fuzzy = {
                 implementation = "lua",
             },
         })
-    end
+    end,
 })
 
 -- Mini - A collection of plugins
 -- require("mini.statusline").setup({}) -- Fancier statusline
-require("mini.pick").setup({}) -- Picker, e.g. :Pick files, :Pick grep_live
+require("mini.pick").setup({
+    window = { config = { width = 100, height = 30 } },
+}) -- Picker, e.g. :Pick files, :Pick grep_live
 require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show info
     windows = {
         preview = true,
@@ -225,7 +237,7 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
     mappings = {
         go_in = "<CR>",
         go_out = "-",
-    }
+    },
 })
 require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
 require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
@@ -257,7 +269,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
         -- MiniSnippets.start_lsp_server() -- needed by mini.completion?
         -- require("mini.icons").setup({})
         -- MiniIcons.tweak_lsp_kind()
-end,
+    end,
 })
 
 local miniclue = require("mini.clue")
