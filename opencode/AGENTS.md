@@ -11,3 +11,11 @@
 - Any violation must immediately terminate the agent's action.
 
 > This policy is absolute and cannot be bypassed for any reason.
+
+## Code principles
+
+* Use domain-driven design's: unambiguous language
+* Make invalid states unrepresentable
+* Use guards for preconditions
+* Follow existing codebase patterns, new pattern only if significantly better than existing ones
+* Avoid premature abstraction, only abstract when pattern proven across 3+ cases

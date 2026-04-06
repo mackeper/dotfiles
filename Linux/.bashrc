@@ -43,14 +43,15 @@ alias lt='eza --tree --level=2 --icons --group-directories-first'
 eval "$(zoxide init bash)" # `z` instead of `cd`
 
 # ---- Git ----
-alias ga='git add'     # Add files
-alias gd='git diff'    # Show changes
-alias gl='git pull'    # Pull changes
-alias gp='git push'    # Push changes
-alias gst='git status'  # Show status
-alias gc='git commit -v'   # Commit with verbose diff
-alias gco='git checkout'  # Checkout branch
-alias gb='git branch'     # List branches
+alias ga='git add'              # Add files
+alias gd='git diff'             # Show changes
+alias gdca='git diff --cached'  # Show cached changes
+alias gl='git pull'             # Pull changes
+alias gp='git push'             # Push changes
+alias gst='git status'          # Show status
+alias gc='git commit -v'        # Commit with verbose diff
+alias gco='git checkout'        # Checkout branch
+alias gb='git branch'           # List branches
 
 # ---- fzf ----
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
@@ -65,3 +66,7 @@ bind -x '"\C-g": lazygit'
 # ---- Editor ----
 export EDITOR=nvim       # Default editor for git, etc.
 export VISUAL=nvim
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

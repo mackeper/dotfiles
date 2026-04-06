@@ -1,6 +1,5 @@
 ---
-name: spec-writer
-description: "Create detailed specifications for features. Specs follow a strict
+description: "Use when: Creating detailed specifications for any change. Specs follow a strict
 template and enable two developers to implement the same thing independently."
 ---
 
@@ -8,9 +7,9 @@ template and enable two developers to implement the same thing independently."
 
 Create a specification document for a feature using the template below.
 
-## When to use me
+## When to use
 
-Use this when the user wants to document a feature before implementation. The
+Use this to document any change before implementation. The
 spec must be detailed enough that two different developers would produce
 essentially the same implementation, but must NOT contain actual code.
 
@@ -24,10 +23,15 @@ essentially the same implementation, but must NOT contain actual code.
 ## Template
 
 ```markdown
-# <feature name>
+# <date>: <feature name>
 
-## Overview
-1-2 paragraphs describing what this feature does and why it exists.
+## Problem
+
+What problem are we solving? For whom? [2-3 sentences]
+
+## Solution
+
+What are we building? [2-3 sentences]
 
 ## Scope
 
@@ -40,24 +44,41 @@ essentially the same implementation, but must NOT contain actual code.
 ## Requirements
 
 ### Functional Requirements
-- Each requirement describes *what* the feature does
-- Describe behavior, not implementation
+Each requirement describes *what* the feature does
+Describe behavior, not implementation
 
-### Data & Structures
-- Describe data entities, fields, relationships
-- Use schema/code-snippets format, NOT whole code
+- [01] Requirement 1
+- [01] Requirement 2
 
-### API Interface
-- Describe endpoints, parameters, responses
-- Use structure/contract format/function signature, NOT whole code
+## Technical specifications
 
-## Technical Considerations
+### Architecture
 
+- System architecture
 - Technology recommendations (if any)
 - Integration points
+- Data flow
 - Dependencies
 
-## Edge Cases
+### API Design
+
+* Endpoints and methods
+* Request/response formats
+
+### Database design
+
+* Data model
+* Key entities and relations
+* Migration strategy
+
+### Security considerations
+
+* Authentication method
+* Authorization model
+* Data encryption
+* Personally identifiable information (PII) handling
+
+### Edge Cases
 
 - Error conditions
 - Boundary conditions
