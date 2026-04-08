@@ -37,6 +37,7 @@ vim.opt.scrolloff = 8 -- Keep X lines from top/bottom
 vim.opt.sidescrolloff = 8 -- Keep X characters from the side
 vim.opt.undofile = true -- Persistent undo
 vim.opt.spelllang = { "en_us", "sv" }
+vim.opt.fixendofline = false -- Don't automatically add newline at end of file
 
 -- Search
 vim.opt.ignorecase = true -- Ignore case in search patterns
