@@ -9,29 +9,87 @@
 # - delta: choco install delta -y
 # - neovim: https://github.com/neovim/neovim/releases
 
+# VC:
+# 0.1: Initial version
+# 0.2: Admin terminal function, start driver function
+# 0.3: Git worktrees
+
 function Show-StartMessage {
     Clear-Host
 
     $user = $env:USERNAME
     $hostname = [System.Net.Dns]::GetHostName()
-    $profileVersion = "0.2"
+    $profileVersion = "0.3 worktrees"
+    $col1 = 46
 
     $title = "$([char]27)[38;5;14mWelcome, $user@$hostname (v$profileVersion)$([char]27)[0m"
     Write-Host "$title`n"
 
-    Write-Host "$([char]27)[38;5;10mKey bindings:$([char]27)[0m"
-    Write-Host "  Ctrl+f  → FZF file search"
-    Write-Host "  Ctrl+s  → FZF solution (.sln) search"
-    Write-Host "  Ctrl+j  → FZF project search"
-    Write-Host "  Alt+c   → FZF directory search"
-    Write-Host "  Ctrl+g  → lazygit"
-    Write-Host ""
-    Write-Host "$([char]27)[38;5;10mUseful functions:$([char]27)[0m"
-    Write-Host "  admin  → Open an elevated terminal"
-    Write-Host "  build  → Build current project"
-    Write-Host "  driver → Start/stop a treatment driver"
-    Write-Host "  tabs   → Open preset tabs"
-    Write-Host ""
+    $col1Values = @(
+        @("$([char]27)[38;5;10mKey bindings:$([char]27)[0m", ""),
+        @("Ctrl+F", "FZF file search"),
+        @("Ctrl+S", "FZF solution (.sln) search"),
+        @("Ctrl+J", "FZF project search"),
+        @("Alt+C", "FZF directory search"),
+        @("Ctrl+G", "lazygit"),
+        @("", ""),
+        @("$([char]27)[38;5;10mUseful functions:$([char]27)[0m", ""),
+        @("admin", "Open an elevated terminal"),
+        @("build", "Build current project"),
+        @("driver", "Start/stop a treatment driver"),
+        @("tabs", "Open preset tabs"),
+        @("guid", "Generate a new GUID"),
+        @("", ""),
+        @("$([char]27)[38;5;10mUseful functions:$([char]27)[0m", ""),
+        @("fkill", "Fzf kill process"),
+        @("", ""),
+        @("", ""),
+        @("", ""),
+        @("", ""),
+        @("", "")
+    )
+    $col2Values = @(
+        @("$([char]27)[38;5;10mGit aliases:$([char]27)[0m", ""),
+        @("gst", "git status"),
+        @("ga", "git add"),
+        @("gl", "git pull"),
+        @("gp", "git push"),
+        @("gc", "git commit"),
+        @("gd", "git diff"),
+        @("gco", "git checkout"),
+        @("gcm", "default branch"),
+        @("gb", "git branch"),
+        @("# Worktrees", ""),
+        @("gwtl", "worktree list"),
+        @("gwta", "worktree add"),
+        @("gwtr", "worktree remove"),
+        @("# Analyze", ""),
+        @("gwho", "commits by author"),
+        @("gchurn", "files that change the most"),
+        @("gbugs", "files with most problems"),
+        @("gmonthly", "commits by month"),
+        @("gdmg", "revert frequency"),
+        @("", ""),
+        @("", ""),
+        @("", ""),
+        @("", ""),
+        @("", "")
+    )
+
+    for ($i = 0; $i -lt $col1Values.Length; $i++) {
+        $isCol1TitleRow = $col1Values[$i][0] -ne "" -and $col1Values[$i][1] -eq ""
+        $col1Width = $isCol1TitleRow ? $col1 + 14 : $col1
+
+        $col1Value = $col1Values[$i][1] -eq "" `
+            ? ("{0,-8}" -f $col1Values[$i][0]) `
+            : ("{0,-8} → {1}" -f $col1Values[$i][0], $col1Values[$i][1])
+
+        $col2Value = $col2Values[$i][1] -eq "" `
+            ? ("{0,-8}" -f $col2Values[$i][0]) `
+            : ("{0,-8} → {1}" -f $col2Values[$i][0], $col2Values[$i][1])
+
+        Write-Host ("{0,-$col1Width}{1}" -f $col1Value, $col2Value)
+    }
 }
 
 # ========================================
@@ -91,6 +149,20 @@ Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 # ========================================
 #              Git Aliases
 # ========================================
+
+# --- Commands to analyze git history, ga "git analyze" ---
+# https://piechowski.io/post/git-commands-before-reading-code/
+# Commit count:
+function gwho { git shortlog -sn --no-merges }
+# Files that change the most:
+function gchurn { git log --format=format: --name-only --since="1 year ago" | ? {$_} | group | sort Count -desc | select -f 20 |  % { "{0,5} {1}" -f $_.Count, $_.Name } }
+# Files with most problems:
+function gbugs { git log -i -E --grep="(fix|bug|broken|issue|resolve|repair|fail|crash)" --name-only --format='' | group | sort Count -desc | select -f 20 | % { "{0,5} {1}" -f $_.Count, $_.Name } }
+# Commits by month
+function gmonthly { git log --format='%ad' --date=format:'%Y-%m' | group | sort Name -desc }
+# Revert frequency:
+function gdmg { git log --oneline --since="1 year ago" -i -E --grep "(revert|hotfix|emergency|rollback)" }
+
 Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gpn, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
 
 function gc  { git commit -ev @args }
@@ -106,12 +178,26 @@ function gb  { git branch @args }
 function ga  { git add @args }
 function grs { git restore @args }
 function grss{ git restore --staged @args }
-
+function glog { git log `
+    --color `
+    --graph `
+    --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' `
+    --abbrev-commit `
+    -- @args
+}
 function gcm {
-    $branch = @( 'master', 'main', 'develop' ) | Where-Object { git rev-parse --verify $_ 2>$null } | Select-Object -First 1
+    $branch = @( 'master', 'main', 'develop' )
+        | Where-Object { git rev-parse --verify $_ 2>$null }
+        | Select-Object -First 1
     if (-not $branch) { Write-Error "No default branch found"; return }
     git checkout $branch @args
 }
+
+
+function gwt { git worktree @args }
+function gwtl { git worktree list @args }
+function gwta { git worktree add @args }
+function gwtr { git worktree remove @args }
 
 # ========================================
 #               Curl tools
@@ -136,14 +222,13 @@ function tabs() {
     wt -w 0 nt --tabColor '#00FF00' --title Dotfiles --suppressApplicationTitle ` -d 'C:\git\dotfiles'
     wt -w 0 split-pane -V --tabColor '#00FF00' --title Copilot --suppressApplicationTitle ` -d "$env:APPDATA\Code\User"
     wt -w 0 split-pane -H --tabColor '#00FF00' --title Wiki --suppressApplicationTitle ` -d 'C:\git\wiki'
+    wt -w 0 nt --tabColor '#F000F0' --title RayCare2 --suppressApplicationTitle -d 'C:\git\RayCare.WT'
+    wt -w 0 nt --tabColor '#F000F0' --title TreatmentDrivers2 --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers.WT'
+    wt -w 0 nt --tabColor '#F000F0' --title TreatAPI2 --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API.WT'
     wt -w 0 nt --tabColor '#0000ff' --title RayCare --suppressApplicationTitle -d 'C:\git\RayCare'
     wt -w 0 split-pane -V --tabColor '#0000ff' --title RayCare --suppressApplicationTitle -d 'C:\git\RayCare' powershell -NoExit -File .\MonitorMicroservices.ps1
     wt -w 0 nt --tabColor '#0000ff' --title TreatmentDrivers --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers'
     wt -w 0 nt --tabColor '#0000ff' --title TreatAPI --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API'
-    wt -w 0 nt --tabColor '#F000F0' --title RayCare2 --suppressApplicationTitle -d 'C:\git\RayCare2'
-    wt -w 0 split-pane -V --tabColor '#F000F0' --title RayCare2 --suppressApplicationTitle -d 'C:\git\RayCare2' powershell -NoExit -File .\MonitorMicroservices.ps1
-    wt -w 0 nt --tabColor '#F000F0' --title TreatmentDrivers2 --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers2'
-    wt -w 0 nt --tabColor '#F000F0' --title TreatAPI2 --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API2'
     wt -w 0 nt --tabColor '#ff0000' --title RayStation --suppressApplicationTitle -d 'C:\git\RayStation'
 }
 
@@ -212,7 +297,15 @@ function Build {
 
     (New-Object -ComObject SAPI.SpVoice).Speak("Build done")
 }
+function guid {
+    [guid]::NewGuid().ToString() | Tee-Object -Variable g
+    Set-Clipboard $g
+    Write-Host "(copied)"
+}
 
+# ========================================
+#              Modules
+# ========================================
 function install_module_if_missing($moduleName) {
     if (-not (Get-Module -ListAvailable -Name $moduleName)) {
         Install-Module $moduleName -Scope CurrentUser -Force
@@ -221,17 +314,24 @@ function install_module_if_missing($moduleName) {
     Import-Module $moduleName
 }
 
-# ========================================
-#              Modules
-# ========================================
 install_module_if_missing -moduleName PSReadLine
 install_module_if_missing -moduleName PSFzf
 install_module_if_missing -moduleName Terminal-Icons
 
 $env:FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
-Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+f' -PSReadlineChordReverseHistory 'Ctrl+r'
-Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
+$env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
+$env:FZF_CTRL_T_COMMAND = $env:FZF_DEFAULT_COMMAND
+$env:FZF_ALT_C_COMMAND = 'fd --type d --hidden --follow --exclude .git'
+Set-PsFzfOption `
+    -PSReadlineChordProvider 'Ctrl+f' `
+    -PSReadlineChordReverseHistory 'Ctrl+r' `
+    -PSReadlineChordSetLocation 'Alt+c'
+Set-PsFzfOption -TabExpansion
+Set-PsFzfOption -TabCompletionPreviewWindow 'right|down|hidden'
 
+Set-PsFzfOption -EnableAliasFuzzyKillProcess # fkill alias
+
+Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
@@ -269,6 +369,7 @@ function tail {
         else { $input | Select-Object -Last $n }
     }
 }
+function open { Invoke-Item $args }
 
 function Start-TreatmentDriver {
     param(

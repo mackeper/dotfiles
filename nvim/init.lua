@@ -26,8 +26,7 @@ vim.opt.statusline = "[%n] %<%f %h%w%m%r%q%=%=%y %-14.(%l,%c%V%) %L %P"
 vim.opt.termguicolors = true -- Enabled true color support
 vim.opt.list = true -- Show invisible characters
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
-vim.opt.signcolumn = "yes" -- Always show signcolumn. Why?
-vim.opt.colorcolumn = "100"
+vim.opt.signcolumn = "yes" -- Always show signcolumn.
 require("vim._core.ui2").enable({ enable = true }) -- Experimenal new UI
 
 -- Editing
@@ -45,6 +44,8 @@ vim.opt.smartcase = true -- Override ignorecase if search pattern contains upper
 vim.opt.hlsearch = true -- Highlight search matches
 vim.opt.incsearch = true -- Show search matches as you type
 vim.opt.inccommand = "split" -- Show search substitution in split
+
+vim.opt.grepprg = "rg --vimgrep --smart-case"
 
 -- Indentation
 vim.opt.tabstop = 4 -- Number of spaces that a <Tab> counts for
@@ -64,8 +65,8 @@ vim.opt.wildmode = "longest:full,full"
 -- ================================================
 --                   Keymaps
 -- ================================================
-local function opts(desc)
-    return { silent = true, noremap = true, desc = desc }
+local function opts(desc, extra)
+    return vim.tbl_extend("force", { silent = true, noremap = true, desc = desc }, extra or {})
 end
 local map = vim.keymap.set
 
@@ -73,6 +74,14 @@ local map = vim.keymap.set
 map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
 map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
 map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle undotree"))
+
+-- Editing
+map(
+    "n",
+    "<leader>ew",
+    [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+    opts("Substitute word under cursor", { silent = false })
+)
 
 -- Search
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
@@ -83,6 +92,7 @@ map("n", "<C-b>", "<cmd>Pick buffers<cr>", opts())
 map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
 map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
+map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
 
 -- AI
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
@@ -129,8 +139,8 @@ map("n", "<leader>ss", "<CMD>lua MiniSessions.select()<CR>", opts("Select sessio
 map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "qf",
-    callback = function()
-        map("n", "q", "<cmd>cclose<CR>", opts("Close quickfix"))
+    callback = function(e)
+        map("n", "q", "<cmd>cclose<CR>", opts("Close quickfix", { buffer = e.buf }))
         map("n", "dd", function()
             local row = vim.fn.line(".")
             local qf = vim.fn.getqflist()
@@ -141,7 +151,7 @@ vim.api.nvim_create_autocmd("FileType", {
             if new_row > 0 then
                 vim.api.nvim_win_set_cursor(0, { new_row, 0 })
             end
-        end, opts("Delete qf entry"))
+        end, opts("Delete qf entry", { buffer = e.buf }))
     end,
 })
 
@@ -164,25 +174,12 @@ end, opts("Toggle checkbox"))
 
 -- Harpoon
 
-map("n", "<leader>a", function()
-    vim.cmd("$argadd %")
-    vim.cmd("argdedup")
-end, opts("Harpoon add"))
-map("n", "<leader>h", function()
-    vim.cmd("silent! 1argument")
-end, opts("harpoon 1"))
-map("n", "<leader>j", function()
-    vim.cmd("silent! 2argument")
-end, opts("harpoon 2"))
-map("n", "<leader>k", function()
-    vim.cmd("silent! 3argument")
-end, opts("harpoon 3"))
-map("n", "<leader>n", function()
-    vim.cmd("silent! 4argument")
-end, opts("harpoon 4"))
-map("n", "<leader>m", function()
-    vim.cmd("silent! 5argument")
-end, opts("harpoon 5"))
+map("n", "<leader>a", "<cmd>$argadd %<cr><cmd>argdedup<cr>", opts("Harpoon add current file"))
+map("n", "<leader>h", "<cmd>silent! 1argument<cr>", opts("Harpoon 1"))
+map("n", "<leader>j", "<cmd>silent! 2argument<cr>", opts("Harpoon 2"))
+map("n", "<leader>k", "<cmd>silent! 3argument<cr>", opts("Harpoon 3"))
+map("n", "<leader>l", "<cmd>silent! 4argument<cr>", opts("Harpoon 4"))
+map("n", "<leader>;", "<cmd>silent! 5argument<cr>", opts("Harpoon 5"))
 
 -- ================================================
 --                   Plugins
@@ -226,9 +223,11 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 })
 
 -- Mini - A collection of plugins
--- require("mini.statusline").setup({}) -- Fancier statusline
 require("mini.pick").setup({
     window = { config = { width = 100, height = 30 } },
+    mappings = {
+        choose_marked = '<C-q>',  -- send marked to quickfix
+    },
 }) -- Picker, e.g. :Pick files, :Pick grep_live
 require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show info
     windows = {
@@ -238,6 +237,7 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
     mappings = {
         go_in = "<CR>",
         go_out = "-",
+
     },
 })
 require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
@@ -265,11 +265,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
                 gen_loader.from_lang(),
             },
         })
-
-        -- require("mini.completion").setup({})
-        -- MiniSnippets.start_lsp_server() -- needed by mini.completion?
-        -- require("mini.icons").setup({})
-        -- MiniIcons.tweak_lsp_kind()
     end,
 })
 
@@ -302,6 +297,8 @@ miniclue.setup({
         { mode = "n", keys = "<Leader>w", desc = "+Wiki" },
         { mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
         { mode = "n", keys = "<Leader>z", desc = "+Spell check" },
+        { mode = "n", keys = "<Leader>f", desc = "+Find" },
+        { mode = "n", keys = "<Leader>s", desc = "+Session" },
     },
 })
 
