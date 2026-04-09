@@ -37,6 +37,7 @@ vim.opt.sidescrolloff = 8 -- Keep X characters from the side
 vim.opt.undofile = true -- Persistent undo
 vim.opt.spelllang = { "en_us", "sv" }
 vim.opt.fixendofline = false -- Don't automatically add newline at end of file
+vim.opt.foldmethod = "syntax" -- Where to calculate folds
 
 -- Search
 vim.opt.ignorecase = true -- Ignore case in search patterns
@@ -118,6 +119,22 @@ map("n", "<C-Right>", "<C-w>l", opts("Window right"))
 
 map("n", "<tab>", ":bnext<CR>", opts("Next buffer"))
 map("n", "<S-tab>", ":bprevious<CR>", opts("Previous buffer"))
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "cs",
+    callback = function()
+        map("n", "[[", "/^\\s*\\(public\\|private\\|protected\\|class\\|interface\\|struct\\|enum\\)<CR>", { buffer = true })
+        map("n", "]]", "/^\\s*}<CR>", { buffer = true })
+    end,
+})
+
+-- Terminal
+map("n", "<C-space>", "<cmd>terminal<CR>", opts("Open terminal"))
+map("t", "<Esc><Esc>", "<C-\\><C-n>", opts("Exit terminal mode"))
+map("t", "<C-Left>", "<C-\\><C-O><C-w>h<esc>", opts("Window left"))
+map("t", "<C-Down>", "<C-\\><C-O><C-w>j<esc>", opts("Window down"))
+map("t", "<C-Up>", "<C-\\><C-O><C-w>k<esc>", opts("Window up"))
+map("t", "<C-Right>", "<C-\\><C-O><C-w>l<esc>", opts("Window right"))
 
 -- Copying
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
@@ -237,7 +254,6 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
     mappings = {
         go_in = "<CR>",
         go_out = "-",
-
     },
 })
 require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
