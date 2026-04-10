@@ -37,7 +37,6 @@ vim.opt.sidescrolloff = 8 -- Keep X characters from the side
 vim.opt.undofile = true -- Persistent undo
 vim.opt.spelllang = { "en_us", "sv" }
 vim.opt.fixendofline = false -- Don't automatically add newline at end of file
-vim.opt.foldmethod = "syntax" -- Where to calculate folds
 
 -- Search
 vim.opt.ignorecase = true -- Ignore case in search patterns
@@ -94,6 +93,7 @@ map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
 map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
+map("n", "<leader>ff", "<cmd>Pick resume<cr>", opts("Resume last picker"))
 
 -- AI
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
@@ -123,8 +123,8 @@ map("n", "<S-tab>", ":bprevious<CR>", opts("Previous buffer"))
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
     callback = function()
-        map("n", "[[", "/^\\s*\\(public\\|private\\|protected\\|class\\|interface\\|struct\\|enum\\)<CR>", { buffer = true })
-        map("n", "]]", "/^\\s*}<CR>", { buffer = true })
+        map("n", "[[", "?^\\s*\\(public\\|private\\|protected\\|class\\|interface\\|struct\\|enum\\)<CR>:nohl<CR>", { buffer = true })
+        map("n", "]]", "/^\\s*\\(public\\|private\\|protected\\|class\\|interface\\|struct\\|enum\\)<CR>:nohl<CR>", { buffer = true })
     end,
 })
 
@@ -140,6 +140,17 @@ map("t", "<C-Right>", "<C-\\><C-O><C-w>l<esc>", opts("Window right"))
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
 map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to clipboard"))
 map("n", "<leader>cd", [[:let @+=expand("%:h")<CR>]], opts("Copy file directory to clipboard"))
+
+-- Pasting
+map(
+    "n",
+    "<leader>p_",
+    function()
+        local text = vim.fn.getreg("+"):gsub("[ :]", "_")
+        vim.api.nvim_put({text}, "c", true, true)
+    end,
+    opts("Paste replacing spaces with _")
+)
 
 -- LSP
 map("n", "grd", vim.lsp.buf.definition, opts("vim.lsp.buf.definition()"))
@@ -227,9 +238,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     callback = function()
         require("blink.cmp").setup({
             completion = {
-                documentation = {
-                    auto_show = true,
-                },
+                documentation = { auto_show = true, },
+            },
+            snippets = {
+                expand = function(snippet)
+                    MiniSnippets.default_insert({ body = snippet })
+                end,
             },
             signature = { enabled = true },
             fuzzy = {
@@ -278,9 +292,11 @@ vim.api.nvim_create_autocmd("BufReadPost", {
         local gen_loader = require("mini.snippets").gen_loader
         require("mini.snippets").setup({
             snippets = {
+                gen_loader.from_file(vim.fn.stdpath("config") .. "/snippets/global.json"),
                 gen_loader.from_lang(),
             },
         })
+        MiniSnippets.start_lsp_server()
     end,
 })
 
