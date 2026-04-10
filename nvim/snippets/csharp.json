@@ -1,0 +1,57 @@
+{
+  "constructor": {
+    "prefix": "ctor",
+    "body": [
+      "${1:public} ${2:$TM_FILENAME_BASE}(${3:Parameters})",
+      "{",
+      "  $0",
+      "}"
+    ],
+    "description": "constructor"
+  },
+  "xUnit Test": {
+    "prefix": "fact",
+    "body": [
+      "[Fact]",
+      "public void ${1:TestName}()",
+      "{",
+      "  // Arrange",
+      "  $0",
+      "  // Act",
+      "",
+      "  // Assert",
+      "}"
+    ],
+    "description": "create xunit test method"
+  },
+  "Creates a Method structure": {
+    "prefix": "method",
+    "body": [
+      "${1:public} ${2:void} ${3:MyMethod}(${4:string} ${5:parameter})",
+      "{",
+      "  $0",
+      "}"
+    ],
+    "description": "Creates a Method structure"
+  },
+  "Creates an Async Method structure": {
+    "prefix": "method_async",
+    "body": [
+      "${1:public} async ${2:Task}<${3:object}> ${4:MyMethodAsync}(${5:string} ${6:parameter})",
+      "{",
+      "  $0",
+      "}"
+    ],
+    "description": "Creates an async Method structure"
+  },
+  "cls": {
+    "prefix": "cls",
+    "body": [
+      "${1:public} class ${2:$TM_FILENAME_BASE}",
+      "{",
+      "  $0",
+      "}"
+    ],
+    "description": "Create new class"
+  }
+}
