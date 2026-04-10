@@ -1,4 +1,5 @@
 ---
+name: spec-writer
 description: "Use when: Creating detailed specifications for any change. Specs follow a strict
 template and enable two developers to implement the same thing independently."
 ---

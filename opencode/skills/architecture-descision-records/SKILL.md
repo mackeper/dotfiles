@@ -1,4 +1,5 @@
 ---
+name: architecture-descision-records
 description: "Use when: A significant architectural decision has been made."
 ---
 
