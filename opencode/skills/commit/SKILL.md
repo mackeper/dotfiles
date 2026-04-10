@@ -5,121 +5,59 @@ description: "ALWAYS use this skill when committing code changes — never commi
 
 # commit
 
-## Format
+Write commit messages terse and exact. Conventional Commits format. No fluff. Why over what.
 
-The header is required. All lines must stay under 100 characters.
-Exclamation mark after type indicates a breaking change.
+## Rules
 
-```
-<type>(<scope>): <subject>
+**Subject line:**
+- `<type>(<scope>): <imperative summary>` — `<scope>` optional
+- Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`, `build`, `ci`, `style`, `revert`
+- Imperative mood: "add", "fix", "remove" — not "added", "adds", "adding"
+- ≤50 chars when possible, hard cap 72
+- No trailing period
+- Match project convention for capitalization after the colon
 
-<optional body>
+**Body (only if needed):**
+- Skip entirely when subject is self-explanatory
+- Add body only for: non-obvious *why*, breaking changes, migration notes, linked issues
+- Wrap at 72 chars
+- Bullets `-` not `*`
+- Reference issues/PRs at end: `Closes #42`, `Refs #17`
 
-<optional footer>
-```
-
-### Commit Types
-
-| Type | Purpose |
-|------|---------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `ref` | Refactoring (no behavior change) |
-| `perf` | Performance improvement |
-| `docs` | Documentation only |
-| `test` | Test additions or corrections |
-| `build` | Build system or dependencies |
-| `ci` | CI configuration |
-| `chore` | Maintenance tasks |
-| `style` | Code formatting (no logic change) |
-| `meta` | Repository metadata |
-| `license` | License changes |
-
-### Header Line Rules
-
-- Use imperative, present tense: "Add feature" not "Added feature"
-- Capitalize the first letter
-- No period at the end
-- Maximum 70 characters
-
-### Body Guidelines
-
-- Explain **what** and **why**, not how
-- Use imperative mood and present tense
-- Include motivation for the change
-- Contrast with previous behavior when relevant
-
-### Footer: Issue References
-
-Reference issues in the footer using these patterns:
-
-```
-Fixes GH-1234
-Fixes #1234
-Fixes SENTRY-1234
-Refs LINEAR-ABC-123
-```
-
-- `Fixes` closes the issue when merged
-- `Refs` links without closing
+**What NEVER goes in:**
+- "This commit does X", "I", "we", "now", "currently" — the diff says what
+- "As requested by..." — use Co-authored-by trailer
+- "Generated with Claude Code" or any AI attribution
+- Emoji (unless project convention requires)
+- Restating the file name when scope already says it
 
 ## Examples
 
-### Simple fix
+Diff: new endpoint for user profile with body explaining the why
+- ❌ "feat: add a new endpoint to get user profile information from the database"
+- ✅
+  ```
+  feat(api): add GET /users/:id/profile
 
-```
-fix(api): Handle null response in user endpoint
+  Mobile client needs profile data without the full user payload
+  to reduce LTE bandwidth on cold-launch screens.
 
-The user API could return null for deleted accounts, causing a crash
-in the dashboard. Add null check before accessing user properties.
+  Closes #128
+  ```
 
-Fixes SENTRY-5678
-```
+Diff: breaking API change
+- ✅
+  ```
+  feat(api)!: rename /v1/orders to /v1/checkout
 
-### Breaking change
+  BREAKING CHANGE: clients on /v1/orders must migrate to /v1/checkout
+  before 2026-06-01. Old route returns 410 after that date.
+  ```
 
-```
-feat(api)!: Remove deprecated v1 endpoints
+## Auto-Clarity
 
-Remove all v1 API endpoints that were deprecated in version 23.1.
-Clients should migrate to v2 endpoints.
+Always include body for: breaking changes, security fixes, data migrations, anything reverting a prior commit. Never compress these into subject-only — future debuggers need the context.
 
-BREAKING CHANGE: v1 endpoints no longer available
-Fixes SENTRY-9999
-```
+## Boundaries
 
-## Revert Format
-
-```
-revert: feat(api): Add new endpoint
-
-This reverts commit abc123def456.
-
-Reason: Caused performance regression in production.
-```
-
-## Principles
-
-- Each commit should be a single, stable change
-- Commits should be independently reviewable
-- The repository should be in a working state after each commit
-
-## Workflow
-
-Copy this checklist and verify before committing:
-
-```
-Commit Checklist:
-- [ ] Review staged changes: git diff --cached
-- [ ] Check recent commits for style: git log --oneline -5
-- [ ] Subject line under 70 characters
-- [ ] Body explains what and why, not how
-- [ ] Issue reference in correct format (if applicable)
-```
-
-### Validation
-
-After drafting the commit message:
-1. Verify subject line length
-2. Confirm imperative mood
-3. Check issue references match expected patterns
+Only generates the commit message. Does not run `git commit`, does not stage files, does not amend. Output the message as a code block ready to paste. "stop caveman-commit" or "normal mode": revert to verbose commit style.

@@ -14,7 +14,6 @@
 -- ================================================
 --                   Options
 -- ================================================
-vim.cmd.colorscheme("catppuccin")
 
 -- Leader key
 vim.g.mapleader = " "
@@ -23,11 +22,11 @@ vim.g.maplocalleader = " "
 -- UI
 -- [bufnr] filepath [flags] | | [ft] (row,col-Vcol) tLines percentage%
 vim.opt.statusline = "[%n] %<%f %h%w%m%r%q%=%=%y %-14.(%l,%c%V%) %L %P"
-vim.opt.termguicolors = true -- Enabled true color support
 vim.opt.list = true -- Show invisible characters
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 vim.opt.signcolumn = "yes" -- Always show signcolumn.
 require("vim._core.ui2").enable({ enable = true }) -- Experimenal new UI
+vim.cmd.colorscheme("catppuccin")
 
 -- Editing
 vim.opt.clipboard = "unnamedplus" -- System clipboard
@@ -76,12 +75,9 @@ map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
 map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle undotree"))
 
 -- Editing
-map(
-    "n",
-    "<leader>ew",
+map("n", "<leader>ew",
     [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-    opts("Substitute word under cursor", { silent = false })
-)
+    opts("Substitute word under cursor", { silent = false }))
 
 -- Search
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
@@ -123,8 +119,9 @@ map("n", "<S-tab>", ":bprevious<CR>", opts("Previous buffer"))
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
     callback = function()
-        map("n", "[[", "?^\\s*\\(public\\|private\\|protected\\|class\\|interface\\|struct\\|enum\\)<CR>:nohl<CR>", { buffer = true })
-        map("n", "]]", "/^\\s*\\(public\\|private\\|protected\\|class\\|interface\\|struct\\|enum\\)<CR>:nohl<CR>", { buffer = true })
+        local scope_pattern = [[^\s*\(public\|private\|protected\|class\|interface\|struct\|enum\)]]
+        map("n", "[[", "?^\\s*\\" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
+        map("n", "]]", "/^\\s*\\" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
     end,
 })
 
@@ -142,15 +139,12 @@ map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to cl
 map("n", "<leader>cd", [[:let @+=expand("%:h")<CR>]], opts("Copy file directory to clipboard"))
 
 -- Pasting
-map(
-    "n",
-    "<leader>p_",
+map( "n", "<leader>p",
     function()
         local text = vim.fn.getreg("+"):gsub("[ :]", "_")
         vim.api.nvim_put({text}, "c", true, true)
     end,
-    opts("Paste replacing spaces with _")
-)
+    opts("Paste replacing spaces with _"))
 
 -- LSP
 map("n", "grd", vim.lsp.buf.definition, opts("vim.lsp.buf.definition()"))
@@ -222,15 +216,17 @@ vim.pack.add({
     "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
     "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
     "https://github.com/saghen/blink.cmp", -- Completion (cannot get mini.completion to work)
-    -- {
-    --     src = "https://github.com/nvim-treesitter/nvim-treesitter",
-    --     branch = "master",
-    --     build = ":TSUpdate",
-    -- },
 })
 vim.cmd.packadd("cfilter") -- filder quickfix list.
 vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
 vim.cmd.packadd("nvim.difftool") -- not sure
+
+vim.api.nvim_create_user_command("VimPackList", function()
+    for _, value in ipairs(vim.pack.get()) do
+        print(value.spec.name)
+    end
+end, { desc = "List plugins" })
+
 
 -- Blink
 vim.api.nvim_create_autocmd("BufReadPost", {
@@ -270,19 +266,19 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
         go_out = "-",
     },
 })
-require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
-require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
+require("mini.visits").setup({})   -- Track file visits and jump to them. E.g. :Visit
+require("mini.extra").setup({})    -- Extra functionality. E.g. :Pick git_hunks
 require("mini.sessions").setup({}) -- Session management.
 
-vim.api.nvim_create_autocmd("BufReadPost", {
+vim.api.nvim_create_autocmd({"BufReadPost", "BufNewFile"}, {
     once = true,
     callback = function()
         require("mini.cursorword").setup({}) -- Highlight word under cursor
-        require("mini.diff").setup({}) -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
-        require("mini.splitjoin").setup({}) -- Split and join code blocks. gS to toggle
-        require("mini.ai").setup({}) -- Extend a/i text objects
-        require("mini.surround").setup({}) -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
-        require("mini.align").setup({}) -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
+        require("mini.diff").setup({})       -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
+        require("mini.splitjoin").setup({})  -- Split and join code blocks. gS to toggle
+        require("mini.ai").setup({})         -- Extend a/i text objects
+        require("mini.surround").setup({})   -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
+        require("mini.align").setup({})      -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
         local hipatterns = require("mini.hipatterns")
         hipatterns.setup({
             highlighters = {
@@ -365,39 +361,24 @@ require("mason-tool-installer").setup({
 -- ================================================
 --                 Autocmds
 -- ================================================
--- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function()
         vim.highlight.on_yank({ timeout = 1000 })
     end,
-    desc = "Briefly highlight yanked text",
 })
 
 -- Restore cursor position when reopening files
-vim.api.nvim_create_autocmd("BufReadPost", {
-    callback = function()
-        local mark = vim.api.nvim_buf_get_mark(0, '"')
-        local lcount = vim.api.nvim_buf_line_count(0)
-        if mark[1] > 0 and mark[1] <= lcount then
-            pcall(vim.api.nvim_win_set_cursor, 0, mark)
-            vim.schedule(function()
-                vim.cmd("normal! zz")
-            end)
-        end
-    end,
-})
+vim.opt.viewoptions = "folds,cursor" -- what gets saved in the session
+vim.api.nvim_create_autocmd("BufWinLeave", { command = "silent! mkview" })
+vim.api.nvim_create_autocmd("BufWinEnter", { command = "silent! loadview" })
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "text", "gitcommit" },
-    callback = function()
-        vim.opt_local.spell = true
-    end,
-    desc = "Enable wrap and spellcheck for certain filetypes",
+    command = "setlocal spell",
 })
 
 vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
         MiniSessions.write(vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ".vim")
     end,
-    desc = "Save the session",
 })
