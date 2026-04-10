@@ -1,4 +1,5 @@
 ---
+name: bash
 description: "Use when: writing a bash script"
 ---
 
