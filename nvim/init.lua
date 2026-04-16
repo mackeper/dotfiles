@@ -88,6 +88,7 @@ map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
 map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
+map("n", "<leader>fW", "<cmd>Pick grep pattern=[[(([^n][^e][^w])\\\\\\s+<cword>\\\\\\s*\\\\\\(|class.*<cword>)]]<cr>", opts("Grep C function"))
 map("n", "<leader>ff", "<cmd>Pick resume<cr>", opts("Resume last picker"))
 
 -- AI
@@ -260,7 +261,7 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
         width_preview = 80,
     },
     mappings = {
-        go_in = "<CR>",
+        go_in_plus = "<CR>",
         go_out = "-",
     },
 })

@@ -5,9 +5,12 @@ case $- in
 esac
 
 # ---- PATH ----
-export PATH=$PATH:~/bin               # Local bin scripts
-export PATH=$PATH:~/go/bin            # Go binaries
-export PATH=$PATH:/usr/local/go/bin   # System Go
+export PATH=$PATH:$HOME/bin               # Local bin scripts
+export PATH=$PATH:$HOME/go/bin            # Go binaries
+export PATH=$PATH:/usr/local/go/bin       # System Go
+export PATH=$PATH:$HOME/dotnet            # .NET SDK
+
+export DOTNET_ROOT=$HOME/dotnet
 
 # ---- History ----
 HISTCONTROL=ignoreboth                # Ignore duplicates and lines starting with space
