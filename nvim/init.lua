@@ -119,9 +119,9 @@ map("n", "<S-tab>", ":bprevious<CR>", opts("Previous buffer"))
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
     callback = function()
-        local scope_pattern = [[^\s*\(public\|private\|protected\|class\|interface\|struct\|enum\)]]
-        map("n", "[[", "?^\\s*\\" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
-        map("n", "]]", "/^\\s*\\" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
+        local scope_pattern = [[\(public\|private\|protected\|class\|interface\|struct\|enum\)]]
+        map("n", "[[", "?^\\s*" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
+        map("n", "]]", "/^\\s*" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
     end,
 })
 
@@ -228,25 +228,27 @@ end, { desc = "List plugins" })
 
 
 -- Blink
-vim.api.nvim_create_autocmd("BufReadPost", {
-    once = true,
-    callback = function()
-        require("blink.cmp").setup({
-            completion = {
-                documentation = { auto_show = true, },
-            },
-            snippets = {
-                expand = function(snippet)
-                    MiniSnippets.default_insert({ body = snippet })
-                end,
-            },
-            signature = { enabled = true },
-            fuzzy = {
-                implementation = "lua",
-            },
-        })
-    end,
-})
+if not vim.g.vscode then -- Unfortunately, vscode at work
+    vim.api.nvim_create_autocmd("BufReadPost", {
+        once = true,
+        callback = function()
+            require("blink.cmp").setup({
+                completion = {
+                    documentation = { auto_show = true, },
+                },
+                snippets = {
+                    expand = function(snippet)
+                        MiniSnippets.default_insert({ body = snippet })
+                    end,
+                },
+                signature = { enabled = true },
+                fuzzy = {
+                    implementation = "lua",
+                },
+            })
+        end,
+    })
+end
 
 -- Mini - A collection of plugins
 require("mini.pick").setup({
