@@ -39,10 +39,10 @@ function Show-StartMessage {
         @("driver", "Start/stop a treatment driver"),
         @("tabs", "Open preset tabs"),
         @("guid", "Generate a new GUID"),
+        @("test", "FZF C# test runner"),
         @("", ""),
         @("$([char]27)[38;5;10mUseful functions:$([char]27)[0m", ""),
         @("fkill", "Fzf kill process"),
-        @("", ""),
         @("", ""),
         @("", ""),
         @("", ""),
@@ -222,9 +222,9 @@ function tabs() {
     wt -w 0 nt --tabColor '#00FF00' --title Dotfiles --suppressApplicationTitle ` -d 'C:\git\dotfiles'
     wt -w 0 split-pane -V --tabColor '#00FF00' --title Copilot --suppressApplicationTitle ` -d "$env:APPDATA\Code\User"
     wt -w 0 split-pane -H --tabColor '#00FF00' --title Wiki --suppressApplicationTitle ` -d 'C:\git\wiki'
-    wt -w 0 nt --tabColor '#F000F0' --title RayCare2 --suppressApplicationTitle -d 'C:\git\RayCare.WT'
-    wt -w 0 nt --tabColor '#F000F0' --title TreatmentDrivers2 --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers.WT'
-    wt -w 0 nt --tabColor '#F000F0' --title TreatAPI2 --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API.WT'
+    wt -w 0 nt --tabColor '#F000F0' --title RayCare.WT --suppressApplicationTitle -d 'C:\git\RayCare.WT'
+    wt -w 0 nt --tabColor '#F000F0' --title TreatmentDrivers.WT --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers.WT'
+    wt -w 0 nt --tabColor '#F000F0' --title TreatAPI.WT --suppressApplicationTitle -d 'C:\git\RayCare.Treat.API.WT'
     wt -w 0 nt --tabColor '#0000ff' --title RayCare --suppressApplicationTitle -d 'C:\git\RayCare'
     wt -w 0 split-pane -V --tabColor '#0000ff' --title RayCare --suppressApplicationTitle -d 'C:\git\RayCare' powershell -NoExit -File .\MonitorMicroservices.ps1
     wt -w 0 nt --tabColor '#0000ff' --title TreatmentDrivers --suppressApplicationTitle -d 'C:\git\RayCare.TreatmentDrivers'
@@ -350,13 +350,78 @@ Set-PSReadLineKeyHandler -Key Ctrl+g -ScriptBlock {
     lazygit
 }
 
+Remove-PSReadLineKeyHandler -Chord Ctrl+t
+
+# Default TestInfo display: only Fqn
+Update-TypeData -TypeName 'TestInfo' -DefaultDisplayPropertySet 'Fqn' -Force
+Update-TypeData -TypeName 'TestInfo' -MemberType ScriptMethod -MemberName ToString -Value { $this.Fqn } -Force
+
+function Find-TestProject {
+    param([Parameter(ValueFromPipeline)][string]$Filter = '')
+    process { fd -i "(Tests?|Specs?)\.csproj$" 2>$null | Where-Object { -not $Filter -or $_ -match [regex]::Escape($Filter) } }
+}
+Set-Alias test-csproj Find-TestProject
+
+function Find-Test {
+    param(
+        [Parameter(Mandatory, ValueFromPipeline)][string]$Project,
+        [string]$Filter = ''
+    )
+    process {
+        $projectDir = Split-Path $Project -Parent
+        $projectName = [IO.Path]::GetFileNameWithoutExtension($Project)
+        $pattern = '\[(?:Test|TestMethod|Fact|Theory)[^\]]*\][\s\S]*?\b(?:public|private|internal)\s+(?:static\s+)?(?:async\s+)?(?:Task|void)\s+(\w+)\s*\('
+        rg -U --pcre2 --json $pattern $projectDir --glob '*.cs' | ForEach-Object {
+            $obj = $_ | ConvertFrom-Json
+            if ($obj.type -eq 'match') {
+                $matchText = $obj.data.submatches[0].match.text
+                if ($matchText -match '\b(?:Task|void)\s+(\w+)\s*\(') {
+                    $filePath = $obj.data.path.text
+                    $relDir = [IO.Path]::GetRelativePath($projectDir, (Split-Path $filePath -Parent))
+                    $ns = if ($relDir -eq '.') { $projectName } else { "$projectName." + ($relDir -replace '[\\/]', '.') }
+                    $class = [IO.Path]::GetFileNameWithoutExtension($filePath).Split('.')[0]
+                    $fqn = "$ns.$class.$($Matches[1])"
+                    if (-not $Filter -or $fqn -match [regex]::Escape($Filter)) { $fqn }
+                }
+            }
+        }
+    }
+}
+Set-Alias test-fd Find-Test
+
+function Invoke-TestCase {
+    param(
+        [Parameter(Mandatory)][string]$Project,
+        [Parameter(Mandatory, ValueFromPipeline)][string]$Fqn,
+        [switch]$NoHistory
+    )
+    process {
+        $command = "dotnet test $Project --no-build --filter `"FullyQualifiedName~$Fqn`""
+        if (-not $NoHistory) { [Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory($command) }
+        Invoke-Expression $command
+    }
+}
+Set-Alias test-case Invoke-TestCase
+
+function Invoke-Test {
+    $project = Find-TestProject | Invoke-Fzf
+    $fqn = Find-Test -Project $project | Invoke-Fzf
+    Invoke-TestCase -Project $project -Fqn $fqn
+}
+Set-Alias test Invoke-Test
+
 # ========================================
 #              Mimic linux
 # ========================================
 function touch($file) { if (Test-Path $file) { (Get-Item $file).LastWriteTime = Get-Date } else { New-Item $file -ItemType File } }
+function wget {
+    param([string]$url, [string]$o)
+    $outFile = if ($o) { $o } else { Split-Path $url -Leaf }
+    Invoke-WebRequest $url -OutFile $outFile
+}
 function grep {
-    if (Get-Command rg -ErrorAction SilentlyContinue) { rg --color=auto @args }
-    else { Select-String @args }
+    if (Get-Command rg -ErrorAction SilentlyContinue) { $input | rg --color=auto @args }
+    else { $input | Select-String @args }
 }
 function head { param($n=10) $input | Select-Object -First $n }
 function tail {

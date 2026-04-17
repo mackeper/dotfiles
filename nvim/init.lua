@@ -10,6 +10,7 @@
 --  - Replace blink.cmp with mini.completion if I can get it to work
 --  - More snippets, especially for markdown
 --  - mini.git?
+--  - Replace mini.sessions with native
 
 -- ================================================
 --                   Options
@@ -72,6 +73,7 @@ local map = vim.keymap.set
 map("n", "<leader>ee", "<cmd>Explore<cr>", opts("Open file explorer"))
 map("n", "<leader>ec", "<cmd>edit $MYVIMRC<cr>", opts("Edit init.lua"))
 map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle undotree"))
+map("n", "<leader>er", "<cmd>lua MiniSessions.restart()<CR>", opts("Restart nvim"))
 
 -- Editing
 map("n", "<leader>ew",
@@ -88,7 +90,7 @@ map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
 map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
-map("n", "<leader>fW", "<cmd>Pick grep pattern=[[(([^n][^e][^w])\\\\\\s+<cword>\\\\\\s*\\\\\\(|class.*<cword>)]]<cr>", opts("Grep C function"))
+map("n", "<leader>fW", "<cmd>Pick grep pattern=[[(([^n][^e][^w])\\s+<cword>\\s*\\\\\\(|class.*<cword>\\s|<cword>\\s\\{)]]<cr>", opts("Grep C function"))
 map("n", "<leader>ff", "<cmd>Pick resume<cr>", opts("Resume last picker"))
 
 -- AI
