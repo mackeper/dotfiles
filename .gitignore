@@ -1,2 +1,9 @@
 # Neovim
 lazy-lock.json
+
+# Security
+.cer
+.key
+.pem
+.env
+.cert

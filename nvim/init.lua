@@ -127,6 +127,9 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
+-- Buffers
+map("n", "<leader>bd", "<cmd>bdelete<CR>", opts("Close buffer"))
+
 -- Terminal
 map("n", "<C-space>", "<cmd>terminal<CR>", opts("Open terminal"))
 map("t", "<Esc><Esc>", "<C-\\><C-n>", opts("Exit terminal mode"))
@@ -173,7 +176,9 @@ vim.api.nvim_create_autocmd("FileType", {
             vim.cmd("copen")
             local new_row = math.min(row, #qf)
             if new_row > 0 then
-                vim.api.nvim_win_set_cursor(0, { new_row, 0 })
+                vim.schedule(function()
+                    pcall(vim.api.nvim_win_set_cursor, 0, { new_row, 0 })
+                end)
             end
         end, opts("Delete qf entry", { buffer = e.buf }))
     end,
@@ -230,27 +235,25 @@ end, { desc = "List plugins" })
 
 
 -- Blink
-if not vim.g.vscode then -- Unfortunately, vscode at work
-    vim.api.nvim_create_autocmd("BufReadPost", {
-        once = true,
-        callback = function()
-            require("blink.cmp").setup({
-                completion = {
-                    documentation = { auto_show = true, },
-                },
-                snippets = {
-                    expand = function(snippet)
-                        MiniSnippets.default_insert({ body = snippet })
-                    end,
-                },
-                signature = { enabled = true },
-                fuzzy = {
-                    implementation = "lua",
-                },
-            })
-        end,
-    })
-end
+local blink_autocmd = vim.api.nvim_create_autocmd("BufReadPost", {
+    once = true,
+    callback = function()
+        require("blink.cmp").setup({
+            completion = {
+                documentation = { auto_show = true, },
+            },
+            snippets = {
+                expand = function(snippet)
+                    MiniSnippets.default_insert({ body = snippet })
+                end,
+            },
+            signature = { enabled = true },
+            fuzzy = {
+                implementation = "lua",
+            },
+        })
+    end,
+})
 
 -- Mini - A collection of plugins
 require("mini.pick").setup({
@@ -373,7 +376,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- Restore cursor position when reopening files
 vim.opt.viewoptions = "folds,cursor" -- what gets saved in the session
 vim.api.nvim_create_autocmd("BufWinLeave", { command = "silent! mkview" })
-vim.api.nvim_create_autocmd("BufWinEnter", { command = "silent! loadview" })
+vim.api.nvim_create_autocmd("BufWinEnter", { callback = function() pcall(vim.cmd, "silent! loadview") end })
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "text", "gitcommit" },
@@ -389,6 +392,18 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 --- =============================================
 ---                ui2
 --- =============================================
+
+-- vscode ... unfortunately
+if vim.g.vscode then
+    local vsc = require('vscode')
+    vim.api.nvim_del_autocmd(blink_autocmd)
+    map("n", "<leader>bd", function() vsc.action('workbench.action.closeActiveEditor') end, opts("Close buffer"))
+    map("n", "<leader>gd", function() vsc.action('git.openChange') end, opts("Open git change"))
+    map("n", "<leader>ee", function() vsc.action('workbench.view.explorer') end, opts("Open explorer"))
+    map("n", "grd", function() vsc.action('editor.action.revealDefinition') end, opts("Go to definition"))
+    map("n", "grf", function() vsc.action('editor.action.formatDocument') end, opts("Format document"))
+end
+if vim.g.vscode then return end
 -- Experimental UI2: floating cmdline and messages
 -- https://www.reddit.com/r/neovim/comments/1sfmgkb/comment/oeyrgua/?context=3
 vim.o.cmdheight = 1

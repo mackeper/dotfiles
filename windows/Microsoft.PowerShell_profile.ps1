@@ -405,8 +405,28 @@ Set-Alias test-case Invoke-TestCase
 
 function Invoke-Test {
     $project = Find-TestProject | Invoke-Fzf
-    $fqn = Find-Test -Project $project | Invoke-Fzf
-    Invoke-TestCase -Project $project -Fqn $fqn
+    $fqns = Find-Test -Project $project | Invoke-Fzf -Multi
+    if (-not $fqns) { return }
+    $filter = ($fqns | ForEach-Object { "FullyQualifiedName~$_" }) -join ' | '
+    $command = "dotnet test $project --no-build --filter `"$filter`""
+    [Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory($command)
+
+    $logFile = Join-Path ([IO.Path]::GetTempPath()) "test-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
+    $passed = 0; $failed = 0; $skipped = 0; $failures = @()
+    $count = ($fqns | Measure-Object).Count
+    Write-Host "  Running $count test(s)..."
+
+    & dotnet test $project --no-build -v normal --filter "`"$filter`"" 2>&1 | ForEach-Object {
+        $line = $_.ToString()
+        Add-Content $logFile $line
+        if ($line -match '^\s+Passed\s+(\S+)')  { $passed++;  Write-Host "  $([char]0x2713) $($Matches[1])" -ForegroundColor Green }
+        elseif ($line -match '^\s+Failed\s+(\S+)')  { $failed++; $failures += $line.Trim(); Write-Host "  $([char]0x2717) $($Matches[1])" -ForegroundColor Red }
+        elseif ($line -match '^\s+Skipped\s+(\S+)') { $skipped++; Write-Host "  ~ $($Matches[1])" -ForegroundColor Yellow }
+    }
+
+    Write-Host ""
+    Write-Host "  P:$passed F:$failed S:$skipped" -ForegroundColor $(if ($failed) { 'Red' } else { 'Green' })
+    Write-Host "Log: $logFile"
 }
 Set-Alias test Invoke-Test
 
