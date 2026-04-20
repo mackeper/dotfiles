@@ -9,6 +9,11 @@ export PATH=$PATH:$HOME/bin               # Local bin scripts
 export PATH=$PATH:$HOME/go/bin            # Go binaries
 export PATH=$PATH:/usr/local/go/bin       # System Go
 export PATH=$PATH:$HOME/dotnet            # .NET SDK
+export PATH=$PATH:$HOME/.opencode/bin     # OpenCode
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export DOTNET_ROOT=$HOME/dotnet
 
@@ -45,6 +50,8 @@ alias lt='eza --tree --level=2 --icons --group-directories-first'
 
 eval "$(zoxide init bash)" # `z` instead of `cd`
 
+alias wttr='curl wttr.in/Tungelsta'
+
 # ---- Git ----
 alias ga='git add'              # Add files
 alias gd='git diff'             # Show changes
@@ -69,10 +76,3 @@ bind -x '"\C-g": lazygit'
 # ---- Editor ----
 export EDITOR=nvim       # Default editor for git, etc.
 export VISUAL=nvim
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# opencode
-export PATH=/home/marcus/.opencode/bin:$PATH
