@@ -389,6 +389,94 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
     end,
 })
 
+
+-- ================================================
+--               Minimal Scrollbar
+-- ================================================
+vim.api.nvim_set_hl(0, "Scrollbar", { fg = "#6c7086", bg = "NONE" })
+
+local sb_win = nil
+local sb_buf = nil
+
+local function scrollbar_show()
+    local win = vim.fn.win_getid()
+    local info = vim.fn.getwininfo(win)[1]
+    if not info then return end
+
+    local total = vim.fn.line('$')
+    if total <= 1 then
+        scrollbar_hide()
+        return
+    end
+
+    local height = vim.api.nvim_win_get_height(win)
+    local top = info.topline
+    local bot = info.botline
+
+    -- Calculate scrollbar position
+    local scroll_pct = (top - 1) / (total - 1)
+    local thumb_pct = math.max(0.05, math.min(1, (bot - top) / total))
+
+    local row = math.floor(scroll_pct * (height - 1))
+    local bar_height = math.max(1, math.floor(thumb_pct * height))
+
+    -- Create buffer if needed
+    if not sb_buf or not vim.api.nvim_buf_is_valid(sb_buf) then
+        sb_buf = vim.api.nvim_create_buf(false, true)
+        vim.bo[sb_buf].bufhidden = "wipe"
+    end
+
+-- Create window if needed
+    local config = {
+        relative = "win",
+        win = win,
+        anchor = "SE",
+        width = 1,
+        height = bar_height,
+        row = row,
+        col = vim.o.columns - 1,
+        style = "minimal",
+        focusable = false,
+        noautocmd = true,
+    }
+
+    if not sb_win or not vim.api.nvim_win_is_valid(sb_win) then
+        sb_win = vim.api.nvim_open_win(sb_buf, false, config)
+        vim.wo[sb_win].winhighlight = "Normal:Scrollbar"
+    else
+        vim.api.nvim_win_set_config(sb_win, config)
+    end
+
+    -- Set content
+    vim.api.nvim_buf_set_lines(sb_buf, 0, -1, false, { "▌" })
+end
+
+local function scrollbar_hide()
+    if sb_win and vim.api.nvim_win_is_valid(sb_win) then
+        vim.api.nvim_win_close(sb_win, true)
+        sb_win = nil
+    end
+end
+
+vim.api.nvim_create_autocmd({ "WinScrolled", "BufEnter", "VimResized" }, {
+    callback = function()
+        local win = vim.fn.win_getid()
+        local info = vim.fn.getwininfo(win)[1]
+        if not info then return end
+        local total = vim.fn.line('$')
+        local height = vim.api.nvim_win_get_height(win)
+        if total <= height then
+            scrollbar_hide()
+        else
+            scrollbar_show()
+        end
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
+    callback = scrollbar_hide,
+})
+
 --- =============================================
 ---                ui2
 --- =============================================
