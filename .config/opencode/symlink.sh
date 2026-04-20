@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DOTFILES=~/git/dotfiles/opencode
+DOTFILES=~/git/dotfiles/.config/opencode
 CONFIG=~/.config/opencode
 
 ln -sf "$DOTFILES/AGENTS.md" "$CONFIG/AGENTS.md"
