@@ -1,0 +1,107 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "ctrl+z",
+        "command": "workbench.action.toggleZenMode"
+    },
+    {
+        "key": "ctrl+`",
+        "command": "runCommands",
+        "args": {
+            "commands": [
+                "workbench.action.terminal.focus",
+                "workbench.action.toggleMaximizedPanel"
+            ]
+        },
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "ctrl+`",
+        "command": "runCommands",
+        "args": {
+            "commands": [
+                "workbench.action.toggleMaximizedPanel",
+                "workbench.action.closePanel"
+            ]
+        },
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "workbench.action.toggleSidebarVisibility",
+        "when": "sideBarVisible && activeViewlet == 'workbench.view.explorer'"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "workbench.view.explorer",
+        "when": "!sideBarVisible || activeViewlet != 'workbench.view.explorer'"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "-workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+shift+g",
+        "command": "runCommands",
+        "args": {
+            "commands": [
+                {
+                    "command": "workbench.action.tasks.terminate",
+                    "args": "lazygit"
+                },
+                "workbench.action.toggleMaximizedPanel",
+                "workbench.action.closePanel",
+            ]
+        }
+    },
+    {
+        "key": "ctrl+m",
+        "command": "runCommands",
+        "args": {
+            "commands": [
+            "workbench.action.toggleMaximizedAuxiliaryBar",
+            ]
+        }
+    },
+    {
+        "key": "ctrl+l",
+        "command": "workbench.action.chat.toggle"
+    },
+    {
+        "key": "alt+l",
+        "command": "editor.action.inlineSuggest.commit",
+        "when": "editorTextFocus && inlineSuggestionVisible"
+    },
+    {
+        "key": "tab",
+        "command": "-editor.action.inlineSuggest.commit",
+        "when": "inlineSuggestionVisible && !editorTabMovesFocus"
+    },
+    {
+        "key": "tab",
+        "command": "-acceptSelectedSuggestion",
+        "when": "suggestWidgetVisible && textInputFocus"
+    },
+    {
+        "key": "ctrl+b",
+        "command": "workbench.action.showAllEditors"
+    },
+    {
+        "key": "alt+r",
+        "command": "workbench.action.openRecent"
+    },
+    {
+        "key": "ctrl+f",
+        "command": "workbench.action.findInFiles"
+    },
+    {
+        "key": "tab",
+        "command": "workbench.action.nextEditor",
+        "when": "!terminalFocus"
+    },
+    {
+        "key": "shift+tab",
+        "command": "workbench.action.previousEditor",
+        "when": "!terminalFocus"
+    }
+]

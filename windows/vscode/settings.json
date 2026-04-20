@@ -1,0 +1,177 @@
+{
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
+    "window.title": "${dirty}${folderName}",
+    "editor.minimap.enabled": false,
+    "editor.fontLigatures": true,
+    "git.autofetch": true,
+    "zenMode.showTabs": "none",
+    "zenMode.fullScreen": false,
+    "zenMode.hideLineNumbers": false,
+    "workbench.editor.limit.value": 5,
+    "workbench.editor.limit.enabled": true,
+    "workbench.editor.limit.excludeDirty": true,
+    "workbench.editor.pinnedTabsOnSeparateRow": true,
+    "workbench.editor.pinnedTabSizing": "compact",
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.activityBar.compact": true,
+    "window.density.editorTabHeight": "compact",
+    "window.menuBarVisibility": "compact",
+    "breadcrumbs.icons": false,
+    "vim.handleKeys": {
+        "<C-p>": false,
+        "<C-d>": true,
+        "<C-s>": false,
+        "<C-z>": false,
+        "<C-g>": false,
+        "<C-h>": false,
+    },
+    "vim.highlightedyank.enable": true,
+    "vim.useSystemClipboard": true,
+    "vim.leader": " ",
+    "vim.normalModeKeyBindingsNonRecursive": [
+        // General
+        {
+        "before": ["<Esc>"],
+        "commands": [":nohl"]
+        },
+        // Search files
+        {
+            "before": ["<leader>", "j", "f"],
+            "commands": ["workbench.action.quickOpen"]
+        },
+        {
+            "before": ["<leader>", "j", "p"],
+            "commands": ["workbench.action.showCommands"]
+        },
+        {
+            "before": ["<leader>", "j", "g"],
+            "commands": ["workbench.action.findInFiles"]
+        },
+        {
+            "before": ["<leader>", "j", "b"],
+            "commands": ["workbench.action.showAllEditors"]
+        },
+        {
+            "before": ["<leader>", "j", "c"],
+            "commands": ["workbench.action.openSettingsJson"]
+        },
+        // LSP
+        {
+            "before": ["<leader>", "."],
+            "commands": ["editor.action.quickFix"]
+        },
+        {
+            "before": ["g", "d"],
+            "commands": ["editor.action.revealDefinition"]
+        },
+        {
+            "before": ["g", "D"],
+            "commands": ["editor.action.revealDeclaration"]
+        },
+        {
+            "before": ["g", "i"],
+            "commands": ["editor.action.goToImplementation"]
+        },
+        {
+            "before": ["g", "r"],
+            "commands": ["editor.action.referenceSearch.trigger"]
+        },
+        // Explorer
+        {
+            "before": ["<leader>", "e", "s"],
+            "commands": ["workbench.files.action.showActiveFileInExplorer"]
+        },
+        // Tabs/buffers
+        {
+            "before": ["<leader>", "b", "d"],
+            "commands": [":bdelete"]
+        },
+        // AI
+        {
+            "before": ["<leader>", "p", "c"],
+            "commands": ["workbench.action.chat.open"]
+        },
+        // UI
+        {
+            "before": ["<leader>", "z", "m"],
+            "commands": ["workbench.action.toggleZenMode"]
+        },
+        // IDE
+        {
+            "before": ["<leader>", "r", "n"],
+            "commands": ["editor.action.rename"]
+        },
+        {
+            "before": ["<leader>", "r", "f"],
+            "commands": ["editor.action.formatDocument"]
+        },
+        {
+            "before": ["<leader>", "i", "b"],
+            "commands": ["csdevkit.buildSolution"]
+        },
+        {
+            "before": ["<leader>", "i", "t"],
+            "commands": ["csdevkit.testSolution"]
+        },
+        // Copy
+        {
+            "before": ["<leader>", "cp"],
+            "commands": ["editor.action.clipboardCopyAction"]
+        }
+    ],
+    "chat.tools.terminal.autoApprove": {
+        "C:\\Users\\marost\\AppData\\Roaming\\Code\\User\\tools\\Get-WorkItem.ps1": true,
+        "& \"C:\\git\\RayCare\\tools\\ByTeam\\SystemArchitects\\New-TfsTestCase.ps1\"": true,
+        "git add": false,
+        "git push": false,
+        "git commit": false,
+        "git log": true,
+        "git show": true,
+        "git diff": true,
+        "git status": true,
+        "git branch": true,
+        "git rev-parse": true,
+        "git fetch": true,
+        "nuget restore": true,
+        "rg": true,
+        "fd": true,
+        "Get-Location": true,
+        "dotnet test": true,
+        "dotnet build": true,
+        "Test-Path": true,
+        "Get-ChildItem": true,
+        "Remove-Item": false,
+        "rm": false,
+        "&": true,
+        ".\\.github\\tools\\generate_dcses.ps1": true,
+        "Copy-Item": true,
+        ".\\Build.ps1": true
+    },
+    "dotnet.codeLens.enableReferencesCodeLens": false,
+    "chat.tools.urls.autoApprove": {
+        "https://code.visualstudio.com": true,
+        "https://github.com/microsoft/vscode/wiki/*": true,
+        "https://code.visualstudio.com/docs": true,
+        "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent": true,
+        "https://github.com/code-yeongyu/oh-my-openagent": true,
+        "https://*.microsoft.com": true,
+        "https://dicom.nema.org": true
+    },
+    "chat.agentSkillsLocations": {
+        "~/AppData/Roaming/Code/User/skills": true,
+        "~/../../git/RayCare/.github/skills": true
+    },
+    "powershell.promptToUpdatePowerShell": false,
+    "workbench.editor.enablePreview": false,
+    "github.copilot.enable": {
+        "markdown": true,
+        "plaintext": true
+    },
+    "git.openRepositoryInParentFolders": "never",
+    "github.copilot.chat.agentDebugLog.enabled": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.renderWhitespace": "trailing",
+    "chat.viewSessions.orientation": "stacked",
+}
