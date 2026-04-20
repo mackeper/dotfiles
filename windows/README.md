@@ -1,7 +1,5 @@
 # Windows setup
 
-![](.images/README/README_1698152733223.png)
-
 ## Setup powershell
 
 ```Powershell
