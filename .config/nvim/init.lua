@@ -26,7 +26,10 @@ vim.opt.statusline = "[%n] %<%f %h%w%m%r%q%=%=%y %-14.(%l,%c%V%) %L %P"
 vim.opt.list = true -- Show invisible characters
 vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 vim.opt.signcolumn = "yes" -- Always show signcolumn.
+
 vim.cmd.colorscheme("catppuccin")
+vim.api.nvim_set_hl(0, "Normal", { bg = "none"}) -- Transparent background
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none"})
 
 -- Editing
 vim.opt.clipboard = "unnamedplus" -- System clipboard
