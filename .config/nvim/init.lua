@@ -29,8 +29,8 @@ vim.opt.signcolumn = "yes" -- Always show signcolumn.
 vim.opt.cursorline = true -- Highlight current line
 
 vim.cmd.colorscheme("catppuccin")
-vim.api.nvim_set_hl(0, "Normal", { bg = "none"}) -- Transparent background
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none"})
+vim.api.nvim_set_hl(0, "Normal", { bg = "none" }) -- Transparent background
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 
 -- Editing
 vim.opt.clipboard = "unnamedplus" -- System clipboard
@@ -80,9 +80,12 @@ map("n", "<leader>eu", "<cmd>lua require('undotree').open()<cr>", opts("Toggle u
 map("n", "<leader>er", "<cmd>lua MiniSessions.restart()<CR>", opts("Restart nvim"))
 
 -- Editing
-map("n", "<leader>ew",
+map(
+    "n",
+    "<leader>ew",
     [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-    opts("Substitute word under cursor", { silent = false }))
+    opts("Substitute word under cursor", { silent = false })
+)
 
 -- Search
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
@@ -94,7 +97,12 @@ map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
 map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
-map("n", "<leader>fW", "<cmd>Pick grep pattern=[[(([^n][^e][^w])\\s+<cword>\\s*\\\\\\(|class.*<cword>\\s|<cword>\\s\\{)]]<cr>", opts("Grep C function"))
+map(
+    "n",
+    "<leader>fW",
+    "<cmd>Pick grep pattern=[[(([^n][^e][^w])\\s+<cword>\\s*\\\\\\(|class.*<cword>\\s|<cword>\\s\\{)]]<cr>",
+    opts("Grep C function")
+)
 map("n", "<leader>ff", "<cmd>Pick resume<cr>", opts("Resume last picker"))
 
 -- AI
@@ -107,6 +115,34 @@ vim.g.copilot_no_tab_map = true
 
 -- Git
 map("n", "<leader>gd", "<cmd>lua MiniDiff.toggle_overlay()<cr>", opts("Toggle git diff overlay"))
+map("n", "<leader>gc", "<cmd>Pick git_commits<cr>", opts("Git commits"))
+
+-- stylua: ignore start
+-- Git blame line, run again to copy hash
+local last_time, last_line = 0, 0
+map("n", "<leader>gb", function()
+    local now = vim.loop.now()
+    local line = vim.fn.line(".")
+    local o = vim.fn.systemlist({
+        "git",
+        "blame",
+        "--line-porcelain",
+        "-L",
+        vim.fn.line(".") .. ",+1",
+        vim.api.nvim_buf_get_name(0),
+    })
+    local h = o[1]:match("^(%w+)"):sub(1, 7)
+    local a = vim.iter(o):find(function(x) return x:match("^author ") end):sub(8)
+    local t = vim.iter(o):find(function(x) return x:match("^author%-time ") end):sub(13)
+    if now - last_time < 5000 and line == last_line then
+        vim.fn.setreg("+", h)
+        vim.notify("Copied hash: " .. h, vim.log.levels.INFO)
+    else
+        print(h, a, os.date("%F", tonumber(t)))
+    end
+    last_time, last_line = now, line
+end, opts("Git blame"))
+-- stylua: ignore end
 
 -- Navigation
 map("n", "n", "nzzzv", opts("Move to next match"))
@@ -148,12 +184,10 @@ map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to cl
 map("n", "<leader>cd", [[:let @+=expand("%:h")<CR>]], opts("Copy file directory to clipboard"))
 
 -- Pasting
-map( "n", "<leader>p",
-    function()
-        local text = vim.fn.getreg("+"):gsub("[ :]", "_")
-        vim.api.nvim_put({text}, "c", true, true)
-    end,
-    opts("Paste replacing spaces with _"))
+map("n", "<leader>p", function()
+    local text = vim.fn.getreg("+"):gsub("[ :]", "_")
+    vim.api.nvim_put({ text }, "c", true, true)
+end, opts("Paste replacing spaces with _"))
 
 -- LSP
 map("n", "grd", vim.lsp.buf.definition, opts("vim.lsp.buf.definition()"))
@@ -225,7 +259,11 @@ vim.pack.add({
     "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Auto install tools installed by mason.nvim
     "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
     "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
-    "https://github.com/saghen/blink.cmp", -- Completion (cannot get mini.completion to work)
+    { -- Completion (cannot get mini.completion to work)
+
+        src = "https://github.com/saghen/blink.cmp",
+        version = "v1",
+    },
 })
 vim.cmd.packadd("cfilter") -- filder quickfix list.
 vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
@@ -237,14 +275,13 @@ vim.api.nvim_create_user_command("VimPackList", function()
     end
 end, { desc = "List plugins" })
 
-
 -- Blink
 local blink_autocmd = vim.api.nvim_create_autocmd("BufReadPost", {
     once = true,
     callback = function()
         require("blink.cmp").setup({
             completion = {
-                documentation = { auto_show = true, },
+                documentation = { auto_show = true },
             },
             snippets = {
                 expand = function(snippet)
@@ -263,7 +300,7 @@ local blink_autocmd = vim.api.nvim_create_autocmd("BufReadPost", {
 require("mini.pick").setup({
     window = { config = { width = 100, height = 30 } },
     mappings = {
-        choose_marked = '<C-q>',  -- send marked to quickfix
+        choose_marked = "<C-q>", -- send marked to quickfix
     },
 }) -- Picker, e.g. :Pick files, :Pick grep_live
 require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show info
@@ -276,19 +313,19 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
         go_out = "-",
     },
 })
-require("mini.visits").setup({})   -- Track file visits and jump to them. E.g. :Visit
-require("mini.extra").setup({})    -- Extra functionality. E.g. :Pick git_hunks
+require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
+require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
 require("mini.sessions").setup({}) -- Session management.
 
-vim.api.nvim_create_autocmd({"BufReadPost", "BufNewFile"}, {
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
     once = true,
     callback = function()
         require("mini.cursorword").setup({}) -- Highlight word under cursor
-        require("mini.diff").setup({})       -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
-        require("mini.splitjoin").setup({})  -- Split and join code blocks. gS to toggle
-        require("mini.ai").setup({})         -- Extend a/i text objects
-        require("mini.surround").setup({})   -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
-        require("mini.align").setup({})      -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
+        require("mini.diff").setup({}) -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
+        require("mini.splitjoin").setup({}) -- Split and join code blocks. gS to toggle
+        require("mini.ai").setup({}) -- Extend a/i text objects
+        require("mini.surround").setup({}) -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
+        require("mini.align").setup({}) -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
         local hipatterns = require("mini.hipatterns")
         hipatterns.setup({
             highlighters = {
@@ -352,11 +389,12 @@ require("mason-tool-installer").setup({
         "lua-language-server",
         "powershell_es",
         "pylsp",
-        "stylua",
-        "tinymist",
-        "prettierd",
+        "stylua", -- npm
+        "tinymist", -- npm
+        "prettierd", -- npm
         "shfmt",
     },
+    run_on_start = false,
 })
 
 -- vim.api.nvim_create_autocmd("LspAttach", {
@@ -380,7 +418,11 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- Restore cursor position when reopening files
 vim.opt.viewoptions = "folds,cursor" -- what gets saved in the session
 vim.api.nvim_create_autocmd("BufWinLeave", { command = "silent! mkview" })
-vim.api.nvim_create_autocmd("BufWinEnter", { callback = function() pcall(vim.cmd, "silent! loadview") end })
+vim.api.nvim_create_autocmd("BufWinEnter", {
+    callback = function()
+        pcall(vim.cmd, "silent! loadview")
+    end,
+})
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "text", "gitcommit" },
@@ -393,7 +435,6 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
     end,
 })
 
-
 -- ================================================
 --               Minimal Scrollbar
 -- ================================================
@@ -405,9 +446,11 @@ local sb_buf = nil
 local function scrollbar_show()
     local win = vim.fn.win_getid()
     local info = vim.fn.getwininfo(win)[1]
-    if not info then return end
+    if not info then
+        return
+    end
 
-    local total = vim.fn.line('$')
+    local total = vim.fn.line("$")
     if total <= 1 then
         scrollbar_hide()
         return
@@ -430,7 +473,7 @@ local function scrollbar_show()
         vim.bo[sb_buf].bufhidden = "wipe"
     end
 
--- Create window if needed
+    -- Create window if needed
     local config = {
         relative = "win",
         win = win,
@@ -466,8 +509,10 @@ vim.api.nvim_create_autocmd({ "WinScrolled", "BufEnter", "VimResized" }, {
     callback = function()
         local win = vim.fn.win_getid()
         local info = vim.fn.getwininfo(win)[1]
-        if not info then return end
-        local total = vim.fn.line('$')
+        if not info then
+            return
+        end
+        local total = vim.fn.line("$")
         local height = vim.api.nvim_win_get_height(win)
         if total <= height then
             scrollbar_hide()
@@ -487,15 +532,27 @@ vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
 
 -- vscode ... unfortunately
 if vim.g.vscode then
-    local vsc = require('vscode')
+    local vsc = require("vscode")
     vim.api.nvim_del_autocmd(blink_autocmd)
-    map("n", "<leader>bd", function() vsc.action('workbench.action.closeActiveEditor') end, opts("Close buffer"))
-    map("n", "<leader>gd", function() vsc.action('git.openChange') end, opts("Open git change"))
-    map("n", "<leader>ee", function() vsc.action('workbench.view.explorer') end, opts("Open explorer"))
-    map("n", "grd", function() vsc.action('editor.action.revealDefinition') end, opts("Go to definition"))
-    map("n", "grf", function() vsc.action('editor.action.formatDocument') end, opts("Format document"))
+    map("n", "<leader>bd", function()
+        vsc.action("workbench.action.closeActiveEditor")
+    end, opts("Close buffer"))
+    map("n", "<leader>gd", function()
+        vsc.action("git.openChange")
+    end, opts("Open git change"))
+    map("n", "<leader>ee", function()
+        vsc.action("workbench.view.explorer")
+    end, opts("Open explorer"))
+    map("n", "grd", function()
+        vsc.action("editor.action.revealDefinition")
+    end, opts("Go to definition"))
+    map("n", "grf", function()
+        vsc.action("editor.action.formatDocument")
+    end, opts("Format document"))
 end
-if vim.g.vscode then return end
+if vim.g.vscode then
+    return
+end
 -- Experimental UI2: floating cmdline and messages
 -- https://www.reddit.com/r/neovim/comments/1sfmgkb/comment/oeyrgua/?context=3
 vim.o.cmdheight = 1

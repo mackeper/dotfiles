@@ -6,7 +6,8 @@
     },
     "blink.cmp": {
       "rev": "ba9601b77e721d53d66e1486a30a05c6311cf535",
-      "src": "https://github.com/saghen/blink.cmp"
+      "src": "https://github.com/saghen/blink.cmp",
+      "version": "'v1'"
     },
     "copilot.vim": {
       "rev": "a12fd5672110c8aa7e3c8419e28c96943ca179be",
