@@ -62,8 +62,10 @@ vim.opt.wildmenu = true -- Command line wild search
 vim.opt.wildmode = "longest:full,full"
 
 -- Completion (using blink.cmp)
--- vim.opt.autocomplete = true -- Enable autocompletion
--- vim.opt.completeopt = "fuzzy,menu,menuone,preview"
+vim.opt.autocomplete = true -- Enable autocompletion
+vim.opt.complete = { ".,w,b,u,t,o" } -- Sources for completion
+vim.opt.completeopt = "fuzzy,noinsert,noselect,menu,menuone" -- how completion menu behaves
+
 
 -- ================================================
 --                   Keymaps
@@ -82,7 +84,7 @@ map("n", "<leader>er", "<cmd>lua MiniSessions.restart()<CR>", opts("Restart nvim
 -- Editing
 map(
     "n",
-    "<leader>ew",
+    "<leader>rw",
     [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
     opts("Substitute word under cursor", { silent = false })
 )
@@ -276,25 +278,25 @@ vim.api.nvim_create_user_command("VimPackList", function()
 end, { desc = "List plugins" })
 
 -- Blink
-local blink_autocmd = vim.api.nvim_create_autocmd("BufReadPost", {
-    once = true,
-    callback = function()
-        require("blink.cmp").setup({
-            completion = {
-                documentation = { auto_show = true },
-            },
-            snippets = {
-                expand = function(snippet)
-                    MiniSnippets.default_insert({ body = snippet })
-                end,
-            },
-            signature = { enabled = true },
-            fuzzy = {
-                implementation = "lua",
-            },
-        })
-    end,
-})
+-- local blink_autocmd = vim.api.nvim_create_autocmd("BufReadPost", {
+--     once = true,
+--     callback = function()
+--         require("blink.cmp").setup({
+--             completion = {
+--                 documentation = { auto_show = true },
+--             },
+--             snippets = {
+--                 expand = function(snippet)
+--                     MiniSnippets.default_insert({ body = snippet })
+--                 end,
+--             },
+--             signature = { enabled = true },
+--             fuzzy = {
+--                 implementation = "lua",
+--             },
+--         })
+--     end,
+-- })
 
 -- Mini - A collection of plugins
 require("mini.pick").setup({
@@ -366,14 +368,16 @@ miniclue.setup({
         miniclue.gen_clues.registers(),
         miniclue.gen_clues.windows(),
         miniclue.gen_clues.z(),
-        { mode = "n", keys = "<Leader>g", desc = "+Git" },
-        { mode = "n", keys = "<Leader>e", desc = "+Explorer/Edit" },
+        { mode = "n", keys = "<Leader>b", desc = "+Buffer" },
         { mode = "n", keys = "<Leader>c", desc = "+Copy" },
-        { mode = "n", keys = "<Leader>w", desc = "+Wiki" },
-        { mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
-        { mode = "n", keys = "<Leader>z", desc = "+Spell check" },
+        { mode = "n", keys = "<Leader>e", desc = "+Explorer/Edit" },
         { mode = "n", keys = "<Leader>f", desc = "+Find" },
+        { mode = "n", keys = "<Leader>g", desc = "+Git" },
+        { mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
+        { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
         { mode = "n", keys = "<Leader>s", desc = "+Session" },
+        { mode = "n", keys = "<Leader>w", desc = "+Wiki" },
+        { mode = "n", keys = "<Leader>z", desc = "+Spell check" },
     },
 })
 
