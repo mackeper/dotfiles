@@ -52,16 +52,47 @@ eval "$(zoxide init bash)" # `z` instead of `cd`
 
 alias wttr='curl wttr.in/Tungelsta'
 
+# ---- Navigation aliases ----
+alias ..='cd ..'           # Up one directory
+alias ...='cd ../..'       # Up two directories
+alias ....='cd ../../..'   # Up three directories
+alias ~='cd ~'             # Go to home directory
+alias g='cd ~/git'
+alias dots='cd ~/git/dotfiles'
+alias wiki='cd ~/git/wiki'
+
 # ---- Git ----
-alias ga='git add'              # Add files
-alias gd='git diff'             # Show changes
-alias gdca='git diff --cached'  # Show cached changes
-alias gl='git pull'             # Pull changes
-alias gp='git push'             # Push changes
-alias gst='git status'          # Show status
-alias gc='git commit -v'        # Commit with verbose diff
-alias gco='git checkout'        # Checkout branch
-alias gb='git branch'           # List branches
+
+fzf-git() {
+    git status --porcelain | \
+    fzf --multi --prompt="Git: " --height 20% --layout reverse | \
+    awk '{print $2}' | \
+    xargs -r git "$@"
+}
+
+fzf-gitbranch() {
+    git branch --all --color=never | \
+    fzf --multi --prompt="Git Branch: " --height 20% --layout reverse | \
+    sed 's/.* //; s#remotes/##; s#HEAD##'
+}
+
+alias gst='git status'             # Show status
+alias gl='git pull'                # Pull changes
+alias gp='git push'                # Push changes
+alias gf='git fetch'               # Fetch changes
+alias gc='git commit -v'           # Commit with verbose diff
+
+ga() { (( $# == 0 )) && fzf-git "add" || git add "$@" ; }
+
+# Can these be merged an handled by fzf-git?
+gd()   { (( $# == 0 )) && fzf-git "diff" || git diff "$@"; }
+gdca() { (( $# == 0 )) && fzf-git "diff --cached" || git diff --cached "$@"; }
+grs()  { (( $# == 0 )) && fzf-git "restore" || git restore "$@"; }
+grss() { (( $# == 0 )) && fzf-git "restore --staged" || git restore --staged "$@"; }
+
+# alias gco='git checkout'           # Checkout branch
+# alias gb='git branch'              # List branches
+alias groot='cd $(git rev-parse --show-toplevel)'
 
 # ---- fzf ----
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
@@ -70,9 +101,15 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden'     # Use fd (faster than find
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --max-depth 3'  # No hidden dirs
 
+fzf-cd-git() {
+  local dir
+  dir=$(ls -d ~/git/*/ | fzf --prompt="cd to: " --query="$1" --height 20% --layout reverse) && cd "$dir"
+}
+bind -x '"\C-p": fzf-cd-git'
+
 # ---- lazygit ----
 bind -x '"\C-g": lazygit'
 
 # ---- Editor ----
-export EDITOR=nvim       # Default editor for git, etc.
+export EDITOR=nvim # Default editor for git, etc.
 export VISUAL=nvim
