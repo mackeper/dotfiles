@@ -13,13 +13,27 @@
 # 0.1: Initial version
 # 0.2: Admin terminal function, start driver function
 # 0.3: Git worktrees
+# 0.4: Service status in prompt, test runner
+
+function Show-DailyTip {
+    $tipsFile = Join-Path $PSScriptRoot 'tips.json'
+    if (-not (Test-Path $tipsFile)) { return }
+    $data = Get-Content $tipsFile -Raw | ConvertFrom-Json
+    if (-not $data) { return }
+    $all = foreach ($cat in $data.PSObject.Properties) {
+        foreach ($t in $cat.Value) { [PSCustomObject]@{ Category = $cat.Name; Tip = $t } }
+    }
+    if (-not $all) { return }
+    $pick = $all | Get-Random
+    Write-Host "`n$([char]27)[38;5;8m[$($pick.Category)]$([char]27)[0m $([char]27)[38;5;14m`u{1F4A1} $($pick.Tip)$([char]27)[0m`n"
+}
 
 function Show-StartMessage {
     Clear-Host
 
     $user = $env:USERNAME
     $hostname = [System.Net.Dns]::GetHostName()
-    $profileVersion = "0.3 worktrees"
+    $profileVersion = "0.4 service status in prompt, test runner"
     $col1 = 46
 
     $title = "$([char]27)[38;5;14mWelcome, $user@$hostname (v$profileVersion)$([char]27)[0m"
@@ -29,7 +43,7 @@ function Show-StartMessage {
         @("$([char]27)[38;5;10mKey bindings:$([char]27)[0m", ""),
         @("Ctrl+F", "FZF file search"),
         @("Ctrl+S", "FZF solution (.sln) search"),
-        @("Ctrl+J", "FZF project search"),
+        @("Ctrl+P", "FZF project search"),
         @("Alt+C", "FZF directory search"),
         @("Ctrl+G", "lazygit"),
         @("", ""),
@@ -90,6 +104,8 @@ function Show-StartMessage {
 
         Write-Host ("{0,-$col1Width}{1}" -f $col1Value, $col2Value)
     }
+
+    Show-DailyTip
 }
 
 # ========================================
@@ -120,10 +136,17 @@ function prompt {
         if ($hasDiff -or $hasStaged) { $gitInfo = " $([char]27)[38;5;9m~$([char]27)[0m" }
     }
     $display = if ($branch) { "$([char]27)[38;5;15m ($([char]27)[38;5;10m$branch$gitInfo$([char]27)[38;5;15m)" } else { "" }
-    "$([char]27)[38;5;10mPS$([char]27)[0m $([char]27)[38;5;15m$path$display$([char]27)[0m > "
+    $svcInfo = ''
+    if ($PWD.Path -match '^C:\\git\\RayCare(2|\.WT)?$') {
+        $count = (Get-Process -Name 'RayCare*' -ErrorAction SilentlyContinue | Measure-Object).Count
+        if ($count) { $svcInfo = " $([char]27)[38;5;14m[$count svc]$([char]27)[0m" }
+    }
+    "$([char]27)[38;5;10mPS$([char]27)[0m $([char]27)[38;5;15m$path$display$svcInfo$([char]27)[0m > "
 }
 
-# --- PowerShell Aliases ---
+# ========================================
+#                Aliases
+# ========================================
 Remove-Alias ls -Force -ErrorAction SilentlyContinue
 function ls([string]$path = ".") {
     if (Get-Command -Name "eza" -ErrorAction SilentlyContinue) {
@@ -146,38 +169,137 @@ function la {
 }
 Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 
+# --- Work shortcuts ---
+function rc    { Set-Location 'C:\git\RayCare' }
+function rc2   { Set-Location 'C:\git\RayCare2' }
+function rcwt  { Set-Location 'C:\git\RayCare.WT' }
+
+function tx    { Set-Location 'C:\git\RayCare.TreatmentDrivers' }
+function tx2   { Set-Location 'C:\git\RayCare.TreatmentDrivers2' }
+function txwt  { Set-Location 'C:\git\RayCare.TreatmentDrivers.WT' }
+
+function api   { Set-Location 'C:\git\RayCare.Treat.API' }
+function api2  { Set-Location 'C:\git\RayCare.Treat.API2' }
+function apiwt { Set-Location 'C:\git\RayCare.Treat.API.WT' }
+
+function rs    { Set-Location 'C:\git\RayStation' }
+function dd    { Set-Location 'C:\git\DicomDesigner' }
+
+# --- Personal shortcuts ---
+function g     { Set-Location 'C:\git' }
+function wiki  { Set-Location 'C:\git\wiki' }
+function dots   { Set-Location 'C:\git\dotfiles' }
+function cc    { Set-Location "$env:APPDATA\Code\User" }
+
+
 # ========================================
 #              Git Aliases
 # ========================================
 
-# --- Commands to analyze git history, ga "git analyze" ---
+function Invoke-GitFzfStatusFiles {
+    param(
+        [Parameter(Mandatory)][string]$Cmd,
+        [ValidateSet('Unstaged', 'Untracked', 'Staged')]
+        [string[]]$Filter
+    )
+    $lines = git status --porcelain
+    if ($Filter) {
+        $lines = $lines | Where-Object {
+            ($Filter -contains 'Unstaged'  -and $_ -match '^ [MDRC]') -or
+            ($Filter -contains 'Untracked' -and $_ -match '^\?\?') -or
+            ($Filter -contains 'Staged'    -and $_ -match '^[MADRC]')
+        }
+    }
+    $paths = $lines | Invoke-Fzf -m | ForEach-Object { $_.Substring(3) }
+    if ($paths) { Invoke-Expression "$Cmd $($paths -join ' ')" }
+}
+
+function Invoke-GitOrFzf {
+    param(
+        [Parameter(Mandatory)][string]$Cmd,
+        [ValidateSet('Unstaged', 'Untracked', 'Staged')]
+        [string[]]$Filter,
+        [Parameter(ValueFromRemainingArguments)][string[]]$Args
+    )
+    if ($Args.Count) { Invoke-Expression "$Cmd $($Args -join ' ')" }
+    else { Invoke-GitFzfStatusFiles -Cmd $Cmd -Filter $Filter }
+}
+
+function ga { Invoke-GitOrFzf 'git add' -Filter Unstaged,Untracked @args }
+function gd { Invoke-GitOrFzf 'git diff' -Filter Unstaged @args }
+function gdc { Invoke-GitOrFzf 'git diff --cached' -Filter Staged @args }
+function grs { Invoke-GitOrFzf 'git restore' -Filter Unstaged @args }
+function grss { Invoke-GitOrFzf 'git restore --staged' -Filter Staged @args }
+
+function Show-BarChart {
+    param(
+        [Parameter(ValueFromPipeline)][object[]]$Data,
+        [int]$MaxWidth = 40
+    )
+    begin { $items = @() }
+    process { $items += $Data }
+    end {
+        $max = ($items | Measure-Object Count -Max).Maximum
+        if (!$max) { return }
+        $lw = ($items | % { "$($_.Name)".Length } | Measure-Object -Max).Maximum
+        foreach ($i in $items) {
+            $bar = [int]($i.Count / $max * $MaxWidth)
+            "{0,-$lw} │{1} {2}" -f $i.Name, ('=' * $bar), $i.Count
+        }
+    }
+}
+
+# --- Commands to analyze git history ---
 # https://piechowski.io/post/git-commands-before-reading-code/
-# Commit count:
-function gwho { git shortlog -sn --no-merges }
-# Files that change the most:
-function gchurn { git log --format=format: --name-only --since="1 year ago" | ? {$_} | group | sort Count -desc | select -f 20 |  % { "{0,5} {1}" -f $_.Count, $_.Name } }
-# Files with most problems:
-function gbugs { git log -i -E --grep="(fix|bug|broken|issue|resolve|repair|fail|crash)" --name-only --format='' | group | sort Count -desc | select -f 20 | % { "{0,5} {1}" -f $_.Count, $_.Name } }
-# Commits by month
-function gmonthly { git log --format='%ad' --date=format:'%Y-%m' | group | sort Name -desc }
-# Revert frequency:
-function gdmg { git log --oneline --since="1 year ago" -i -E --grep "(revert|hotfix|emergency|rollback)" }
+function Invoke-GitAnalyze {
+    param([string]$Command, [string]$Author)
+    $commands = [ordered]@{
+        'who      - commits by author'         = { git shortlog -sn --no-merges }
+        'churn    - files that change most'    = { git log --format=format: --name-only --since="1 year ago" | ? {$_} | group | sort Count -desc | select -f 20 | % { "{0,5} {1}" -f $_.Count, $_.Name } }
+        'bugs     - files with most problems'  = { git log -i -E --grep="(fix|bug|broken|issue|resolve|repair|fail|crash)" --name-only --format='' | group | sort Count -desc | select -f 20 | % { "{0,5} {1}" -f $_.Count, $_.Name } }
+        'by-month - commits by month'          = { git log --format='%ad' --date=format:'%Y-%m' | group | sort Name -desc | Show-BarChart }
+        'dmg      - revert frequency'          = { git log --oneline --since="1 year ago" -i -E --grep "(revert|hotfix|emergency|rollback)" }
+        'by-hour  - commits by hour of day'    = { git log --format='%ad' --date=format:'%H' | group | sort Name | Show-BarChart }
+        'by-day   - commits by weekday'        = { git log --format='%ad' --date=format:'%A' | group | sort Count -desc | Show-BarChart }
+        'active   - total unique commit days'  = { $d = (git log --format='%ad' --date=short | sort -u | Measure-Object).Count; Write-Host "$d active days" }
+        'stale    - branches without recent commits' = { git for-each-ref --sort=committerdate --format='%(committerdate:short) %(refname:short)' refs/heads/ | select -f 15 }
+        'shared   - files with most authors'   = { git log --format='%aN' --name-only --since="1 year ago" | ? {$_} | % -Begin { $a=''; $h=@{} } -Process { if ($_ -notmatch '[\\/.]') {$a=$_} elseif($a) {if(!$h[$_]){$h[$_]=[System.Collections.Generic.HashSet[string]]::new([string[]]@())}; $h[$_].Add($a)>$null} } -End { $h.GetEnumerator() | sort {$_.Value.Count} -desc | select -f 20 | % { "{0,5} {1}" -f $_.Value.Count, $_.Key } } }
+        'author   - analyze a specific author' = {
+            $a = if ($Author) { $Author } else { git shortlog -sn --no-merges | % { ($_ -replace '^\s*\d+\s+','').Trim() } | Invoke-Fzf }
+            if (!$a) { return }
+            Write-Host "`n$([char]27)[38;5;14m=== $a ===$([char]27)[0m"
+            $total = (git log --author="$a" --oneline | Measure-Object).Count
+            $first = git log --author="$a" --format='%ad' --date=short --reverse | select -f 1
+            $last = git log --author="$a" --format='%ad' --date=short | select -f 1
+            $days = (git log --author="$a" --format='%ad' --date=short | sort -u | Measure-Object).Count
+            Write-Host "  Commits: $total  Active days: $days  Range: $first → $last`n"
+            Write-Host "$([char]27)[38;5;10mBy month:$([char]27)[0m"
+            git log --author="$a" --format='%ad' --date=format:'%Y-%m' | group | sort Name -desc | select -f 12 | Show-BarChart
+            Write-Host "`n$([char]27)[38;5;10mBy weekday:$([char]27)[0m"
+            git log --author="$a" --format='%ad' --date=format:'%A' | group | sort Count -desc | Show-BarChart
+            Write-Host "`n$([char]27)[38;5;10mBy hour:$([char]27)[0m"
+            git log --author="$a" --format='%ad' --date=format:'%H' | group | sort Name | Show-BarChart
+            Write-Host "`n$([char]27)[38;5;10mTop files:$([char]27)[0m"
+            git log --author="$a" --format=format: --name-only --since="1 year ago" | ? {$_} | group | sort Count -desc | select -f 15 | % { "  {0,5} {1}" -f $_.Count, $_.Name }
+        }
+    }
+    $pick = if ($Command) { $commands.Keys | ? { $_ -match "^$Command" } | select -f 1 } else { $commands.Keys | Invoke-Fzf }
+    if ($pick) { & $commands[$pick] }
+}
+Set-Alias ganalyze Invoke-GitAnalyze
 
 Remove-Alias gc, gco, gcb, gd, gdca, gl, gp, gpn, gst, gb, ga, grs, grss, gcm -Force -ErrorAction SilentlyContinue
 
 function gc  { git commit -ev @args }
 function gco { git checkout @args }
 function gcb { git checkout -b @args }
-function gd { git diff @($args.Count ? $args : ".") }
 function gdca { git diff --cached @($args.Count ? $args : ".") }
 function gl  { git pull @args }
 function gp  { git push @args }
 function gpn { & git push --set-upstream origin (git branch --show-current) }
 function gst { git status @args }
 function gb  { git branch @args }
-function ga  { git add @args }
-function grs { git restore @args }
-function grss{ git restore --staged @args }
+function groot { Set-Location (git rev-parse --show-toplevel) }
 function glog { git log `
     --color `
     --graph `
@@ -211,6 +333,8 @@ function cht { (Invoke-WebRequest "cht.sh/$args").Content }
 $env:EDITOR = "nvim"
 $env:VISUAL = "nvim"
 $env:LESS = "-R"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:LC_ALL = 'C.UTF-8'
 
 # ========================================
 #               Functions
@@ -335,7 +459,7 @@ Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
-Set-PSReadLineKeyHandler -Key Ctrl+j -ScriptBlock {
+Set-PSReadLineKeyHandler -Key Ctrl+p -ScriptBlock {
     $locations = @("D:\Documents\Projects", "D:\Documents\Software", "C:\git")
     $directories = $locations | ForEach-Object { if (Test-Path $_) {Get-ChildItem -Path $_ -Directory -Depth 2} }
     $directories | Select-Object -ExpandProperty FullName | Invoke-Fzf | Set-Location
