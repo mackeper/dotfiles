@@ -258,6 +258,33 @@ map("n", "<M-t>", function()
     vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
 end, opts("Toggle checkbox"))
 
+-- Markdown preview with pandoc (no extra dependencies)
+map("n", "<leader>mp", function()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local tmp = os.tmpname() .. ".html"
+
+    vim.system(
+        { "pandoc", "-f", "markdown", "-t", "html", "-o", tmp },
+        { stdin = table.concat(lines, "\n") },
+        function(obj)
+            if obj.code ~= 0 then
+                vim.schedule(function()
+                    vim.notify("pandoc failed: " .. (obj.stderr or ""), vim.log.levels.ERROR)
+                end)
+                return
+            end
+
+            local open_cmd = vim.fn.has("mac") == 1 and "open" or (vim.fn.has("win32") == 1 and "start" or "xdg-open")
+            vim.schedule(function()
+                vim.fn.jobstart({ open_cmd, tmp }, { detach = true })
+                vim.defer_fn(function()
+                    vim.fn.delete(tmp)
+                end, 60000)
+            end)
+        end
+    )
+end, opts("Preview markdown with pandoc"))
+
 -- Harpoon
 map("n", "<leader>a", "<cmd>$argadd %<cr><cmd>argdedup<cr>", opts("Harpoon add current file"))
 map("n", "<leader>h", "<cmd>silent! 1argument<cr>", opts("Harpoon 1"))
@@ -364,6 +391,7 @@ miniclue.setup({
         { mode = "n", keys = "<Leader>e", desc = "+Explorer/Edit" },
         { mode = "n", keys = "<Leader>f", desc = "+Find" },
         { mode = "n", keys = "<Leader>g", desc = "+Git" },
+        { mode = "n", keys = "<Leader>m", desc = "+Markdown" },
         { mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
         { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
         { mode = "n", keys = "<Leader>s", desc = "+Session" },
