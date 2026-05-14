@@ -7,7 +7,6 @@
 --
 -- TODO:
 --  - Terminal use
---  - Replace blink.cmp with mini.completion if I can get it to work
 --  - More snippets, especially for markdown
 --  - mini.git?
 --  - Replace mini.sessions with native
@@ -61,7 +60,7 @@ vim.opt.smartindent = true -- Smart autoindenting when starting a new line
 vim.opt.wildmenu = true -- Command line wild search
 vim.opt.wildmode = "longest:full,full"
 
--- Completion (using blink.cmp)
+-- Completion (<C-x><C-o> omnifunc, <C-x><C-n> keywords, <C-x><C-f> file paths, <C-x><C-u> user defined)
 vim.opt.autocomplete = true -- Enable autocompletion
 vim.opt.complete = { ".,w,b,u,t,o" } -- Sources for completion
 vim.opt.completeopt = "fuzzy,noinsert,noselect,menu,menuone" -- how completion menu behaves
@@ -180,6 +179,23 @@ map("t", "<C-Down>", "<C-\\><C-O><C-w>j<esc>", opts("Window down"))
 map("t", "<C-Up>", "<C-\\><C-O><C-w>k<esc>", opts("Window up"))
 map("t", "<C-Right>", "<C-\\><C-O><C-w>l<esc>", opts("Window right"))
 
+term_buffer = nil
+map({"n", "t"}, "<C-s>", function()
+    if term_buffer and vim.api.nvim_buf_is_valid(term_buffer) then
+        if vim.api.nvim_buf_get_name(0) == vim.api.nvim_buf_get_name(term_buffer) then
+            vim.cmd("bprevious")
+        else
+            vim.cmd("buffer " .. term_buffer)
+            vim.cmd("startinsert")
+        end
+    else
+        vim.cmd("terminal")
+        vim.cmd("startinsert")
+        term_buffer = vim.api.nvim_get_current_buf()
+    end
+
+end, opts("Toggle terminal"))
+
 -- Copying
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
 map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to clipboard"))
@@ -194,6 +210,7 @@ end, opts("Paste replacing spaces with _"))
 -- LSP
 map("n", "grd", vim.lsp.buf.definition, opts("vim.lsp.buf.definition()"))
 map("n", "grf", vim.lsp.buf.format, opts("vim.lsp.buf.format()"))
+map("n", "grs", vim.lsp.buf.signature_help, opts("vim.lsp.buf.signature_help()"))
 
 -- Spell check
 map("n", "<leader>zs", "<CMD>setlocal spell!<CR>", opts("Toggle spell check"))
@@ -261,11 +278,6 @@ vim.pack.add({
     "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Auto install tools installed by mason.nvim
     "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
     "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
-    { -- Completion (cannot get mini.completion to work)
-
-        src = "https://github.com/saghen/blink.cmp",
-        version = "v1",
-    },
 })
 vim.cmd.packadd("cfilter") -- filder quickfix list.
 vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
@@ -276,27 +288,6 @@ vim.api.nvim_create_user_command("VimPackList", function()
         print(value.spec.name)
     end
 end, { desc = "List plugins" })
-
--- Blink
--- local blink_autocmd = vim.api.nvim_create_autocmd("BufReadPost", {
---     once = true,
---     callback = function()
---         require("blink.cmp").setup({
---             completion = {
---                 documentation = { auto_show = true },
---             },
---             snippets = {
---                 expand = function(snippet)
---                     MiniSnippets.default_insert({ body = snippet })
---                 end,
---             },
---             signature = { enabled = true },
---             fuzzy = {
---                 implementation = "lua",
---             },
---         })
---     end,
--- })
 
 -- Mini - A collection of plugins
 require("mini.pick").setup({
@@ -401,6 +392,13 @@ require("mason-tool-installer").setup({
     run_on_start = false,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "cs",
+    callback = function()
+        vim.lsp.enable("roslyn_ls")
+    end,
+})
+
 -- vim.api.nvim_create_autocmd("LspAttach", {
 --     callback = function(args)
 --         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
@@ -428,11 +426,13 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
     end,
 })
 
+-- Enable spelling for certain filetypes
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "markdown", "text", "gitcommit" },
     command = "setlocal spell",
 })
 
+-- Save session on exit
 vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
         MiniSessions.write(vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ".vim")
@@ -446,6 +446,14 @@ vim.api.nvim_set_hl(0, "Scrollbar", { fg = "#6c7086", bg = "NONE" })
 
 local sb_win = nil
 local sb_buf = nil
+
+local function scrollbar_hide()
+    if sb_win and vim.api.nvim_win_is_valid(sb_win) then
+        vim.api.nvim_win_close(sb_win, true)
+        sb_win = nil
+    end
+end
+
 
 local function scrollbar_show()
     local win = vim.fn.win_getid()
@@ -502,13 +510,6 @@ local function scrollbar_show()
     vim.api.nvim_buf_set_lines(sb_buf, 0, -1, false, { "▌" })
 end
 
-local function scrollbar_hide()
-    if sb_win and vim.api.nvim_win_is_valid(sb_win) then
-        vim.api.nvim_win_close(sb_win, true)
-        sb_win = nil
-    end
-end
-
 vim.api.nvim_create_autocmd({ "WinScrolled", "BufEnter", "VimResized" }, {
     callback = function()
         local win = vim.fn.win_getid()
@@ -537,7 +538,6 @@ vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
 -- vscode ... unfortunately
 if vim.g.vscode then
     local vsc = require("vscode")
-    vim.api.nvim_del_autocmd(blink_autocmd)
     map("n", "<leader>bd", function()
         vsc.action("workbench.action.closeActiveEditor")
     end, opts("Close buffer"))
@@ -564,14 +564,14 @@ require("vim._core.ui2").enable({
     enable = true,
     msg = {
         targets = {
-            [""] = "msg",
+            [""] = "cmd",
             empty = "cmd",
             bufwrite = "msg",
             confirm = "cmd",
             emsg = "pager",
             echo = "msg",
             echomsg = "msg",
-            echoerr = "pager",
+            echoerr = "cmd",
             completion = "cmd",
             list_cmd = "pager",
             lua_error = "pager",
