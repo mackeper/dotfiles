@@ -5,6 +5,7 @@ case $- in
 esac
 
 # ---- PATH ----
+. "$HOME/.cargo/env"
 export PATH=$PATH:$HOME/bin               # Local bin scripts
 export PATH=$PATH:$HOME/go/bin            # Go binaries
 export PATH=$PATH:/usr/local/go/bin       # System Go
