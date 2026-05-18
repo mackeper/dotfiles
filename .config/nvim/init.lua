@@ -6,8 +6,6 @@
 --   - One file.
 --
 -- TODO:
---  - Terminal use
---  - More snippets, especially for markdown
 --  - mini.git?
 --  - Replace mini.sessions with native
 
@@ -64,6 +62,7 @@ vim.opt.wildmode = "longest:full,full"
 vim.opt.autocomplete = true -- Enable autocompletion
 vim.opt.complete = { ".,w,b,u,t,o" } -- Sources for completion
 vim.opt.completeopt = "fuzzy,noinsert,noselect,menu,menuone" -- how completion menu behaves
+vim.opt.pumheight = 10 -- Max height of the completion menu
 
 
 -- ================================================
@@ -105,6 +104,19 @@ map(
     opts("Grep C function")
 )
 map("n", "<leader>ff", "<cmd>Pick resume<cr>", opts("Resume last picker"))
+
+local function pick_tags_then_grep()
+    require('mini.pick').start({
+        source = {
+            items = vim.fn.systemlist([[rg -oPIN '(?<!\S)#\w+' . | sort -u]]) ,
+            name = "Tags",
+            choose = function(tag)
+                require('mini.pick').builtin.grep({ pattern = tag })
+            end,
+        },
+    })
+end
+vim.keymap.set("n", "<leader>ft", pick_tags_then_grep, { desc = "Pick tag → grep" })
 
 -- AI
 map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
@@ -285,7 +297,7 @@ map("n", "<leader>mp", function()
     )
 end, opts("Preview markdown with pandoc"))
 
--- Harpoon
+-- Harpoon -ish
 map("n", "<leader>a", "<cmd>$argadd %<cr><cmd>argdedup<cr>", opts("Harpoon add current file"))
 map("n", "<leader>h", "<cmd>silent! 1argument<cr>", opts("Harpoon 1"))
 map("n", "<leader>j", "<cmd>silent! 2argument<cr>", opts("Harpoon 2"))
