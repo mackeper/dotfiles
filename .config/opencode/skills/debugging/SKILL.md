@@ -5,58 +5,52 @@ description: Investigates bugs, test failures, and unexpected behavior. Use when
 
 # Debug
 
-## Phases
-
-### Phase 1: Root Cause Investigation
+## Phase 1: Root Cause
 
 1. Read error message carefully
-
-   * Do not skip past errors or warnings
-   * Read stack traces completely
+   * No skipping errors/warnings
+   * Read full stack traces
    * Note line numbers, file paths, error codes
 
 2. Reproduce consistently
-
-   * Can you trigger it reliably?
-   * What are the exact steps?
-   * Does it happen every time?
-   * If not reproducible -> gather more data, do not guess
+   * Trigger reliably?
+   * Exact steps?
+   * Every time?
+   * Not reproducible → gather more data, no guessing
 
 3. Check recent changes
-
-   * What changed that could cause this?
+   * What changed?
    * Git diff, recent commits
-   * New dependencies, config changes
+   * New deps, config changes
    * Environmental differences
 
 4. Trace data flow
-
    * Where does bad value originate?
-   * What called this with bad value?
-   * Keep tracing up until you find the source
-   * Fix at source, not at symptom
+   * What called with bad value?
+   * Trace up to source
+   * Fix at source, not symptom
 
-### Phase 2: Pattern Analysis
+## Phase 2: Pattern Analysis
 
-Find the pattern before fixing.
+Find pattern before fixing.
 
 1. Find working examples
-2. Compare and identify differences
-3. Do not assume a difference cannot matter
+2. Compare, identify differences
+3. No difference too small to matter
 4. Understand dependencies
 
-### Phase 3: Hypothesis and Testing
+## Phase 3: Hypothesis Testing
 
-1. Form a single hypothesis.
-2. Make the SMALLEST possible change to test hypothesis.
-3. Verify before continuing, else form new hypothesis.
-4. When you do not know:
-   * Admit you do not know
-   * Do not pretend to know
+1. Single hypothesis
+2. SMALLEST possible change to test
+3. Verify before continuing, else new hypothesis
+4. When don't know:
+   * Admit it
+   * No pretending
    * Ask for help
-   * Search codebase, docs, or web for relevant information
+   * Search codebase/docs/web
 
-### Phase 4: Implementation
+## Phase 4: Implementation
 
 ```
 Debug Progress:
@@ -66,11 +60,11 @@ Debug Progress:
 - [ ] Phase 4: Fix verified
 ```
 
-1. Create smallest test to reproduce the problem
-2. Implement single fix for the root cause
+1. Smallest test to reproduce
+2. Single fix for root cause
 3. Verify fix
-4. If the fix does not work:
+4. Fix doesn't work:
    * STOP
-   * Count: How many fixes have you tried?
-   * If < 3: Return to Phase 1, re-analyze with new information
-   * If ≥ 3: STOP, question the architecture, report back, and ABORT.
+   * Count fix attempts
+   * < 3: Return to Phase 1, re-analyze with new info
+   * ≥ 3: STOP, question architecture, report back, ABORT
