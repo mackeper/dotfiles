@@ -150,7 +150,7 @@ function prompt {
 Remove-Alias ls -Force -ErrorAction SilentlyContinue
 function ls([string]$path = ".") {
     if (Get-Command -Name "eza" -ErrorAction SilentlyContinue) {
-        eza --icons $path
+        eza --group-directories-first --icons $path
     } else {
         Get-ChildItem -Exclude ".*" $path | Format-Wide -AutoSize -ErrorAction SilentlyContinue
     }
@@ -188,8 +188,9 @@ function dd    { Set-Location 'C:\git\DicomDesigner' }
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
 function wiki  { Set-Location 'C:\git\wiki' }
-function dots   { Set-Location 'C:\git\dotfiles' }
+function dots  { Set-Location 'C:\git\dotfiles' }
 function cc    { Set-Location "$env:APPDATA\Code\User" }
+function tmp   { mkdir -f C:\tmp; Set-Location C:\tmp }
 
 
 # ========================================

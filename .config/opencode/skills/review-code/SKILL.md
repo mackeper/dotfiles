@@ -3,58 +3,59 @@ name: review-code
 description: "Review code changes for quality and correctness. Use when: user wants any review of code changes."
 ---
 
-# Review code
+# Review Code
 
-- Review code changes against the stated requirements
-- Check for bugs, edge cases, and security issues
-- Verify adherence to project conventions and patterns
-- Provide clear, actionable feedback
+- Review changes against stated requirements
+- Check bugs, edge cases, security
+- Verify project conventions/patterns
+- Clear, actionable feedback
 
 ## Constraints
 
-- **DO NOT** write or edit code
-- **DO NOT** fix issues yourself — report them for the Developer
-- **ONLY** read, analyze, and provide feedback
+- No code writing/editing
+- No fixing issues — report for Developer
+- Read, analyze, feedback only
 
-## Review checklist:
+## Checklist
 
-Copy this checklist and track progress:
+Copy and track:
 
-- [ ] 1. Understand the context and stated problem
+- [ ] 1. Context
+  - [ ] 1.1. Intended behavior/requirement?
+  - [ ] 1.2. Files/changes in scope?
+  - [ ] 1.3. Project conventions/patterns?
 - [ ] 2. Correctness
-  - [ ] 2.1. Implements the required functionality
+  - [ ] 2.1. Implements required functionality
   - [ ] 2.2. Handles edge cases and errors
-- [ ] 3. Architecture and quality
-  - [ ] 3.1. Dependencies inversion (pass dependencies as parameters)
-  - [ ] 3.2. No global variables (Constants are fine)
-  - [ ] 3.3. Project conventions and patterns
-  - [ ] 3.4. As simple as possible, but no simpler (YAGNI)
+- [ ] 3. Architecture/quality
+  - [ ] 3.1. Dependency inversion (pass deps as params)
+  - [ ] 3.2. No globals (constants fine)
+  - [ ] 3.3. Project conventions/patterns
+  - [ ] 3.4. Simple as possible, no simpler (YAGNI)
 - [ ] 4. Tests
-  - [ ] 4.1. New/modified behaviors are covered by tests
-  - [ ] 4.2. Tests are clear and maintainable
+  - [ ] 4.1. New/modified behaviors covered
+  - [ ] 4.2. Tests clear and maintainable
 - [ ] 5. Security
-  - [ ] 5.1. No API keys, secrets, or sensitive data in code or git
-  - [ ] 5.3. User input is validated/sanitized
-  - [ ] 5.4. No sensitive data exposure in logs or error messages
-  - [ ] 5.5. No OWASP Top 10 vulnerabilities
+  - [ ] 5.1. No keys/secrets/sensitive data in code/git
+  - [ ] 5.2. Input validated/sanitized
+  - [ ] 5.3. No sensitive data in logs/errors
+  - [ ] 5.4. No OWASP Top 10 vulns
 - [ ] 6. Performance
-    - [ ] 6.1. No obvious performance issues
+  - [ ] 6.1. No obvious perf issues
 
-## Resources
+## OWASP Top 10 (2025)
 
-### OWASP Top 10 (2025)
-
-- A01 - Broken Access Control: Missing authorization, IDOR
-- A02 - Cryptographic Failures: Weak hashing, insecure RNG
-- A03 - Injection: SQL, NoSQL, command injection via taint analysis
-- A04 - Insecure Design: Missing threat modeling
-- A05 - Security Misconfiguration: Default credentials
-- A06 - Vulnerable Components: Snyk/Dependabot for CVEs
-- A07 - Authentication Failures: Weak session management
-- A08 - Data Integrity Failures: Unsigned JWTs
-- A09 - Logging Failures: Missing audit logs
-- A10 - SSRF: Unvalidated user-controlled URLs
+- A01 - Broken Access Control: missing authz, IDOR
+- A02 - Cryptographic Failures: weak hashing, insecure RNG
+- A03 - Injection: SQL/NoSQL/cmd injection via taint analysis
+- A04 - Insecure Design: missing threat modeling
+- A05 - Security Misconfiguration: default creds
+- A06 - Vulnerable Components: CVEs via Snyk/Dependabot
+- A07 - Auth Failures: weak session mgmt
+- A08 - Data Integrity Failures: unsigned JWTs
+- A09 - Logging Failures: missing audit logs
+- A10 - SSRF: unvalidated user-controlled URLs
 
 ## Output
 
-- **Follow** the caveman-review skill.
+Follow `caveman-review` skill.
