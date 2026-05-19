@@ -7,7 +7,7 @@ Interview me relentlessly about every aspect of this plan until we reach a share
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
 
-For each question, provide your recommended answer.
+For each question, provide 1 recommended answer.
 
 ## Question format
 
