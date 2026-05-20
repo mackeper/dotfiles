@@ -255,6 +255,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- wiki
 local wiki = vim.fn.expand("~/git/wiki")
+local work_wiki = vim.fn.expand("~/OneDrive - RaySearch Laboratories AB/Marcus/10_Documents/05_wiki")
 if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
     wiki = "C:\\git\\wiki"
 end
@@ -265,7 +266,7 @@ map(
     "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>:lcd %:p:h<CR>",
     opts("Open wiki journal")
 )
-map("n", "<leader>wc", "<cmd>edit " .. wiki .. "/01_Work/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
+map("n", "<leader>wc", "<cmd>edit " .. work_wiki .. "/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
 map("n", "<M-t>", function()
     vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
 end, opts("Toggle checkbox"))
@@ -574,29 +575,6 @@ vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
 --- =============================================
 ---                ui2
 --- =============================================
-
--- vscode ... unfortunately
-if vim.g.vscode then
-    local vsc = require("vscode")
-    map("n", "<leader>bd", function()
-        vsc.action("workbench.action.closeActiveEditor")
-    end, opts("Close buffer"))
-    map("n", "<leader>gd", function()
-        vsc.action("git.openChange")
-    end, opts("Open git change"))
-    map("n", "<leader>ee", function()
-        vsc.action("workbench.view.explorer")
-    end, opts("Open explorer"))
-    map("n", "grd", function()
-        vsc.action("editor.action.revealDefinition")
-    end, opts("Go to definition"))
-    map("n", "grf", function()
-        vsc.action("editor.action.formatDocument")
-    end, opts("Format document"))
-end
-if vim.g.vscode then
-    return
-end
 -- Experimental UI2: floating cmdline and messages
 -- https://www.reddit.com/r/neovim/comments/1sfmgkb/comment/oeyrgua/?context=3
 vim.o.cmdheight = 1

@@ -185,6 +185,8 @@ function apiwt { Set-Location 'C:\git\RayCare.Treat.API.WT' }
 function rs    { Set-Location 'C:\git\RayStation' }
 function dd    { Set-Location 'C:\git\DicomDesigner' }
 
+function w { Set-Location '~/OneDrive - RaySearch Laboratories AB/Marcus/10_Documents/05_wiki' }
+
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
 function wiki  { Set-Location 'C:\git\wiki' }
