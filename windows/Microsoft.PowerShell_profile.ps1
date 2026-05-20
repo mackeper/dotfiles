@@ -185,6 +185,8 @@ function apiwt { Set-Location 'C:\git\Product.Treat.API.WT' }
 function rs    { Set-Location 'C:\git\OtherProduct' }
 function dd    { Set-Location 'C:\git\Designer' }
 
+function w { Set-Location '~/OneDrive - Company/Marcus/10_Documents/05_wiki' }
+
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
 function wiki  { Set-Location 'C:\git\wiki' }
