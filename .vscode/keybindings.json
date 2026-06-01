@@ -1,10 +1,6 @@
 // Place your key bindings in this file to override the defaults
 [
     {
-        "key": "ctrl+z",
-        "command": "workbench.action.toggleZenMode"
-    },
-    {
         "key": "ctrl+`",
         "command": "runCommands",
         "args": {
@@ -41,20 +37,6 @@
         "command": "-workbench.action.quickOpen"
     },
     {
-        "key": "ctrl+shift+g",
-        "command": "runCommands",
-        "args": {
-            "commands": [
-                {
-                    "command": "workbench.action.tasks.terminate",
-                    "args": "lazygit"
-                },
-                "workbench.action.toggleMaximizedPanel",
-                "workbench.action.closePanel",
-            ]
-        }
-    },
-    {
         "key": "ctrl+m",
         "command": "runCommands",
         "args": {
@@ -68,19 +50,13 @@
         "command": "workbench.action.chat.toggle"
     },
     {
+        "key": "ctrl+t",
+        "command": "workbench.action.toggleLightDarkThemes"
+    },
+    {
         "key": "alt+l",
         "command": "editor.action.inlineSuggest.commit",
         "when": "editorTextFocus && inlineSuggestionVisible"
-    },
-    {
-        "key": "tab",
-        "command": "-editor.action.inlineSuggest.commit",
-        "when": "inlineSuggestionVisible && !editorTabMovesFocus"
-    },
-    {
-        "key": "tab",
-        "command": "-acceptSelectedSuggestion",
-        "when": "suggestWidgetVisible && textInputFocus"
     },
     {
         "key": "ctrl+b",
@@ -93,15 +69,5 @@
     {
         "key": "ctrl+f",
         "command": "workbench.action.findInFiles"
-    },
-    {
-        "key": "tab",
-        "command": "workbench.action.nextEditor",
-        "when": "!terminalFocus"
-    },
-    {
-        "key": "shift+tab",
-        "command": "workbench.action.previousEditor",
-        "when": "!terminalFocus"
     }
 ]

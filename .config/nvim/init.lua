@@ -25,9 +25,24 @@ vim.opt.listchars = { tab = " ", trail = "·", nbsp = "␣" }
 vim.opt.signcolumn = "yes" -- Always show signcolumn.
 vim.opt.cursorline = true -- Highlight current line
 
-vim.cmd.colorscheme("catppuccin")
-vim.api.nvim_set_hl(0, "Normal", { bg = "none" }) -- Transparent background
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+local function apply_theme(theme)
+    vim.g.theme_mode = theme
+    if theme == "light" then
+        vim.o.background = "light"
+        vim.cmd.colorscheme("shine")
+    else
+        vim.o.background = "dark"
+        vim.cmd.colorscheme("catppuccin")
+        vim.api.nvim_set_hl(0, "Normal", { bg = "none" }) -- Transparent background
+        vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+    end
+end
+
+local function toggle_light_mode()
+    apply_theme(vim.g.theme_mode == "light" and "dark" or "light")
+end
+
+apply_theme("dark")
 
 -- Editing
 vim.opt.clipboard = "unnamedplus" -- System clipboard
@@ -89,11 +104,12 @@ map(
 
 -- Search
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
+map("n", "<C-t>", toggle_light_mode, opts("Toggle light theme"))
 map("n", "<leader>es", "<cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0), false)<cr>", opts("Open file explorer"))
 map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
 map("n", "<C-f>", "<cmd>Pick grep_live<cr>", opts())
 map("n", "<C-b>", "<cmd>Pick buffers<cr>", opts())
-map("n", "<C-g>", "<cmd>Pick git_hunks<cr>", opts())
+map("n", "<leader>fg", "<cmd>Pick git_hunks<cr>", opts("Search git hunks"))
 map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
@@ -191,7 +207,7 @@ map("t", "<C-Down>", "<C-\\><C-O><C-w>j<esc>", opts("Window down"))
 map("t", "<C-Up>", "<C-\\><C-O><C-w>k<esc>", opts("Window up"))
 map("t", "<C-Right>", "<C-\\><C-O><C-w>l<esc>", opts("Window right"))
 
-term_buffer = nil
+local term_buffer = nil
 map({"n", "t"}, "<C-s>", function()
     if term_buffer and vim.api.nvim_buf_is_valid(term_buffer) then
         if vim.api.nvim_buf_get_name(0) == vim.api.nvim_buf_get_name(term_buffer) then
@@ -205,8 +221,23 @@ map({"n", "t"}, "<C-s>", function()
         vim.cmd("startinsert")
         term_buffer = vim.api.nvim_get_current_buf()
     end
-
 end, opts("Toggle terminal"))
+
+local lazygit_buffer = nil
+map({"n", "t"}, "<C-g>", function()
+    if lazygit_buffer and vim.api.nvim_buf_is_valid(lazygit_buffer) then
+        if vim.api.nvim_buf_get_name(0) == vim.api.nvim_buf_get_name(lazygit_buffer) then
+            vim.cmd("bprevious")
+        else
+            vim.cmd("buffer " .. lazygit_buffer)
+            vim.cmd("startinsert")
+        end
+    else
+        vim.cmd("terminal lazygit")
+        vim.cmd("startinsert")
+        lazygit_buffer = vim.api.nvim_get_current_buf()
+    end
+end, opts("Toggle lazygit"))
 
 -- Copying
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
