@@ -2,7 +2,6 @@
 description: "Use as the entry point for every larger code change — bug fixes, features, refactors. Analyzes requirements, creates a plan, and delegates implementation to Developer and review to Reviewer. Never writes code directly."
 name: "Architect"
 mode: "primary"
-model: "opencode/big-pickle"
 argument-hint: "Describe the bug, feature, or change you need"
 permission:
   task:

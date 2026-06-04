@@ -2,7 +2,6 @@
 description: "Implements code changes as directed by a plan. Writes, edits, and runs code. Use when given a specific implementation task with clear requirements and file targets."
 name: "Developer"
 mode: "subagent"
-model: "opencode/big-pickle"
 tools:
   write: true        # Write to files
   edit: true         # Edit files
