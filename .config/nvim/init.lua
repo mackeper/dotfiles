@@ -29,7 +29,7 @@ local function apply_theme(theme)
     vim.g.theme_mode = theme
     if theme == "light" then
         vim.o.background = "light"
-        vim.cmd.colorscheme("shine")
+        vim.cmd.colorscheme("delek")
     else
         vim.o.background = "dark"
         vim.cmd.colorscheme("catppuccin")
