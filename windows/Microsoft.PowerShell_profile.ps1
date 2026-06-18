@@ -14,6 +14,7 @@
 # 0.2: Admin terminal function, start driver function
 # 0.3: Git worktrees
 # 0.4: Service status in prompt, test runner
+# 0.5: Speed up startup
 
 function Show-DailyTip {
     $tipsFile = Join-Path $PSScriptRoot 'tips.json'
@@ -33,7 +34,7 @@ function Show-StartMessage {
 
     $user = $env:USERNAME
     $hostname = [System.Net.Dns]::GetHostName()
-    $profileVersion = "0.4 service status in prompt, test runner"
+    $profileVersion = "0.5 speed up startup"
     $col1 = 46
 
     $title = "$([char]27)[38;5;14mWelcome, $user@$hostname (v$profileVersion)$([char]27)[0m"
@@ -55,7 +56,7 @@ function Show-StartMessage {
         @("guid", "Generate a new GUID"),
         @("test", "FZF C# test runner"),
         @("", ""),
-        @("$([char]27)[38;5;10mUseful functions:$([char]27)[0m", ""),
+        @("$([char]27)[38;5;10mFzf functions:$([char]27)[0m", ""),
         @("fkill", "Fzf kill process"),
         @("", ""),
         @("", ""),
@@ -126,22 +127,37 @@ Set-PSReadLineOption -BellStyle None
 #              Prompt
 # ========================================
 function prompt {
-    $path = (Get-Location).Path.Replace($HOME, '~')
-    $branch = ''
-    $gitInfo = ''
-    if (git rev-parse --is-inside-work-tree 2>$null) {
-        $branch = git rev-parse --abbrev-ref HEAD 2>$null
-        git diff --quiet 2>$null; $hasDiff = $LASTEXITCODE -ne 0
-        git diff --cached --quiet 2>$null; $hasStaged = $LASTEXITCODE -ne 0
-        if ($hasDiff -or $hasStaged) { $gitInfo = " $([char]27)[38;5;9m~$([char]27)[0m" }
+    $e = [char]27
+    $path = $PWD.Path.Replace($HOME, '~')
+
+    # One git call instead of four: branch + dirty state in a single subprocess.
+    #   -uno              skip untracked scan (faster in big repos; matches old diff-based ~)
+    #   --no-optional-locks  don't contend for index.lock with a running git command
+    # Porcelain v2 emits all '# ...' headers before any file lines, so the first
+    # non-header line means "dirty" and we can stop early.
+    $display = ''
+    $status = git --no-optional-locks status --porcelain=v2 --branch -uno 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        $branch = ''
+        $dirty = $false
+        foreach ($line in $status) {
+            if ($line[0] -eq '#') {
+                if ($line.StartsWith('# branch.head ')) { $branch = $line.Substring(14) }
+            } else { $dirty = $true; break }
+        }
+        if ($branch) {
+            $gitInfo = if ($dirty) { " $e[38;5;9m~$e[0m" } else { '' }
+            $display = "$e[38;5;15m ($e[38;5;10m$branch$gitInfo$e[38;5;15m)"
+        }
     }
-    $display = if ($branch) { "$([char]27)[38;5;15m ($([char]27)[38;5;10m$branch$gitInfo$([char]27)[38;5;15m)" } else { "" }
+
     $svcInfo = ''
     if ($PWD.Path -match '^C:\\git\\RayCare(2|\.WT)?$') {
-        $count = (Get-Process -Name 'RayCare*' -ErrorAction SilentlyContinue | Measure-Object).Count
-        if ($count) { $svcInfo = " $([char]27)[38;5;14m[$count svc]$([char]27)[0m" }
+        $count = @(Get-Process -Name 'RayCare*' -ErrorAction SilentlyContinue).Count
+        if ($count) { $svcInfo = " $e[38;5;14m[$count svc]$e[0m" }
     }
-    "$([char]27)[38;5;10mPS$([char]27)[0m $([char]27)[38;5;15m$path$display$svcInfo$([char]27)[0m > "
+
+    "$e[38;5;10mPS$e[0m $e[38;5;15m$path$display$svcInfo$e[0m > "
 }
 
 # ========================================
@@ -152,7 +168,12 @@ function ls([string]$path = ".") {
     if (Get-Command -Name "eza" -ErrorAction SilentlyContinue) {
         eza --group-directories-first --icons $path
     } else {
-        Get-ChildItem -Exclude ".*" $path | Format-Wide -AutoSize -ErrorAction SilentlyContinue
+        # Lazy-load Terminal-Icons: only when eza is absent and ls first runs (idempotent, no startup cost).
+        Import-Module Terminal-Icons -ErrorAction SilentlyContinue
+        Get-ChildItem -Exclude ".*" $path | Format-Wide -AutoSize -ErrorAction SilentlyContinue | ForEach-Object {
+            if ($_.GetType().Name -eq "GroupStartData") { $_.groupingEntry = $null }  # drop the "Directory:" header, keep icons
+            $_
+        }
     }
 }
 function ll {
@@ -342,7 +363,7 @@ $env:LC_ALL = 'C.UTF-8'
 # ========================================
 #               Functions
 # ========================================
-function which($cmd) { Get-Command $cmd | Select-Object -ExpandProperty Source }
+function which($cmd) { $c = Get-Command $cmd; if ($c.Source) { $c.Source } else { $c.Definition } }
 
 # TODO: Update with private / work
 function tabs() {
@@ -359,47 +380,6 @@ function tabs() {
     wt -w 0 nt --tabColor '#ff0000' --title RayStation --suppressApplicationTitle -d 'C:\git\RayStation'
 }
 
-
-function Invoke-AdminAndStreamOutput {
-    param(
-        [string]$AdminCommand,
-        [string]$TempFile = $(Join-Path "C:/tmp" ("rc_build_" + [guid]::NewGuid().ToString() + ".txt"))
-    )
-
-    # Ensure temp directory exists
-    if (-not (Test-Path "C:/tmp")) {
-        New-Item -ItemType Directory -Path "C:/tmp" | Out-Null
-    }
-
-    # Start admin PowerShell to run command and write output to temp file
-    $psCommand = "$AdminCommand | Tee-Object -FilePath '$TempFile'"
-    $proc = Start-Process powershell.exe -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", $psCommand) -Verb RunAs -PassThru
-
-    Write-Host "Streaming output from $TempFile..."
-
-    $lastLength = 0
-    while ($proc.HasExited -eq $false) {
-        if (Test-Path $TempFile) {
-            $content = Get-Content $TempFile -Raw
-            if ($content.Length -gt $lastLength) {
-                Write-Host $content.Substring($lastLength)
-                $lastLength = $content.Length
-            }
-        }
-        Start-Sleep -Seconds 1
-        $proc.Refresh()
-    }
-
-    # Print any remaining output
-    if (Test-Path $TempFile) {
-        $content = Get-Content $TempFile -Raw
-        if ($content.Length -gt $lastLength) {
-            Write-Host $content.Substring($lastLength)
-        }
-    }
-
-    Remove-Item $TempFile -Force
-}
 
 # TODO: Better solution than folder specific?
 function Build {
@@ -420,6 +400,7 @@ function Build {
             Start-Process powershell $command -Verb RunAs
             return
         }
+        else { & $scriptPath }
     }
 
     (New-Object -ComObject SAPI.SpVoice).Speak("Build done")
@@ -433,32 +414,43 @@ function guid {
 # ========================================
 #              Modules
 # ========================================
-function install_module_if_missing($moduleName) {
-    if (-not (Get-Module -ListAvailable -Name $moduleName)) {
-        Install-Module $moduleName -Scope CurrentUser -Force
-        Write-Host "$moduleName installed. Restart PowerShell to load the module."
-    }
-    Import-Module $moduleName
-}
-
-install_module_if_missing -moduleName PSReadLine
-install_module_if_missing -moduleName PSFzf
-install_module_if_missing -moduleName Terminal-Icons
+# PSReadLine is auto-loaded by PowerShell before this profile runs — no import needed.
+# Terminal-Icons removed: ls/ll/lt/la already render icons via eza.
+# PSFzf is lazy-loaded on first use (see Initialize-PSFzf below) to keep startup fast.
+# One-time install (run MANUALLY, not on startup):
+#   if (-not (Get-Module -ListAvailable PSFzf)) { Install-Module PSFzf -Scope CurrentUser -Force }
 
 $env:FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
 $env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
 $env:FZF_CTRL_T_COMMAND = $env:FZF_DEFAULT_COMMAND
 $env:FZF_ALT_C_COMMAND = 'fd --type d --hidden --follow --exclude .git'
-Set-PsFzfOption `
-    -PSReadlineChordProvider 'Ctrl+f' `
-    -PSReadlineChordReverseHistory 'Ctrl+r' `
-    -PSReadlineChordSetLocation 'Alt+c'
-Set-PsFzfOption -TabExpansion
-Set-PsFzfOption -TabCompletionPreviewWindow 'right|down|hidden'
 
-Set-PsFzfOption -EnableAliasFuzzyKillProcess # fkill alias
+# --- Lazy-load PSFzf (keeps ~200ms off every startup) ---
+# Full setup runs once, on first use of any fzf chord, Tab, Invoke-Fzf, or fkill.
+function Initialize-PSFzf {
+    if (Get-Module PSFzf) { return }
+    Import-Module PSFzf
+    Set-PsFzfOption `
+        -PSReadlineChordProvider 'Ctrl+f' `
+        -PSReadlineChordReverseHistory 'Ctrl+r' `
+        -PSReadlineChordSetLocation 'Alt+c'
+    Set-PsFzfOption -TabExpansion
+    Set-PsFzfOption -TabCompletionPreviewWindow 'right|down|hidden'
+    Set-PsFzfOption -EnableAliasFuzzyKillProcess # fkill alias
+    Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
+}
 
-Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
+# Stub chords: first press loads PSFzf (which rebinds them to its real handlers), then services this press.
+# The handler functions aren't exported, so invoke them inside the module scope with & (Get-Module ...).
+Set-PSReadLineKeyHandler -Key Ctrl+f -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerProvider } }
+Set-PSReadLineKeyHandler -Key Ctrl+r -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerHistory } }
+Set-PSReadLineKeyHandler -Key Alt+c  -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerSetLocation } }
+Set-PSReadLineKeyHandler -Key Tab    -ScriptBlock { Initialize-PSFzf; Invoke-FzfTabCompletion }
+
+# Stub commands: first call loads PSFzf, then forwards to the real command.
+function Invoke-Fzf { Initialize-PSFzf; & (Get-Command Invoke-Fzf -Module PSFzf) @args }
+function fkill { Initialize-PSFzf; Invoke-FuzzyKillProcess @args }
+
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
