@@ -324,6 +324,50 @@ Loop Files, "C:\\git\\*", "D"
 ; Ctrl+Alt+Space -> Open the command palette
 ^!Space::ShowCommandPalette()
 
+; Score how well pattern fuzzy-matches text as an ordered subsequence
+; (like VS Code's Ctrl+P). Returns -1 if pattern isn't a subsequence of text.
+FuzzyMatchScore(text, pattern) {
+    textLower := StrLower(text)
+    patternLower := StrLower(pattern)
+    searchStart := 1
+    consecutive := 0
+    score := 0
+
+    Loop StrLen(patternLower) {
+        ch := SubStr(patternLower, A_Index, 1)
+        pos := InStr(textLower, ch, , searchStart)
+        if !pos
+            return -1
+
+        gap := pos - searchStart
+        consecutive := (gap = 0) ? consecutive + 1 : 0
+
+        matchScore := 10 + consecutive * 5 - gap
+        prevChar := (pos = 1) ? "" : SubStr(textLower, pos - 1, 1)
+        if (pos = 1 || !RegExMatch(prevChar, "[a-z0-9]"))
+            matchScore += 10  ; bonus for matching at a word boundary
+
+        score += matchScore
+        searchStart := pos + 1
+    }
+
+    return score
+}
+
+; Simple insertion sort by descending score (palette lists are short)
+SortByScoreDesc(matches) {
+    Loop matches.Length - 1 {
+        i := A_Index + 1
+        current := matches[i]
+        j := i - 1
+        while (j >= 1 && matches[j].score < current.score) {
+            matches[j + 1] := matches[j]
+            j -= 1
+        }
+        matches[j + 1] := current
+    }
+}
+
 ShowCommandPalette() {
     global paletteCommands
     chosen := "", guiVisible := true
@@ -347,9 +391,19 @@ ShowCommandPalette() {
     UpdateList("")
     UpdateList(filterText) {
         commandList.Delete()
-        for index, cmd in paletteCommands {
-            if (filterText = "" || InStr(cmd.label, filterText))
+        if (filterText = "") {
+            for cmd in paletteCommands
                 commandList.Add("", cmd.label)
+        } else {
+            matches := []
+            for cmd in paletteCommands {
+                score := FuzzyMatchScore(cmd.label, filterText)
+                if (score >= 0)
+                    matches.Push({label: cmd.label, score: score})
+            }
+            SortByScoreDesc(matches)
+            for m in matches
+                commandList.Add("", m.label)
         }
         if (commandList.GetCount() > 0)
             commandList.Modify(1, "Select Focus")
