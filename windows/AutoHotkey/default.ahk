@@ -21,7 +21,9 @@
 ; ===                       General                             ===
 ; ==================================================================
 
-^+!T::{
+^+!T::ToggleWindowTransparency()
+
+ToggleWindowTransparency() {
     ExStyle := WinGetExStyle("A")
     if (ExStyle & 0x80000)
         WinSetTransparent(255, "A")  ; Fully opaque
@@ -30,7 +32,9 @@
 }
 
 ; Reload all scripts
-^!r:: {
+^!r::ReloadAllScripts()
+
+ReloadAllScripts() {
     DetectHiddenWindows true
     for hwnd in WinGetList("ahk_class AutoHotkey") {
         PostMessage 0x111, 65303,, , hwnd  ; 0x111 = WM_COMMAND, 65303 = ID_RELOAD
@@ -38,13 +42,17 @@
 }
 
 ; Generate a GUID, copy it, and paste at cursor
-^!g:: {
+^!g::PasteNewGuid()
+
+PasteNewGuid() {
     guid := ComObject("Scriptlet.TypeLib").GUID
     guid := StrUpper(StrReplace(StrReplace(guid, "{"), "}"))
     PasteTextPreservingClipboard(guid)
 }
 
-::mvh::{
+::mvh::PasteSignature()
+
+PasteSignature() {
     PasteTextPreservingClipboard("
     (LTrim
         Med vänlig hälsning,
@@ -53,7 +61,9 @@
 }
 
 ; Copy the full path of the selected Explorer item(s) to the clipboard
-!+c::{
+!+c::CopyExplorerSelectionPath()
+
+CopyExplorerSelectionPath() {
     if !(WinActive("ahk_class CabinetWClass") || WinActive("ahk_class ExploreWClass"))
         return
 
@@ -76,7 +86,9 @@
 }
 
 ; Write current date and time
-!+d:: {
+!+d::WriteDateTimeAndUser()
+
+WriteDateTimeAndUser() {
     dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
     user := A_UserName
     SendText dt "`n" user
@@ -118,7 +130,9 @@ GetExplorerSelectionPaths() {
 ; ==================================================================
 
 ; Write version
-!+v::{
+!+v::WriteTestVersions()
+
+WriteTestVersions() {
     Send "9.1.0.60649"
     Send "{Tab}"
     Send "TrueBeamDriver2.0.0.60945"
@@ -127,15 +141,14 @@ GetExplorerSelectionPaths() {
 }
 
 ; Send "PASSED"
-!+p:: {
-    dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
-    SendText dt "`nPASSED"
-}
+!+p::WriteTestResult("PASSED")
 
 ; Send "FAILED"
-!+F:: {
+!+F::WriteTestResult("FAILED")
+
+WriteTestResult(result) {
     dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
-    SendText dt "`nFAILED"
+    SendText dt "`n" result
 }
 
 ; ==================================================================
@@ -281,6 +294,17 @@ AddPaletteCommand("App: Teams / Discord", OpenChat)
 AddPaletteCommand("Wiki: Index", OpenWikiIndex)
 AddPaletteCommand("Wiki: Journal", OpenWikiJournal)
 AddPaletteCommand("Wiki: Current", OpenWikiCurrent)
+
+AddPaletteCommand("General: Generate GUID", PasteNewGuid)
+AddPaletteCommand("General: Paste signature (mvh)", PasteSignature)
+AddPaletteCommand("General: Copy Explorer selection path", CopyExplorerSelectionPath)
+AddPaletteCommand("General: Insert date/time + username", WriteDateTimeAndUser)
+AddPaletteCommand("General: Toggle window transparency", ToggleWindowTransparency)
+AddPaletteCommand("General: Reload all scripts", ReloadAllScripts)
+
+AddPaletteCommand("Testing: Write versions", WriteTestVersions)
+AddPaletteCommand("Testing: Write PASSED", WriteTestResult.Bind("PASSED"))
+AddPaletteCommand("Testing: Write FAILED", WriteTestResult.Bind("FAILED"))
 
 ; Auto-discover repos so the list stays current without editing this script
 OpenRepoInTerminal(path) {
