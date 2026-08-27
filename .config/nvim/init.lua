@@ -296,15 +296,21 @@ local function find_test_at_cursor()
     return class_name, method_name
 end
 
---- Run the .NET test at the cursor in a floating terminal window.
-local function run_dotnet_test_at_cursor()
-    local class_name, method_name = find_test_at_cursor()
-    if not method_name then
-        vim.notify("No test method found above cursor", vim.log.levels.WARN)
-        return
+--- Walk backward from the cursor to find the enclosing class name.
+local function find_class_at_cursor()
+    local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+    local lines = vim.api.nvim_buf_get_lines(0, 0, cursor_line, false)
+    for i = #lines, 1, -1 do
+        local cls = lines[i]:match("class%s+([%w_]+)")
+        if cls then
+            return cls
+        end
     end
+    return nil
+end
 
-    local filter = class_name and (class_name .. "." .. method_name) or method_name
+--- Run `dotnet test` with the given filter in a floating terminal window.
+local function run_dotnet_test_filter(filter)
     local csproj = find_csproj(vim.fn.expand("%:p:h"))
     if not csproj then
         vim.notify("No .csproj found for " .. vim.fn.expand("%:p:h"), vim.log.levels.ERROR)
@@ -326,13 +332,38 @@ local function run_dotnet_test_at_cursor()
         title_pos = "center",
     })
 
-    vim.fn.termopen({ "dotnet", "test", csproj, "--filter", "FullyQualifiedName~" .. filter })
+    vim.fn.termopen({
+        "dotnet", "test", csproj,
+        "--filter", "FullyQualifiedName~" .. filter,
+        "--logger", "console;verbosity=detailed",
+    })
     vim.cmd("startinsert")
     map("n", "q", "<cmd>close<CR>", opts("Close test window", { buffer = buf }))
     map("t", "<Esc><Esc>", "<C-\\><C-n><cmd>close<CR>", opts("Close test window", { buffer = buf }))
 end
 
+--- Run the .NET test method at the cursor.
+local function run_dotnet_test_at_cursor()
+    local class_name, method_name = find_test_at_cursor()
+    if not method_name then
+        vim.notify("No test method found above cursor", vim.log.levels.WARN)
+        return
+    end
+    run_dotnet_test_filter(class_name and (class_name .. "." .. method_name) or method_name)
+end
+
+--- Run all .NET tests in the class enclosing the cursor.
+local function run_dotnet_test_class_at_cursor()
+    local class_name = find_class_at_cursor()
+    if not class_name then
+        vim.notify("No test class found above cursor", vim.log.levels.WARN)
+        return
+    end
+    run_dotnet_test_filter(class_name)
+end
+
 map("n", "<leader>tt", run_dotnet_test_at_cursor, opts("Run .NET test at cursor"))
+map("n", "<leader>tc", run_dotnet_test_class_at_cursor, opts("Run .NET test class at cursor"))
 
 -- Copying
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
