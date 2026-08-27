@@ -23,12 +23,38 @@
 
 ^+!T::ToggleWindowTransparency()
 
+; Track transparency per-window ourselves instead of inferring it from the
+; WS_EX_LAYERED extended style bit: WinSetTransparent(255, ...) does not clear
+; that bit (only "Off" does), and many modern apps already have it set for
+; unrelated reasons (Mica/acrylic effects), so it's not a reliable state check.
+global transparentWindows := Map()
+
 ToggleWindowTransparency() {
-    ExStyle := WinGetExStyle("A")
-    if (ExStyle & 0x80000)
-        WinSetTransparent(255, "A")  ; Fully opaque
-    else
-        WinSetTransparent(180, "A")  ; Semi-transparent
+    global transparentWindows
+    hwnd := WinExist("A")
+    if !hwnd
+        return
+
+    isTransparent := transparentWindows.Has(hwnd) && transparentWindows[hwnd]
+    if isTransparent {
+        WinSetTransparent("Off", "ahk_id " hwnd)
+        transparentWindows[hwnd] := false
+    } else {
+        WinSetTransparent(180, "ahk_id " hwnd)
+        transparentWindows[hwnd] := true
+    }
+}
+
+ToggleAlwaysOnTop() {
+    hwnd := WinExist("A")
+    if !hwnd
+        return
+
+    WinSetAlwaysOnTop(-1, "ahk_id " hwnd)
+    isOnTop := WinGetExStyle("ahk_id " hwnd) & 0x8  ; WS_EX_TOPMOST
+    ToolTip(isOnTop ? "Always on top: ON" : "Always on top: OFF", , , 1)
+    Sleep 800
+    ToolTip("", , , 1)
 }
 
 ; Reload all scripts
@@ -152,6 +178,62 @@ WriteTestResult(result) {
 }
 
 ; ==================================================================
+; ===                       Pomodoro                            ===
+; ==================================================================
+
+global pomodoroEndTick := 0
+global pomodoroLabel := ""
+
+StartPomodoro(minutes, label) {
+    global pomodoroEndTick, pomodoroLabel
+    SetTimer(PomodoroFinished, 0)  ; cancel any running timer first
+
+    pomodoroLabel := label
+    pomodoroEndTick := A_TickCount + Integer(minutes * 60000)
+    SetTimer(PomodoroFinished, -Integer(minutes * 60000))
+    TrayTip(minutes " minutes", label " started", 1)
+}
+
+StopPomodoro() {
+    global pomodoroEndTick, pomodoroLabel
+    if !pomodoroEndTick {
+        TrayTip("Nothing to stop", "Pomodoro", 2)
+        return
+    }
+
+    SetTimer(PomodoroFinished, 0)
+    stopped := pomodoroLabel
+    pomodoroEndTick := 0
+    pomodoroLabel := ""
+    TrayTip("Cancelled", stopped, 2)
+}
+
+ShowPomodoroStatus() {
+    global pomodoroEndTick, pomodoroLabel
+    if !pomodoroEndTick {
+        TrayTip("No timer running", "Pomodoro", 1)
+        return
+    }
+
+    remainingMs := pomodoroEndTick - A_TickCount
+    if (remainingMs < 0)
+        remainingMs := 0
+    totalSeconds := Integer(remainingMs // 1000)
+    TrayTip(Format("{:02}:{:02} left", totalSeconds // 60, Mod(totalSeconds, 60)), pomodoroLabel, 1)
+}
+
+PomodoroFinished() {
+    global pomodoroEndTick, pomodoroLabel
+    finished := pomodoroLabel
+    pomodoroEndTick := 0
+    pomodoroLabel := ""
+
+    TrayTip("Time is up", finished, 1)
+    SoundBeep(880, 250)
+    SoundBeep(660, 250)
+}
+
+; ==================================================================
 ; ===                        Apps                               ===
 ; ==================================================================
 
@@ -198,7 +280,7 @@ OpenCodeEditor() {
 
 OpenIde() {
     if isWorkMode {
-        riderPath := FindNewestFile("C:\\Program Files\\JetBrains\\JetBrains Rider*\\bin\\rider64.exe")
+        riderPath := FindRiderExecutable()
         if riderPath
             OpenOrFocusProgram(riderPath, "rider64.exe")
         else
@@ -259,11 +341,11 @@ OpenOrFocusShellApp(aumid, exeName) {
     }
 }
 
-; Return the most recently modified file matching a wildcard pattern, or "" if none found
-FindNewestFile(pattern) {
+; Return the most recently modified subfolder matching a wildcard pattern, or "" if none found
+FindNewestDir(pattern) {
     newestPath := ""
     newestTime := ""
-    Loop Files, pattern
+    Loop Files, pattern, "D"
     {
         if (newestTime = "" || A_LoopFileTimeModified > newestTime) {
             newestPath := A_LoopFileFullPath
@@ -271,6 +353,18 @@ FindNewestFile(pattern) {
         }
     }
     return newestPath
+}
+
+; Locate rider64.exe under the newest installed Rider version folder.
+; Loop Files only supports wildcards in the final path segment, so the
+; versioned folder ("JetBrains Rider*") must be resolved before appending
+; the fixed "\bin\rider64.exe" suffix.
+FindRiderExecutable() {
+    riderDir := FindNewestDir("C:\\Program Files\\JetBrains\\JetBrains Rider*")
+    if !riderDir
+        return ""
+    exePath := riderDir "\\bin\\rider64.exe"
+    return FileExist(exePath) ? exePath : ""
 }
 
 ; ==================================================================
@@ -300,11 +394,18 @@ AddPaletteCommand("General: Paste signature (mvh)", PasteSignature)
 AddPaletteCommand("General: Copy Explorer selection path", CopyExplorerSelectionPath)
 AddPaletteCommand("General: Insert date/time + username", WriteDateTimeAndUser)
 AddPaletteCommand("General: Toggle window transparency", ToggleWindowTransparency)
+AddPaletteCommand("General: Toggle always on top", ToggleAlwaysOnTop)
 AddPaletteCommand("General: Reload all scripts", ReloadAllScripts)
 
 AddPaletteCommand("Testing: Write versions", WriteTestVersions)
 AddPaletteCommand("Testing: Write PASSED", WriteTestResult.Bind("PASSED"))
 AddPaletteCommand("Testing: Write FAILED", WriteTestResult.Bind("FAILED"))
+
+AddPaletteCommand("Pomodoro: Start focus (25 min)", StartPomodoro.Bind(25, "Focus"))
+AddPaletteCommand("Pomodoro: Start short break (5 min)", StartPomodoro.Bind(5, "Short break"))
+AddPaletteCommand("Pomodoro: Start long break (15 min)", StartPomodoro.Bind(15, "Long break"))
+AddPaletteCommand("Pomodoro: Show time remaining", ShowPomodoroStatus)
+AddPaletteCommand("Pomodoro: Stop timer", StopPomodoro)
 
 ; Auto-discover repos so the list stays current without editing this script
 OpenRepoInTerminal(path) {
@@ -313,12 +414,24 @@ OpenRepoInTerminal(path) {
 OpenRepoInVSCode(path) {
     Run('"C:\\Program Files\\Microsoft VS Code\\Code.exe" "' path '"')
 }
+OpenRepoInRider(path) {
+    riderPath := FindRiderExecutable()
+    if riderPath
+        Run('"' riderPath '" "' path '"')
+    else
+        ToolTip("Rider not found under C:\\Program Files\\JetBrains", , , 1)
+}
+OpenRepoInExplorer(path) {
+    Run('explorer.exe "' path '"')
+}
 Loop Files, "C:\\git\\*", "D"
 {
     repoPath := A_LoopFileFullPath
     repoName := A_LoopFileName
     AddPaletteCommand("Repo: " repoName " (Terminal)", OpenRepoInTerminal.Bind(repoPath))
     AddPaletteCommand("Repo: " repoName " (VS Code)", OpenRepoInVSCode.Bind(repoPath))
+    AddPaletteCommand("Repo: " repoName " (Rider)", OpenRepoInRider.Bind(repoPath))
+    AddPaletteCommand("Repo: " repoName " (Explorer)", OpenRepoInExplorer.Bind(repoPath))
 }
 
 ; Ctrl+Alt+Space -> Open the command palette
