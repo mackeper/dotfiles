@@ -130,6 +130,9 @@ function prompt {
     $e = [char]27
     $path = $PWD.Path.Replace($HOME, '~')
 
+    # Set the Windows Terminal tab title to the current directory name.
+    $Host.UI.RawUI.WindowTitle = Split-Path -Leaf $PWD.Path
+
     # One git call instead of four: branch + dirty state in a single subprocess.
     #   -uno              skip untracked scan (faster in big repos; matches old diff-based ~)
     #   --no-optional-locks  don't contend for index.lock with a running git command
@@ -193,18 +196,19 @@ Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 # --- Work shortcuts ---
 function rc    { Set-Location 'C:\git\RayCare' }
 function rc2   { Set-Location 'C:\git\RayCare2' }
-function rcwt  { Set-Location 'C:\git\RayCare.WT' }
+function rcw  { Set-Location 'C:\git\RayCare.WT' }
 
 function tx    { Set-Location 'C:\git\RayCare.TreatmentDrivers' }
 function tx2   { Set-Location 'C:\git\RayCare.TreatmentDrivers2' }
-function txwt  { Set-Location 'C:\git\RayCare.TreatmentDrivers.WT' }
+function txw  { Set-Location 'C:\git\RayCare.TreatmentDrivers.WT' }
 
 function api   { Set-Location 'C:\git\RayCare.Treat.API' }
 function api2  { Set-Location 'C:\git\RayCare.Treat.API2' }
-function apiwt { Set-Location 'C:\git\RayCare.Treat.API.WT' }
+function apiw { Set-Location 'C:\git\RayCare.Treat.API.WT' }
 
 function rs    { Set-Location 'C:\git\RayStation' }
 function dd    { Set-Location 'C:\git\DicomDesigner' }
+function tt    { Set-Location 'C:\git\RayCare.TreatmentTool' }
 
 function w { Set-Location '~/OneDrive - RaySearch Laboratories AB/Marcus/10_Documents/05_wiki' }
 
@@ -319,6 +323,7 @@ function gco { git checkout @args }
 function gcb { git checkout -b @args }
 function gdca { git diff --cached @($args.Count ? $args : ".") }
 function gl  { git pull @args }
+function gg  { git grep @args }
 function gp  { git push @args }
 function gpn { & git push --set-upstream origin (git branch --show-current) }
 function gst { git status @args }
@@ -381,6 +386,23 @@ function tabs() {
 }
 
 
+function Start-PodmanContainers {
+    if (-not (Get-Command podman -ErrorAction SilentlyContinue)) {
+        Write-Warning "podman not found; skipping container startup"
+        return
+    }
+    # Ensure the podman machine is running (idempotent; harmless if already started).
+    if (-not (podman machine inspect --format '{{.State}}' 2>$null | Select-String -SimpleMatch 'running' -Quiet)) {
+        Write-Host "Starting podman machine..."
+        podman machine start
+    }
+    $stopped = podman ps -aq --filter status=created --filter status=exited --filter status=paused
+    if ($stopped) {
+        Write-Host "Starting podman containers..."
+        $stopped | ForEach-Object { podman start $_ }
+    }
+}
+
 # TODO: Better solution than folder specific?
 function Build {
     if ($PWD.Path -match "C:\\git\\RayCare\.TreatmentDrivers2?") {
@@ -393,17 +415,42 @@ function Build {
     }
 
     if ($PWD.Path -match "C:\\git\\RayCare2?$") {
+        Start-PodmanContainers
+
         $scriptPath = Join-Path $PWD "Build.ps1"
 
-        if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-            $command = "-NoProfile -ExecutionPolicy Bypass -Command `"& { `"$scriptPath`"; (New-Object -ComObject SAPI.SpVoice).Speak('Build done'); Write-Host 'Press any key to exit...'; $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown') }`""
-            Start-Process powershell $command -Verb RunAs
-            return
+        # Cake's tools are missing only after e.g. `git clean`. The official bootstrap
+        # (bakeCake.ps1) needs admin solely to write the machine-level PATH, which the build
+        # never uses (RunCakeTargets.ps1 invokes Cake.exe by full path). So restore the tools
+        # unelevated by running preBakeCake.ps1 directly with the correct ToolPath; the whole
+        # build then runs without admin.
+        $cakeExe = Join-Path $PWD "cake\tools\cake\Cake.exe"
+        if (-not (Test-Path $cakeExe)) {
+            Write-Host "Cake tools missing (post-clean build): restoring Cake (no admin needed)..."
+            $toolPath = Join-Path $PWD "cake\tools"
+            & (Join-Path $PWD "cake\tfs\preBakeCake.ps1") -ToolPath $toolPath
+            if (-not (Test-Path $cakeExe)) {
+                Write-Error "Cake bootstrap failed (Cake.exe still missing); aborting build."
+                return
+            }
         }
-        else { & $scriptPath }
+
+        & $scriptPath
     }
 
     (New-Object -ComObject SAPI.SpVoice).Speak("Build done")
+}
+
+function reconfig {
+    param([switch]$Release)
+
+    $root = git rev-parse --show-toplevel 2>$null
+    if (-not $root) { Write-Error "Not inside a git repo."; return }
+    $root = $root -replace '/', '\'
+
+    $configuration = if ($Release) { 'Release' } else { 'Debug' }
+    $script = Join-Path $root 'Scripts\Build\RunConfigurationAction.ps1'
+    Start-Process powershell -Verb RunAs -ArgumentList '-NoExit','-NoProfile','-Command',"Set-Location '$root'; & '$script' -Configuration $configuration"
 }
 function guid {
     [guid]::NewGuid().ToString() | Tee-Object -Variable g
@@ -425,13 +472,12 @@ $env:FZF_DEFAULT_COMMAND = 'fd --type f --hidden --follow --exclude .git'
 $env:FZF_CTRL_T_COMMAND = $env:FZF_DEFAULT_COMMAND
 $env:FZF_ALT_C_COMMAND = 'fd --type d --hidden --follow --exclude .git'
 
-# --- Lazy-load PSFzf (keeps ~200ms off every startup) ---
-# Full setup runs once, on first use of any fzf chord, Tab, Invoke-Fzf, or fkill.
+# --- Lazy-load PSFzf (faster startup; loads on first fzf use) ---
 function Initialize-PSFzf {
     if (Get-Module PSFzf) { return }
-    Import-Module PSFzf
+    Import-Module PSFzf -Global
     Set-PsFzfOption `
-        -PSReadlineChordProvider 'Ctrl+f' `
+        -PSReadlineChordProvider 'Ctrl+t' `
         -PSReadlineChordReverseHistory 'Ctrl+r' `
         -PSReadlineChordSetLocation 'Alt+c'
     Set-PsFzfOption -TabExpansion
@@ -440,16 +486,15 @@ function Initialize-PSFzf {
     Set-PSReadLineKeyHandler -Key Tab -ScriptBlock { Invoke-FzfTabCompletion }
 }
 
-# Stub chords: first press loads PSFzf (which rebinds them to its real handlers), then services this press.
-# The handler functions aren't exported, so invoke them inside the module scope with & (Get-Module ...).
-Set-PSReadLineKeyHandler -Key Ctrl+f -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerProvider } }
+# Stub chords: first press loads PSFzf, then runs the real handler (module-scoped, not exported).
+Set-PSReadLineKeyHandler -Key Ctrl+t -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerProvider } }
 Set-PSReadLineKeyHandler -Key Ctrl+r -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerHistory } }
 Set-PSReadLineKeyHandler -Key Alt+c  -ScriptBlock { Initialize-PSFzf; & (Get-Module PSFzf) { Invoke-FzfPsReadlineHandlerSetLocation } }
 Set-PSReadLineKeyHandler -Key Tab    -ScriptBlock { Initialize-PSFzf; Invoke-FzfTabCompletion }
 
-# Stub commands: first call loads PSFzf, then forwards to the real command.
-function Invoke-Fzf { Initialize-PSFzf; & (Get-Command Invoke-Fzf -Module PSFzf) @args }
-function fkill { Initialize-PSFzf; Invoke-FuzzyKillProcess @args }
+# Stub commands: first call loads PSFzf, then forwards via module-qualified name (always resolves once loaded).
+function Invoke-Fzf { Initialize-PSFzf; PSFzf\Invoke-Fzf @args }
+function fkill { Initialize-PSFzf; PSFzf\Invoke-FuzzyKillProcess @args }
 
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
@@ -468,8 +513,6 @@ Set-PSReadLineKeyHandler -Key Ctrl+s -ScriptBlock {
 Set-PSReadLineKeyHandler -Key Ctrl+g -ScriptBlock {
     lazygit
 }
-
-Remove-PSReadLineKeyHandler -Chord Ctrl+t
 
 # Default TestInfo display: only Fqn
 Update-TypeData -TypeName 'TestInfo' -DefaultDisplayPropertySet 'Fqn' -Force
