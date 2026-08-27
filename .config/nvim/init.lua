@@ -310,6 +310,10 @@ local function find_class_at_cursor()
 end
 
 --- Run `dotnet test` with the given filter in a floating terminal window.
+--- Assumes the project uses Microsoft.Testing.Platform (MTP): --output detailed
+--- shows per-test results. (Classic VSTest projects would need
+--- --logger "console;verbosity=detailed" instead; --output there means the
+--- build output dir, not verbosity.)
 local function run_dotnet_test_filter(filter)
     local csproj = find_csproj(vim.fn.expand("%:p:h"))
     if not csproj then
@@ -335,7 +339,7 @@ local function run_dotnet_test_filter(filter)
     vim.fn.termopen({
         "dotnet", "test", csproj,
         "--filter", "FullyQualifiedName~" .. filter,
-        "--logger", "console;verbosity=detailed",
+        "--output", "detailed",
     })
     vim.cmd("startinsert")
     map("n", "q", "<cmd>close<CR>", opts("Close test window", { buffer = buf }))
