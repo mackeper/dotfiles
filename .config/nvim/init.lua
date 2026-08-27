@@ -8,7 +8,10 @@
 -- TODO:
 --  - mini.git?
 --  - Replace mini.sessions with native
-
+--
+-- Tips:
+--  - Use C-a + C-q in MiniPick to send all to qf list.
+--  - LSP: C-w + d open diagnostic float
 -- ================================================
 --                   Options
 -- ================================================
@@ -239,6 +242,98 @@ map({"n", "t"}, "<C-g>", function()
     end
 end, opts("Toggle lazygit"))
 
+-- .NET testing
+--- Find the closest .csproj by walking up from start_dir.
+local function find_csproj(start_dir)
+    local dir = start_dir
+    while dir and dir ~= "" do
+        local matches = vim.fn.glob(dir .. "/*.csproj", false, true)
+        if #matches > 0 then
+            return matches[1]
+        end
+        local parent = vim.fn.fnamemodify(dir, ":h")
+        if parent == dir then
+            return nil
+        end
+        dir = parent
+    end
+    return nil
+end
+
+--- Walk backward from the cursor to find the enclosing test method and class name.
+local function find_test_at_cursor()
+    local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+    local lines = vim.api.nvim_buf_get_lines(0, 0, cursor_line, false)
+    local ignore_words =
+        { ["if"] = true, ["for"] = true, ["foreach"] = true, ["while"] = true, ["switch"] = true,
+          ["catch"] = true, ["using"] = true, ["lock"] = true, ["return"] = true, ["new"] = true }
+
+    local method_name, class_name
+    for i = #lines, 1, -1 do
+        local trimmed = vim.trim(lines[i])
+        if not method_name and trimmed ~= "" and not trimmed:match("^%[") and not trimmed:match("^//") then
+            local last_match
+            for word in lines[i]:gmatch("([%w_]+)%s*%(") do
+                if not ignore_words[word] then
+                    last_match = word
+                end
+            end
+            local looks_like_method = trimmed:match("^public") or trimmed:match("^private")
+                or trimmed:match("^protected") or trimmed:match("^internal") or trimmed:match("^static")
+                or trimmed:match("^async") or trimmed:match("%svoid%s") or trimmed:match("%sTask")
+            if last_match and looks_like_method then
+                method_name = last_match
+            end
+        end
+        if method_name then
+            local cls = trimmed:match("class%s+([%w_]+)")
+            if cls then
+                class_name = cls
+                break
+            end
+        end
+    end
+    return class_name, method_name
+end
+
+--- Run the .NET test at the cursor in a floating terminal window.
+local function run_dotnet_test_at_cursor()
+    local class_name, method_name = find_test_at_cursor()
+    if not method_name then
+        vim.notify("No test method found above cursor", vim.log.levels.WARN)
+        return
+    end
+
+    local filter = class_name and (class_name .. "." .. method_name) or method_name
+    local csproj = find_csproj(vim.fn.expand("%:p:h"))
+    if not csproj then
+        vim.notify("No .csproj found for " .. vim.fn.expand("%:p:h"), vim.log.levels.ERROR)
+        return
+    end
+
+    local buf = vim.api.nvim_create_buf(false, true)
+    local width = math.floor(vim.o.columns * 0.85)
+    local height = math.floor(vim.o.lines * 0.85)
+    vim.api.nvim_open_win(buf, true, {
+        relative = "editor",
+        width = width,
+        height = height,
+        row = math.floor((vim.o.lines - height) / 2),
+        col = math.floor((vim.o.columns - width) / 2),
+        style = "minimal",
+        border = "rounded",
+        title = " " .. filter .. " ",
+        title_pos = "center",
+    })
+
+    vim.fn.termopen({ "dotnet", "test", csproj, "--filter", "FullyQualifiedName~" .. filter })
+    vim.cmd("startinsert")
+    map("n", "q", "<cmd>close<CR>", opts("Close test window", { buffer = buf }))
+    map("t", "<Esc><Esc>", "<C-\\><C-n><cmd>close<CR>", opts("Close test window", { buffer = buf }))
+end
+
+map("n", "<leader>tt", run_dotnet_test_at_cursor, opts("Run .NET test at cursor"))
+
 -- Copying
 map("n", "<leader>cp", [[:let @+=expand("%:p")<CR>]], opts("Copy file path to clipboard"))
 map("n", "<leader>cn", [[:let @+=expand("%:t")<CR>]], opts("Copy file name to clipboard"))
@@ -263,6 +358,8 @@ map("n", "<leader>sl", "<CMD>lua MiniSessions.read(MiniSessions.get_latest())<CR
 map("n", "<leader>ss", "<CMD>lua MiniSessions.select()<CR>", opts("Select session"))
 
 -- Quickfix list
+map("n", "<M-j>", "<cmd>cnext<CR>", opts("Next quickfix entry"))
+map("n", "<M-k>", "<cmd>cprev<CR>", opts("Previous quickfix entry"))
 map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "qf",
@@ -377,15 +474,21 @@ require("mini.files").setup({ -- File explorer. :MiniFiles.open() g? to show inf
         go_out = "-",
     },
 })
+if vim.g.no_fancy_ui then
+    -- In difftool/mergetool mode nvim is launched with directory arguments.
+    -- mini.files hijacks directory buffers with a floating window, which makes
+    -- nvim.difftool's :only call fail with E5601. Drop that hijack autocmd.
+    pcall(vim.api.nvim_clear_autocmds, { group = "MiniFiles", event = "BufEnter" })
+end
 require("mini.visits").setup({}) -- Track file visits and jump to them. E.g. :Visit
 require("mini.extra").setup({}) -- Extra functionality. E.g. :Pick git_hunks
 require("mini.sessions").setup({}) -- Session management.
+require("mini.diff").setup({}) -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
 
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
     once = true,
     callback = function()
         require("mini.cursorword").setup({}) -- Highlight word under cursor
-        require("mini.diff").setup({}) -- Show git diff in signcolumn and MiniDiff.toggle_overlay()
         require("mini.splitjoin").setup({}) -- Split and join code blocks. gS to toggle
         require("mini.ai").setup({}) -- Extend a/i text objects
         require("mini.surround").setup({}) -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
@@ -528,6 +631,9 @@ end
 
 
 local function scrollbar_show()
+    if vim.g.no_fancy_ui then
+        return
+    end
     local win = vim.fn.win_getid()
     local info = vim.fn.getwininfo(win)[1]
     if not info then
@@ -608,6 +714,13 @@ vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
 --- =============================================
 -- Experimental UI2: floating cmdline and messages
 -- https://www.reddit.com/r/neovim/comments/1sfmgkb/comment/oeyrgua/?context=3
+-- Skip the floating UI when launched as a git difftool/mergetool (see
+-- git config difftool.nvimdifftool.cmd), otherwise nvim.difftool's :only call
+-- fails with E5601 because only a floating window would remain. Keep this block
+-- last in the file so this early return stays safe.
+if vim.g.no_fancy_ui then
+    return
+end
 vim.o.cmdheight = 1
 require("vim._core.ui2").enable({
     enable = true,
@@ -686,3 +799,182 @@ msgs.set_pos = function(tgt)
         })
     end
 end
+
+-- ================================================
+--        Diff review mode (git add -p, but nvim)
+-- ================================================
+-- Toggle with <leader>gR. While active, in the buffer under review:
+--   y  stage hunk under cursor (git add -p "yes") and jump to next hunk
+--   n  leave hunk unstaged (git add -p "no") and jump to next hunk
+--   K  jump to previous hunk
+--   c  comment on this hunk (stub - Azure DevOps integration TODO)
+--   q  exit review mode
+--
+-- When a buffer runs out of hunks in one direction, review mode moves to the
+-- next/previous changed file (`git diff --name-only HEAD`, sorted) and keeps
+-- going, so a whole multi-file changeset can be reviewed without manually
+-- reopening each file. NOTE: this only considers already-tracked files;
+-- brand new untracked files won't show up unless you `git add -N` them first.
+local review_mode = {} -- buf_id -> saved keymaps, to restore on exit
+local review_mode_toggle -- forward declaration (used by review_switch_file below)
+
+--- List files that differ from HEAD (staged + unstaged), as absolute paths.
+--- @return string[] files, string|nil root
+local function review_get_changed_files()
+    local dir = vim.fn.expand("%:p:h")
+    local root = vim.fn.system({ "git", "-C", dir, "rev-parse", "--show-toplevel" })
+    if vim.v.shell_error ~= 0 then
+        return {}, nil
+    end
+    root = vim.trim(root)
+    local out = vim.fn.system({ "git", "-C", root, "diff", "--name-only", "HEAD" })
+    if vim.v.shell_error ~= 0 then
+        return {}, root
+    end
+    local files = {}
+    for _, rel in ipairs(vim.split(out, "\n", { trimempty = true })) do
+        table.insert(files, vim.fs.normalize(root .. "/" .. rel))
+    end
+    table.sort(files)
+    return files, root
+end
+
+--- Block (without freezing the UI) until mini.diff has computed hunks for
+--- `buf`, or `timeout_ms` elapses. Needed because opening a new file and
+--- immediately jumping to its first hunk can otherwise race mini.diff's
+--- asynchronous diff computation (it shells out to git under the hood).
+local function review_wait_hunks(buf, timeout_ms)
+    vim.wait(timeout_ms or 1000, function()
+        local ok, data = pcall(MiniDiff.get_buf_data, buf)
+        return ok and data ~= nil and #data.hunks > 0
+    end, 20)
+end
+
+--- Turn review mode off in the current buffer, open `path`, enable mini.diff
+--- and wait for its hunks there, then turn review mode back on and jump to
+--- the first/last hunk depending on `goto_dir`.
+---
+--- IMPORTANT: MiniDiff.enable() + review_wait_hunks() must run BEFORE
+--- review_mode_toggle()'s "enter" branch, because that branch immediately
+--- calls MiniDiff.toggle_overlay()/goto_hunk() - which error if the buffer
+--- isn't enabled yet, and an error at this point can trigger a blocking
+--- message prompt (hangs headless nvim, e.g. under `git difftool`).
+local function review_switch_file(path, goto_dir)
+    if review_mode[vim.api.nvim_get_current_buf()] then
+        review_mode_toggle()
+    end
+    vim.cmd.edit(vim.fn.fnameescape(path))
+    local buf = vim.api.nvim_get_current_buf()
+    -- mini.diff normally enables itself on a scheduled BufEnter callback
+    -- (an extra event-loop tick); call it directly so review_wait_hunks
+    -- below doesn't have to also wait out that scheduling delay.
+    pcall(MiniDiff.enable, buf)
+    review_wait_hunks(buf, 1000)
+    review_mode_toggle()
+    vim.api.nvim_buf_call(buf, function() MiniDiff.goto_hunk(goto_dir) end)
+end
+
+--- Move to the next/previous hunk; if none remain in this buffer in that
+--- direction, hop to the next/previous changed file in the repo.
+--- @param direction "next"|"prev"
+local function review_advance(direction)
+    local before = vim.fn.line(".")
+    MiniDiff.goto_hunk(direction, { wrap = false })
+    if vim.fn.line(".") ~= before then
+        return -- moved within the current buffer, nothing more to do
+    end
+
+    local files, root = review_get_changed_files()
+    if not root or #files == 0 then
+        vim.notify("Review: no more hunks", vim.log.levels.INFO)
+        return
+    end
+
+    -- Normalize to forward slashes: git paths use "/" while fnamemodify(":p")
+    -- returns "\" on Windows, so a raw string comparison never matches there.
+    local cur = vim.fs.normalize(vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p"))
+    local idx
+    for i, f in ipairs(files) do
+        if f == cur then
+            idx = i
+            break
+        end
+    end
+
+    local target = idx and files[idx + (direction == "next" and 1 or -1)]
+    if not target then
+        local edge = direction == "next" and "last" or "first"
+        vim.notify("Review: reached the " .. edge .. " changed file", vim.log.levels.INFO)
+        return
+    end
+
+    review_switch_file(target, direction == "next" and "first" or "last")
+    vim.notify("Reviewing: " .. vim.fn.fnamemodify(target, ":."), vim.log.levels.INFO)
+end
+
+local function review_stage_and_next()
+    local line = vim.fn.line(".")
+    MiniDiff.do_hunks(0, "apply", { line_start = line, line_end = line })
+    review_advance("next")
+end
+
+local function review_skip_and_next()
+    review_advance("next")
+end
+
+local function review_prev()
+    review_advance("prev")
+end
+
+local function review_comment()
+    -- TODO: wire up to Azure DevOps (e.g. `az repos pr` CLI or REST API).
+    -- For now, just report which hunk/lines the comment would target.
+    local line = vim.fn.line(".")
+    vim.notify(("Comment on hunk at line %d - not implemented yet"):format(line), vim.log.levels.WARN)
+end
+
+review_mode_toggle = function()
+    local buf = vim.api.nvim_get_current_buf()
+    if review_mode[buf] then
+        -- Exit: restore whatever y/n/c/K/q did before
+        for _, saved in ipairs(review_mode[buf]) do
+            if saved.rhs then
+                vim.keymap.set(saved.mode, saved.lhs, saved.rhs, { buffer = buf })
+            else
+                pcall(vim.keymap.del, saved.mode, saved.lhs, { buffer = buf })
+            end
+        end
+        review_mode[buf] = nil
+        MiniDiff.toggle_overlay(buf)
+        vim.notify("Diff review mode: OFF", vim.log.levels.INFO)
+        return
+    end
+
+    -- Enter: remember prior mappings so we can restore them
+    local to_save = { "y", "n", "K", "c", "q" }
+    local saved = {}
+    for _, lhs in ipairs(to_save) do
+        local existing = vim.fn.maparg(lhs, "n", false, true)
+        table.insert(saved, {
+            mode = "n",
+            lhs = lhs,
+            rhs = existing.buffer == 1 and existing.rhs or nil,
+        })
+    end
+    review_mode[buf] = saved
+
+    local bmap = function(lhs, fn, desc)
+        vim.keymap.set("n", lhs, fn, { buffer = buf, desc = desc })
+    end
+    bmap("y", review_stage_and_next, "Review: stage hunk, next")
+    bmap("n", review_skip_and_next, "Review: skip hunk, next")
+    bmap("K", review_prev, "Review: previous hunk")
+    bmap("c", review_comment, "Review: comment on hunk (TODO)")
+    bmap("q", review_mode_toggle, "Review: exit review mode")
+
+    MiniDiff.toggle_overlay(buf)
+    MiniDiff.goto_hunk("first")
+    vim.notify("Diff review mode: ON (y=stage n=skip K=prev c=comment q=quit)", vim.log.levels.INFO)
+end
+
+map("n", "<leader>gR", review_mode_toggle, opts("Toggle diff review mode"))
