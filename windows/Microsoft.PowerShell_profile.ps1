@@ -211,6 +211,8 @@ function dd    { Set-Location 'C:\git\DicomDesigner' }
 function tt    { Set-Location 'C:\git\RayCare.TreatmentTool' }
 
 function w { Set-Location '~/OneDrive - RaySearch Laboratories AB/Marcus/10_Documents/05_wiki' }
+function tools { Set-Location '~\OneDrive - RaySearch Laboratories AB\Marcus\05_Tools' }
+function skills { Set-Location '~\.copilot\skills' }
 
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
