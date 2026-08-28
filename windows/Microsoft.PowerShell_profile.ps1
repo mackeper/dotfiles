@@ -211,6 +211,8 @@ function dd    { Set-Location 'C:\git\Designer' }
 function tt    { Set-Location 'C:\git\Product.Tool' }
 
 function w { Set-Location '~/OneDrive - Company/Marcus/10_Documents/05_wiki' }
+function tools { Set-Location '~\OneDrive - Company\Marcus\05_Tools' }
+function skills { Set-Location '~\.copilot\skills' }
 
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
