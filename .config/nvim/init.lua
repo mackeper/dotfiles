@@ -137,13 +137,183 @@ local function pick_tags_then_grep()
 end
 vim.keymap.set("n", "<leader>ft", pick_tags_then_grep, { desc = "Pick tag → grep" })
 
+local function pick_failed_tests()
+    local test_output_path = vim.fs.joinpath(vim.fn.stdpath("data"), "test-output.log")
+    if not vim.uv.fs_stat(test_output_path) then
+        vim.notify("Test output not found. Run testall first.", vim.log.levels.WARN)
+        return
+    end
+
+    local read_succeeded, lines = pcall(vim.fn.readfile, test_output_path)
+    if not read_succeeded then
+        vim.notify("Could not read test output: " .. test_output_path, vim.log.levels.ERROR)
+        return
+    end
+
+    local failed_tests = {}
+    local added = {}
+    for _, line in ipairs(lines) do
+        local test_name = line:match("^%s*[Ff][Aa][Ii][Ll][Ee][Dd]%s+(.+)%s+%([^)]*%)%s*$")
+        if test_name and not added[test_name] then
+            local name_without_arguments = test_name:gsub("%b()$", "")
+            local search_term = name_without_arguments:match("([%w_]+)$") or name_without_arguments
+            table.insert(failed_tests, {
+                text = test_name,
+                search_term = search_term,
+            })
+            added[test_name] = true
+        end
+    end
+
+    if #failed_tests == 0 then
+        vim.notify("No failed tests found in the latest testall output", vim.log.levels.INFO)
+        return
+    end
+
+    require("mini.pick").start({
+        source = {
+            items = failed_tests,
+            name = "Failed tests",
+            choose = function(test)
+                require("mini.pick").builtin.grep({ pattern = test.search_term })
+            end,
+        },
+    })
+end
+vim.keymap.set("n", "<leader>fT", pick_failed_tests, { desc = "Find failed test" })
+
+local function pick_recent_files()
+    local cwd = vim.fn.getcwd()
+    local cutoff = os.time() - (48 * 24 * 60 * 60)
+
+    local function git(args)
+        local command = { "git", "-C", cwd }
+        vim.list_extend(command, args)
+        local output = vim.fn.systemlist(command)
+        return vim.v.shell_error == 0 and output or nil
+    end
+
+    local root_output = git({ "rev-parse", "--show-toplevel" })
+    if not root_output then
+        vim.notify("Recent branch files requires a Git repository", vim.log.levels.ERROR)
+        return
+    end
+    local root = root_output[1]
+
+    local default_branch = git({ "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD" })
+    if not default_branch then
+        vim.notify("Could not determine the remote default branch", vim.log.levels.ERROR)
+        return
+    end
+
+    local merge_base = git({ "merge-base", "HEAD", default_branch[1] })
+    if not merge_base then
+        vim.notify("Could not determine the branch merge base", vim.log.levels.ERROR)
+        return
+    end
+
+    local uncommitted = git({ "diff", "--name-only", "--diff-filter=ACMR", "HEAD" }) or {}
+    vim.list_extend(uncommitted, git({ "ls-files", "--others", "--exclude-standard" }) or {})
+    local committed = git({
+        "log",
+        "--since=48 days ago",
+        "--name-only",
+        "--pretty=format:",
+        "--diff-filter=ACMR",
+        merge_base[1] .. "..HEAD",
+    }) or {}
+    local items = {}
+    local added = {}
+
+    local function add(path)
+        if path == "" or added[path] then
+            return
+        end
+        local absolute_path = vim.fs.joinpath(root, path)
+        local stat = vim.uv.fs_stat(absolute_path)
+        if stat then
+            local parent = vim.fs.dirname(absolute_path)
+            local display_path = table.concat({
+                vim.fs.basename(parent),
+                vim.fs.basename(absolute_path),
+            }, "/")
+            table.insert(items, {
+                path = absolute_path,
+                text = display_path,
+                mtime = stat.mtime.sec,
+            })
+            added[path] = true
+        end
+    end
+
+    table.sort(uncommitted, function(a, b)
+        local a_stat = vim.uv.fs_stat(vim.fs.joinpath(root, a))
+        local b_stat = vim.uv.fs_stat(vim.fs.joinpath(root, b))
+        return (a_stat and a_stat.mtime.sec or 0) > (b_stat and b_stat.mtime.sec or 0)
+    end)
+    for _, path in ipairs(uncommitted) do
+        local stat = vim.uv.fs_stat(vim.fs.joinpath(root, path))
+        if stat and stat.mtime.sec >= cutoff then
+            add(path)
+        end
+    end
+    for _, path in ipairs(committed) do
+        add(path)
+    end
+
+    require("mini.pick").start({
+        source = {
+            items = vim.list_slice(items, 1, 200),
+            name = "Recent branch files",
+            cwd = root,
+        },
+    })
+end
+vim.keymap.set("n", "<leader>fr", pick_recent_files, { desc = "Recent modified files" })
+
 -- AI
-map({ "n", "v" }, "<C-l>", "<cmd>CopilotChatToggle<cr>", opts())
-vim.keymap.set("i", "<M-l>", 'copilot#Accept("\\<CR>")', {
-    expr = true,
-    replace_keycodes = false,
-})
-vim.g.copilot_no_tab_map = true
+map("i", "<M-l>", vim.lsp.inline_completion.get, opts("Accept Copilot suggestion"))
+map("i", "<M-]>", vim.lsp.inline_completion.select, opts("Next Copilot suggestion"))
+
+local copilot_buffer = nil
+local function copilot_open()
+    local buf = copilot_buffer
+    if buf and vim.api.nvim_buf_is_valid(buf) and vim.fn.jobwait({ vim.bo[buf].channel }, 0)[1] == -1 then
+        vim.cmd("buffer " .. buf)
+        return vim.bo[buf].channel, false
+    end
+    vim.cmd("terminal copilot --continue")
+    copilot_buffer = vim.api.nvim_get_current_buf()
+    return vim.bo[copilot_buffer].channel, true
+end
+
+map({ "n", "t" }, "<C-l>", function()
+    if vim.api.nvim_get_current_buf() == copilot_buffer then
+        return vim.cmd("bprevious")
+    end
+    copilot_open()
+    vim.cmd("startinsert")
+end, opts("Toggle Copilot CLI"))
+
+-- chansend submits at every newline, so send a one-line @file reference instead of the text.
+map({ "n", "x" }, "<leader>ia", function()
+    local a, b = vim.fn.line("v"), vim.fn.line(".")
+    local ref = ("@%s lines %d-%d "):format(vim.fs.normalize(vim.fn.expand("%:.")), math.min(a, b), math.max(a, b))
+    vim.cmd("normal! \27")
+    local chan, started = copilot_open()
+    vim.defer_fn(function()
+        vim.fn.chansend(chan, ref)
+    end, started and 3000 or 0)
+    vim.cmd("startinsert")
+end, opts("Send @file lines to Copilot CLI"))
+
+map("x", "<leader>ip", function()
+    local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
+    vim.cmd("normal! \27")
+    copilot_open()
+    vim.api.nvim_put(lines, "c", false, true)
+    vim.cmd("startinsert")
+end, opts("Paste selection into Copilot CLI"))
 
 -- Git
 map("n", "<leader>gd", "<cmd>lua MiniDiff.toggle_overlay()<cr>", opts("Toggle git diff overlay"))
@@ -268,6 +438,16 @@ local function find_test_at_cursor()
     return nil, method_name
 end
 
+local function uses_testing_platform(dir)
+    local global_json = vim.fs.find("global.json", { path = dir, upward = true, type = "file" })[1]
+    if not global_json then
+        return false
+    end
+    local ok, config = pcall(vim.json.decode, table.concat(vim.fn.readfile(global_json), "\n"))
+    return ok and type(config) == "table" and type(config.test) == "table"
+        and config.test.runner == "Microsoft.Testing.Platform"
+end
+
 local function run_dotnet_test(filter)
     local source_dir = vim.fn.expand("%:p:h")
     local csproj = vim.fs.find(function(name)
@@ -293,7 +473,13 @@ local function run_dotnet_test(filter)
     })
 
     local test_filter = "FullyQualifiedName~" .. filter
-    local command = { "dotnet", "test", csproj, "--filter", test_filter, "--output", "detailed", "--progress", "off" }
+    local command = { "dotnet", "test", csproj, "--filter", test_filter }
+    -- --output and --no-progress are MTP-only; VSTest mode rejects them with MSB1001.
+    if uses_testing_platform(source_dir) then
+        vim.list_extend(command, { "--output", "detailed", "--no-progress" })
+    else
+        vim.list_extend(command, { "--logger", "console;verbosity=detailed" })
+    end
     vim.fn.jobstart(command, { cwd = vim.fs.dirname(csproj), term = true })
     vim.cmd("startinsert")
     map("n", "q", "<cmd>close<CR>", opts("Close test window", { buffer = buf }))
@@ -382,14 +568,113 @@ map("n", "<M-t>", function()
 end, opts("Toggle checkbox"))
 
 -- Markdown preview with pandoc (no extra dependencies)
+local pandoc_theme_header = [[
+<style>
+:root { --bg: #1e1e1e; --fg: #d4d4d4; --link: #4ea1ff; --mono: #2d2d2d; }
+:root[data-theme=light] { --bg: #ffffff; --fg: #1f2328; --link: #0969da; --mono: #eff1f3; }
+#theme-toggle {
+  position: fixed; top: 12px; right: 12px; padding: 4px 10px; cursor: pointer;
+  background: var(--mono); color: var(--fg); border: 1px solid var(--fg); border-radius: 6px;
+}
+:root[data-theme=light] div.sourceCode { color: #1f1c1b; background-color: #f6f8fa; }
+:root[data-theme=light] code span { color: #1f1c1b; }
+:root[data-theme=light] code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; }
+:root[data-theme=light] code span.an { color: #ca60ca; }
+:root[data-theme=light] code span.at { color: #0057ae; }
+:root[data-theme=light] code span.bn { color: #b08000; }
+:root[data-theme=light] code span.bu { color: #644a9b; font-weight: bold; }
+:root[data-theme=light] code span.cf { color: #1f1c1b; font-weight: bold; }
+:root[data-theme=light] code span.ch { color: #924c9d; }
+:root[data-theme=light] code span.cn { color: #aa5500; font-weight: normal; }
+:root[data-theme=light] code span.co { color: #898887; }
+:root[data-theme=light] code span.cv { color: #0095ff; }
+:root[data-theme=light] code span.do { color: #607880; }
+:root[data-theme=light] code span.dt { color: #0057ae; }
+:root[data-theme=light] code span.dv { color: #b08000; }
+:root[data-theme=light] code span.er { color: #bf0303; }
+:root[data-theme=light] code span.ex { color: #0095ff; }
+:root[data-theme=light] code span.fl { color: #b08000; }
+:root[data-theme=light] code span.fu { color: #644a9b; }
+:root[data-theme=light] code span.im { color: #ff5500; }
+:root[data-theme=light] code span.in { color: #b08000; }
+:root[data-theme=light] code span.kw { color: #1f1c1b; }
+:root[data-theme=light] code span.op { color: #1f1c1b; }
+:root[data-theme=light] code span.ot { color: #006e28; }
+:root[data-theme=light] code span.pp { color: #006e28; }
+:root[data-theme=light] code span.re { color: #0057ae; background-color: #e0e9f8; }
+:root[data-theme=light] code span.sc { color: #3daee9; }
+:root[data-theme=light] code span.ss { color: #ff5500; }
+:root[data-theme=light] code span.st { color: #bf0303; }
+:root[data-theme=light] code span.va { color: #0057ae; }
+:root[data-theme=light] code span.vs { color: #bf0303; }
+:root[data-theme=light] code span.wa { color: #bf0303; }
+</style>
+<script>
+document.documentElement.dataset.theme = localStorage.getItem("theme")
+  || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+</script>
+<style>pre.mermaid { background: transparent; text-align: center; }</style>
+<script type="module">
+const nodes = [...document.querySelectorAll("pre.mermaid")];
+if (nodes.length) {
+  const { default: mermaid } = await import("https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");
+  nodes.forEach((n) => (n.dataset.src = n.textContent));
+  window.renderMermaid = async () => {
+    const dark = document.documentElement.dataset.theme !== "light";
+    mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+    nodes.forEach((n) => {
+      n.removeAttribute("data-processed");
+      n.textContent = n.dataset.src;
+    });
+    await mermaid.run({ nodes });
+  };
+  renderMermaid();
+}
+</script>]]
+
+local pandoc_theme_button = [[
+<button id="theme-toggle" title="Toggle dark/light" onclick="
+  const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = t;
+  localStorage.setItem('theme', t);
+  window.renderMermaid?.();">&#9680;</button>]]
+
 map("n", "<leader>mp", function()
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     local tmp = os.tmpname() .. ".html"
+    local header = os.tmpname()
+    local button = os.tmpname()
+    vim.fn.writefile(vim.split(pandoc_theme_header, "\n"), header)
+    vim.fn.writefile(vim.split(pandoc_theme_button, "\n"), button)
+
+    local title = "pagetitle=" .. vim.fn.expand("%:t")
+    local cmd = { "pandoc", "-f", "markdown", "-t", "html", "-s", "--metadata", title, "--highlight-style=breezedark" }
+    vim.list_extend(cmd, { "-H", header, "-B", button })
+    local vars = {
+        "backgroundcolor=var(--bg)",
+        "fontcolor=var(--fg)",
+        "linkcolor=var(--link)",
+        "monobackgroundcolor=var(--mono)",
+        "mainfont=Segoe UI, sans-serif",
+        "monofont=Cascadia Code, Consolas, monospace",
+        "fontsize=16px",
+        "maxwidth=72em",
+        "margin-left=24px",
+        "margin-right=24px",
+        "margin-top=24px",
+        "margin-bottom=24px",
+    }
+    for _, var in ipairs(vars) do
+        vim.list_extend(cmd, { "-V", var })
+    end
+    vim.list_extend(cmd, { "-o", tmp })
 
     vim.system(
-        { "pandoc", "-f", "markdown", "-t", "html", "-o", tmp },
+        cmd,
         { stdin = table.concat(lines, "\n") },
         function(obj)
+            os.remove(header)
+            os.remove(button)
             if obj.code ~= 0 then
                 vim.schedule(function()
                     vim.notify("pandoc failed: " .. (obj.stderr or ""), vim.log.levels.ERROR)
@@ -397,9 +682,8 @@ map("n", "<leader>mp", function()
                 return
             end
 
-            local open_cmd = vim.fn.has("mac") == 1 and "open" or (vim.fn.has("win32") == 1 and "start" or "xdg-open")
             vim.schedule(function()
-                vim.fn.jobstart({ open_cmd, tmp }, { detach = true })
+                vim.ui.open(tmp)
                 vim.defer_fn(function()
                     vim.fn.delete(tmp)
                 end, 60000)
@@ -420,14 +704,11 @@ map("n", "<leader>;", "<cmd>silent! 5argument<cr>", opts("Harpoon 5"))
 --                   Plugins
 -- ================================================
 vim.pack.add({
-    "https://github.com/nvim-lua/plenary.nvim", -- Common library
     "https://github.com/nvim-mini/mini.nvim", -- Collection of plugins
     "https://github.com/neovim/nvim-lspconfig", -- Default LSP configurations
     "https://github.com/mason-org/mason.nvim", -- LSP/DAP/Linter/Formatter installer
     "https://github.com/mason-org/mason-lspconfig.nvim", -- Auto enable plugins installed by mason.nvim
     "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim", -- Auto install tools installed by mason.nvim
-    "https://github.com/github/copilot.vim", -- GitHub copilot :Copilot setup
-    "https://github.com/CopilotC-Nvim/CopilotChat.nvim", -- GitHub copilot chat :CopilotChat
 })
 vim.cmd.packadd("cfilter") -- filder quickfix list.
 vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
@@ -440,7 +721,52 @@ vim.api.nvim_create_user_command("VimPackList", function()
 end, { desc = "List plugins" })
 
 -- Mini - A collection of plugins
+-- Show long paths as ./<csproj dir>/./<file>. Display only, matching uses full path.
+local pick_proj_cache = {}
+local function shorten_pick_path(path, cwd)
+    if #path <= 60 then
+        return path
+    end
+    local abs = vim.fs.normalize(vim.fn.fnamemodify(vim.fs.joinpath(cwd, path), ":p"))
+    if vim.fn.filereadable(abs) == 0 then
+        abs = vim.fs.normalize(vim.fn.fnamemodify(path, ":p"))
+    end
+    local dir = vim.fs.dirname(abs)
+    if pick_proj_cache[dir] == nil then
+        pick_proj_cache[dir] = vim.fs.root(dir, function(name)
+            return name:match("%.csproj$") ~= nil
+        end) or false
+    end
+    local proj = pick_proj_cache[dir]
+    if not proj then
+        return path
+    end
+    local sep = proj == dir and "/" or "/./"
+    return "./" .. vim.fs.basename(proj) .. sep .. vim.fs.basename(abs)
+end
+
+local function pick_show(buf_id, items, query)
+    local opts = MiniPick.get_picker_opts() or {}
+    local cwd = (opts.source and opts.source.cwd) or vim.fn.getcwd()
+    local display = vim.tbl_map(function(item)
+        if type(item) ~= "string" then
+            return item
+        end
+        -- Keep real path so icon lookup still works
+        local path, rest = item:match("^([^%z]+)(%z.*)$")
+        path, rest = path or item, rest or ""
+        local short = shorten_pick_path(path, cwd)
+        if short == path then
+            return item
+        end
+        local real = vim.fn.isabsolutepath(path) == 1 and path or vim.fs.joinpath(cwd, path)
+        return { text = short .. rest, path = real }
+    end, items)
+    MiniPick.default_show(buf_id, display, query, { show_icons = true })
+end
+
 require("mini.pick").setup({
+    source = { show = pick_show },
     window = { config = { width = 100, height = 30 } },
     mappings = {
         choose_marked = "<C-q>", -- send marked to quickfix
@@ -520,6 +846,7 @@ miniclue.setup({
         { mode = "n", keys = "<Leader>e", desc = "+Explorer/Edit" },
         { mode = "n", keys = "<Leader>f", desc = "+Find" },
         { mode = "n", keys = "<Leader>g", desc = "+Git" },
+        { mode = { "n", "x" }, keys = "<Leader>i", desc = "+AI" },
         { mode = "n", keys = "<Leader>m", desc = "+Markdown" },
         { mode = "n", keys = "<Leader>q", desc = "+Quickfix" },
         { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
@@ -538,6 +865,7 @@ require("mason-tool-installer").setup({
     ensure_installed = {
         "bashls",
         "clangd",
+        "copilot-language-server", -- npm
         "lua-language-server",
         "powershell_es",
         "pylsp",
@@ -549,12 +877,57 @@ require("mason-tool-installer").setup({
     run_on_start = false,
 })
 
+-- Default roslyn_ls opens first sln alphabetically. Prefer sln named after repo, else prompt.
+vim.lsp.config("roslyn_ls", {
+    on_init = function(client)
+        local root_dir = client.config.root_dir
+        local slns = {}
+        for entry, type in vim.fs.dir(root_dir) do
+            if type == "file" and (entry:match("%.sln$") or entry:match("%.slnx$")) then
+                table.insert(slns, entry)
+            end
+        end
+        local function open(sln)
+            client:notify("solution/open", { solution = vim.uri_from_fname(vim.fs.joinpath(root_dir, sln)) })
+        end
+        if #slns == 0 then
+            local projects = {}
+            for entry, type in vim.fs.dir(root_dir) do
+                if type == "file" and entry:match("%.csproj$") then
+                    table.insert(projects, vim.uri_from_fname(vim.fs.joinpath(root_dir, entry)))
+                end
+            end
+            client:notify("project/open", { projects = projects })
+            return
+        end
+        if #slns == 1 then
+            return open(slns[1])
+        end
+        local git_root = vim.fs.root(root_dir, ".git") or root_dir
+        local repo = vim.fs.basename(git_root):lower()
+        for _, sln in ipairs(slns) do
+            if sln:lower():gsub("%.slnx?$", "") == repo then
+                return open(sln)
+            end
+        end
+        vim.ui.select(slns, { prompt = "Roslyn solution:" }, function(choice)
+            if choice then
+                open(choice)
+            end
+        end)
+    end,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
     callback = function()
         vim.lsp.enable("roslyn_ls")
+        vim.cmd.compiler("dotnet")
     end,
 })
+
+vim.lsp.enable("copilot")
+vim.lsp.inline_completion.enable()
 
 -- vim.api.nvim_create_autocmd("LspAttach", {
 --     callback = function(args)
