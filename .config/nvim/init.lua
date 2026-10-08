@@ -124,19 +124,22 @@ map(
 )
 map("n", "<leader>ff", "<cmd>Pick resume<cr>", opts("Resume last picker"))
 
+-- Used for wiki
 local function pick_tags_then_grep()
-    require('mini.pick').start({
+    local tags = vim.fn.systemlist({ "rg", "-oPIN", [[(?<!\S)#\w+]], "." })
+    require("mini.pick").start({
         source = {
-            items = vim.fn.systemlist([[rg -oPIN '(?<!\S)#\w+' . | sort -u]]) ,
+            items = vim.fn.uniq(vim.fn.sort(tags)),
             name = "Tags",
             choose = function(tag)
-                require('mini.pick').builtin.grep({ pattern = tag })
+                require("mini.pick").builtin.grep({ pattern = tag })
             end,
         },
     })
 end
 vim.keymap.set("n", "<leader>ft", pick_tags_then_grep, { desc = "Pick tag → grep" })
 
+-- C# dotnet test output to file via $PROFILE.
 local function pick_failed_tests()
     local test_output_path = vim.fs.joinpath(vim.fn.stdpath("data"), "test-output.log")
     if not vim.uv.fs_stat(test_output_path) then
@@ -183,91 +186,29 @@ end
 vim.keymap.set("n", "<leader>fT", pick_failed_tests, { desc = "Find failed test" })
 
 local function pick_recent_files()
-    local cwd = vim.fn.getcwd()
-    local cutoff = os.time() - (48 * 24 * 60 * 60)
-
-    local function git(args)
-        local command = { "git", "-C", cwd }
-        vim.list_extend(command, args)
-        local output = vim.fn.systemlist(command)
-        return vim.v.shell_error == 0 and output or nil
-    end
-
-    local root_output = git({ "rev-parse", "--show-toplevel" })
-    if not root_output then
-        vim.notify("Recent branch files requires a Git repository", vim.log.levels.ERROR)
+    local root = vim.fs.root(vim.fn.getcwd(), ".git")
+    local files = root
+        and vim.fn.systemlist({ "git", "-C", root, "diff", "--name-only", "--merge-base", "origin/HEAD" })
+    if not root or vim.v.shell_error ~= 0 then
+        vim.notify("Recent branch files requires a Git repository with origin/HEAD", vim.log.levels.ERROR)
         return
     end
-    local root = root_output[1]
+    vim.list_extend(files, vim.fn.systemlist({ "git", "-C", root, "ls-files", "--others", "--exclude-standard" }))
 
-    local default_branch = git({ "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD" })
-    if not default_branch then
-        vim.notify("Could not determine the remote default branch", vim.log.levels.ERROR)
-        return
-    end
-
-    local merge_base = git({ "merge-base", "HEAD", default_branch[1] })
-    if not merge_base then
-        vim.notify("Could not determine the branch merge base", vim.log.levels.ERROR)
-        return
-    end
-
-    local uncommitted = git({ "diff", "--name-only", "--diff-filter=ACMR", "HEAD" }) or {}
-    vim.list_extend(uncommitted, git({ "ls-files", "--others", "--exclude-standard" }) or {})
-    local committed = git({
-        "log",
-        "--since=48 days ago",
-        "--name-only",
-        "--pretty=format:",
-        "--diff-filter=ACMR",
-        merge_base[1] .. "..HEAD",
-    }) or {}
     local items = {}
-    local added = {}
-
-    local function add(path)
-        if path == "" or added[path] then
-            return
-        end
-        local absolute_path = vim.fs.joinpath(root, path)
-        local stat = vim.uv.fs_stat(absolute_path)
+    for _, file in ipairs(files) do
+        local path = vim.fs.joinpath(root, file)
+        local stat = vim.uv.fs_stat(path)
         if stat then
-            local parent = vim.fs.dirname(absolute_path)
-            local display_path = table.concat({
-                vim.fs.basename(parent),
-                vim.fs.basename(absolute_path),
-            }, "/")
-            table.insert(items, {
-                path = absolute_path,
-                text = display_path,
-                mtime = stat.mtime.sec,
-            })
-            added[path] = true
+            local text = vim.fs.basename(vim.fs.dirname(path)) .. "/" .. vim.fs.basename(path)
+            table.insert(items, { path = path, text = text, mtime = stat.mtime.sec })
         end
     end
-
-    table.sort(uncommitted, function(a, b)
-        local a_stat = vim.uv.fs_stat(vim.fs.joinpath(root, a))
-        local b_stat = vim.uv.fs_stat(vim.fs.joinpath(root, b))
-        return (a_stat and a_stat.mtime.sec or 0) > (b_stat and b_stat.mtime.sec or 0)
+    table.sort(items, function(a, b)
+        return a.mtime > b.mtime
     end)
-    for _, path in ipairs(uncommitted) do
-        local stat = vim.uv.fs_stat(vim.fs.joinpath(root, path))
-        if stat and stat.mtime.sec >= cutoff then
-            add(path)
-        end
-    end
-    for _, path in ipairs(committed) do
-        add(path)
-    end
 
-    require("mini.pick").start({
-        source = {
-            items = vim.list_slice(items, 1, 200),
-            name = "Recent branch files",
-            cwd = root,
-        },
-    })
+    require("mini.pick").start({ source = { items = items, name = "Recent branch files" } })
 end
 vim.keymap.set("n", "<leader>fr", pick_recent_files, { desc = "Recent modified files" })
 
@@ -310,8 +251,10 @@ end, opts("Send @file lines to Copilot CLI"))
 map("x", "<leader>ip", function()
     local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.mode() })
     vim.cmd("normal! \27")
-    copilot_open()
-    vim.api.nvim_put(lines, "c", false, true)
+    local _, started = copilot_open()
+    vim.defer_fn(function()
+        vim.api.nvim_put(lines, "c", false, true)
+    end, started and 3000 or 0)
     vim.cmd("startinsert")
 end, opts("Paste selection into Copilot CLI"))
 
@@ -323,7 +266,7 @@ map("n", "<leader>gc", "<cmd>Pick git_commits<cr>", opts("Git commits"))
 -- Git blame line, run again to copy hash
 local last_time, last_line = 0, 0
 map("n", "<leader>gb", function()
-    local now = vim.loop.now()
+    local now = vim.uv.now()
     local line = vim.fn.line(".")
     local o = vim.fn.systemlist({
         "git",
@@ -333,6 +276,9 @@ map("n", "<leader>gb", function()
         vim.fn.line(".") .. ",+1",
         vim.api.nvim_buf_get_name(0),
     })
+    if vim.v.shell_error ~= 0 then
+        return vim.notify(o[1] or "git blame failed", vim.log.levels.WARN)
+    end
     local h = o[1]:match("^(%w+)"):sub(1, 7)
     local a = vim.iter(o):find(function(x) return x:match("^author ") end):sub(8)
     local t = vim.iter(o):find(function(x) return x:match("^author%-time ") end):sub(13)
@@ -398,7 +344,11 @@ end, opts("Toggle terminal"))
 
 local lazygit_buffer = nil
 map({"n", "t"}, "<C-g>", function()
-    if lazygit_buffer and vim.api.nvim_buf_is_valid(lazygit_buffer) then
+    if
+        lazygit_buffer
+        and vim.api.nvim_buf_is_valid(lazygit_buffer)
+        and vim.fn.jobwait({ vim.bo[lazygit_buffer].channel }, 0)[1] == -1
+    then
         if vim.api.nvim_buf_get_name(0) == vim.api.nvim_buf_get_name(lazygit_buffer) then
             vim.cmd("bprevious")
         else
@@ -509,7 +459,7 @@ map("n", "<leader>cd", [[:let @+=expand("%:h")<CR>]], opts("Copy file directory 
 
 -- Pasting
 map("n", "<leader>p", function()
-    local text = vim.fn.getreg("+"):gsub("[ :]", "_")
+    local text = vim.trim(vim.fn.getreg("+")):gsub("[ :]", "_")
     vim.api.nvim_put({ text }, "c", true, true)
 end, opts("Paste replacing spaces with _"))
 
@@ -532,20 +482,24 @@ map("n", "<leader>qq", "<cmd>copen<CR>", opts("Open quickfix"))
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "qf",
     callback = function(e)
-        map("n", "q", "<cmd>cclose<CR>", opts("Close quickfix", { buffer = e.buf }))
+        local loclist = vim.fn.win_gettype() == "loclist"
+        map("n", "q", loclist and "<cmd>lclose<CR>" or "<cmd>cclose<CR>", opts("Close list", { buffer = e.buf }))
         map("n", "dd", function()
             local row = vim.fn.line(".")
-            local qf = vim.fn.getqflist()
-            table.remove(qf, row)
-            vim.fn.setqflist(qf, "r")
-            vim.cmd("copen")
-            local new_row = math.min(row, #qf)
+            local items = loclist and vim.fn.getloclist(0) or vim.fn.getqflist()
+            table.remove(items, row)
+            if loclist then
+                vim.fn.setloclist(0, items, "r")
+            else
+                vim.fn.setqflist(items, "r")
+            end
+            local new_row = math.min(row, #items)
             if new_row > 0 then
                 vim.schedule(function()
                     pcall(vim.api.nvim_win_set_cursor, 0, { new_row, 0 })
                 end)
             end
-        end, opts("Delete qf entry", { buffer = e.buf }))
+        end, opts("Delete list entry", { buffer = e.buf }))
     end,
 })
 
@@ -556,12 +510,10 @@ if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
     wiki = "C:\\git\\wiki"
 end
 map("n", "<leader>ww", "<cmd>edit " .. wiki .. "/index.md<CR>:lcd %:p:h<CR>", opts("Open wiki index"))
-map(
-    "n",
-    "<leader>wj",
-    "<cmd>edit " .. wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md<CR>:lcd %:p:h<CR>",
-    opts("Open wiki journal")
-)
+map("n", "<leader>wj", function()
+    vim.cmd.edit(vim.fn.fnameescape(wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md"))
+    vim.cmd("lcd %:p:h")
+end, opts("Open wiki journal"))
 map("n", "<leader>wc", "<cmd>edit " .. work_wiki .. "/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
 map("n", "<M-t>", function()
     vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
@@ -730,6 +682,9 @@ local function shorten_pick_path(path, cwd)
     local abs = vim.fs.normalize(vim.fn.fnamemodify(vim.fs.joinpath(cwd, path), ":p"))
     if vim.fn.filereadable(abs) == 0 then
         abs = vim.fs.normalize(vim.fn.fnamemodify(path, ":p"))
+        if vim.fn.filereadable(abs) == 0 then
+            return path
+        end
     end
     local dir = vim.fs.dirname(abs)
     if pick_proj_cache[dir] == nil then
@@ -965,6 +920,9 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Save session on exit
 vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
+        if vim.fn.argc() > 0 or vim.g.no_fancy_ui then
+            return
+        end
         MiniSessions.write(vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ".vim")
     end,
 })
@@ -1009,8 +967,8 @@ local function scrollbar_show()
     local scroll_pct = (top - 1) / (total - 1)
     local thumb_pct = math.max(0.05, math.min(1, (bot - top) / total))
 
-    local row = math.floor(scroll_pct * (height - 1))
     local bar_height = math.max(1, math.floor(thumb_pct * height))
+    local row = math.floor(scroll_pct * (height - bar_height))
 
     -- Create buffer if needed
     if not sb_buf or not vim.api.nvim_buf_is_valid(sb_buf) then
@@ -1022,11 +980,11 @@ local function scrollbar_show()
     local config = {
         relative = "win",
         win = win,
-        anchor = "SE",
+        anchor = "NE",
         width = 1,
         height = bar_height,
         row = row,
-        col = vim.o.columns - 1,
+        col = vim.api.nvim_win_get_width(win) - 1,
         style = "minimal",
         focusable = false,
         noautocmd = true,
@@ -1040,7 +998,7 @@ local function scrollbar_show()
     end
 
     -- Set content
-    vim.api.nvim_buf_set_lines(sb_buf, 0, -1, false, { "▌" })
+    vim.api.nvim_buf_set_lines(sb_buf, 0, -1, false, vim.fn["repeat"]({ "▌" }, bar_height))
 end
 
 vim.api.nvim_create_autocmd({ "WinScrolled", "BufEnter", "VimResized" }, {
@@ -1063,97 +1021,6 @@ vim.api.nvim_create_autocmd({ "WinScrolled", "BufEnter", "VimResized" }, {
 vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
     callback = scrollbar_hide,
 })
-
---- =============================================
----                ui2
---- =============================================
--- Experimental UI2: floating cmdline and messages
--- https://www.reddit.com/r/neovim/comments/1sfmgkb/comment/oeyrgua/?context=3
--- Skip the floating UI when launched as a git difftool/mergetool (see
--- git config difftool.nvimdifftool.cmd), otherwise nvim.difftool's :only call
--- fails with E5601 because only a floating window would remain. Keep this block
--- last in the file so this early return stays safe.
-if vim.g.no_fancy_ui then
-    return
-end
-vim.o.cmdheight = 1
-require("vim._core.ui2").enable({
-    enable = true,
-    msg = {
-        targets = {
-            [""] = "cmd",
-            empty = "cmd",
-            bufwrite = "msg",
-            confirm = "cmd",
-            emsg = "pager",
-            echo = "msg",
-            echomsg = "msg",
-            echoerr = "cmd",
-            completion = "cmd",
-            list_cmd = "pager",
-            lua_error = "pager",
-            lua_print = "msg",
-            progress = "pager",
-            rpc_error = "pager",
-            quickfix = "msg",
-            search_cmd = "cmd",
-            search_count = "cmd",
-            shell_cmd = "pager",
-            shell_err = "pager",
-            shell_out = "pager",
-            shell_ret = "msg",
-            undo = "msg",
-            verbose = "pager",
-            wildlist = "cmd",
-            wmsg = "msg",
-            typed_cmd = "cmd",
-        },
-        cmd = {
-            height = 0.5,
-        },
-        dialog = {
-            height = 0.5,
-        },
-        msg = {
-            height = 0.3,
-            timeout = 5000,
-        },
-        pager = {
-            height = 0.5,
-        },
-    },
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "msg",
-    callback = function()
-        local ui2 = require("vim._core.ui2")
-        local win = ui2.wins and ui2.wins.msg
-        if win and vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_set_option_value(
-                "winhighlight",
-                "Normal:NormalFloat,FloatBorder:FloatBorder",
-                { scope = "local", win = win }
-            )
-        end
-    end,
-})
-
-local ui2 = require("vim._core.ui2")
-local msgs = require("vim._core.ui2.messages")
-local orig_set_pos = msgs.set_pos
-msgs.set_pos = function(tgt)
-    orig_set_pos(tgt)
-    if (tgt == "msg" or tgt == nil) and vim.api.nvim_win_is_valid(ui2.wins.msg) then
-        pcall(vim.api.nvim_win_set_config, ui2.wins.msg, {
-            relative = "editor",
-            anchor = "NE",
-            row = 1,
-            col = vim.o.columns - 1,
-            border = "rounded",
-        })
-    end
-end
 
 -- ================================================
 --        Diff review mode (git add -p, but nvim)
@@ -1293,10 +1160,10 @@ review_mode_toggle = function()
     if review_mode[buf] then
         -- Exit: restore whatever y/n/c/K/q did before
         for _, saved in ipairs(review_mode[buf]) do
-            if saved.rhs then
-                vim.keymap.set(saved.mode, saved.lhs, saved.rhs, { buffer = buf })
+            if saved.buffer == 1 then
+                vim.fn.mapset("n", false, saved)
             else
-                pcall(vim.keymap.del, saved.mode, saved.lhs, { buffer = buf })
+                pcall(vim.keymap.del, "n", saved.lhs, { buffer = buf })
             end
         end
         review_mode[buf] = nil
@@ -1310,11 +1177,7 @@ review_mode_toggle = function()
     local saved = {}
     for _, lhs in ipairs(to_save) do
         local existing = vim.fn.maparg(lhs, "n", false, true)
-        table.insert(saved, {
-            mode = "n",
-            lhs = lhs,
-            rhs = existing.buffer == 1 and existing.rhs or nil,
-        })
+        table.insert(saved, existing.buffer == 1 and existing or { lhs = lhs })
     end
     review_mode[buf] = saved
 
@@ -1333,3 +1196,98 @@ review_mode_toggle = function()
 end
 
 map("n", "<leader>gR", review_mode_toggle, opts("Toggle diff review mode"))
+
+--- =============================================
+---                ui2
+--- =============================================
+-- Experimental UI2: floating cmdline and messages
+-- https://www.reddit.com/r/neovim/comments/1sfmgkb/comment/oeyrgua/?context=3
+-- Skip the floating UI when launched as a git difftool/mergetool (see
+-- git config difftool.nvimdifftool.cmd), otherwise nvim.difftool's :only call
+-- fails with E5601 because only a floating window would remain. Keep this block
+-- last in the file so this early return stays safe.
+if vim.g.no_fancy_ui then
+    return
+end
+vim.o.cmdheight = 1
+require("vim._core.ui2").enable({
+    enable = true,
+    msg = {
+        targets = {
+            [""] = "cmd",
+            empty = "cmd",
+            bufwrite = "msg",
+            confirm = "cmd",
+            emsg = "pager",
+            echo = "msg",
+            echomsg = "msg",
+            echoerr = "cmd",
+            completion = "cmd",
+            list_cmd = "pager",
+            lua_error = "pager",
+            lua_print = "msg",
+            progress = "pager",
+            rpc_error = "pager",
+            quickfix = "msg",
+            search_cmd = "cmd",
+            search_count = "cmd",
+            shell_cmd = "pager",
+            shell_err = "pager",
+            shell_out = "pager",
+            shell_ret = "msg",
+            undo = "msg",
+            verbose = "pager",
+            wildlist = "cmd",
+            wmsg = "msg",
+            typed_cmd = "cmd",
+        },
+        cmd = {
+            height = 0.5,
+        },
+        dialog = {
+            height = 0.5,
+        },
+        msg = {
+            height = 0.3,
+            timeout = 5000,
+        },
+        pager = {
+            height = 0.5,
+        },
+    },
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "msg",
+    callback = function()
+        local ui2 = require("vim._core.ui2")
+        local win = ui2.wins and ui2.wins.msg
+        if win and vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_set_option_value(
+                "winhighlight",
+                "Normal:NormalFloat,FloatBorder:FloatBorder",
+                { scope = "local", win = win }
+            )
+        end
+    end,
+})
+
+-- Private ui2 internals: patch only if they still look the same after a Neovim update.
+local ui2 = require("vim._core.ui2")
+local msgs_ok, msgs = pcall(require, "vim._core.ui2.messages")
+if msgs_ok and type(msgs.set_pos) == "function" then
+    local orig_set_pos = msgs.set_pos
+    msgs.set_pos = function(tgt)
+        orig_set_pos(tgt)
+        local win = ui2.wins and ui2.wins.msg
+        if (tgt == "msg" or tgt == nil) and win and vim.api.nvim_win_is_valid(win) then
+            pcall(vim.api.nvim_win_set_config, win, {
+                relative = "editor",
+                anchor = "NE",
+                row = 1,
+                col = vim.o.columns - 1,
+                border = "rounded",
+            })
+        end
+    end
+end

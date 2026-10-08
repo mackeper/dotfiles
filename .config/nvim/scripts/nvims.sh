@@ -14,5 +14,4 @@ function nvims() {
   else
     NVIM_APPNAME=$(basename $config_dir)/$config nvim $@
   fi
-  nvim $@
 }
