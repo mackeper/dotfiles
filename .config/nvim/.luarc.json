@@ -1,9 +1,9 @@
 {
     "diagnostics.globals": [
         "vim",
-        "Snacks",
-        "MiniIcons",
-        "MiniSnippets",
-        "MiniSessions"
+        "MiniFiles",
+        "MiniPick",
+        "MiniSessions",
+        "MiniSnippets"
     ]
 }

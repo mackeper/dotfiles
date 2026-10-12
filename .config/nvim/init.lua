@@ -59,8 +59,6 @@ vim.opt.fixendofline = false -- Don't automatically add newline at end of file
 -- Search
 vim.opt.ignorecase = true -- Ignore case in search patterns
 vim.opt.smartcase = true -- Override ignorecase if search pattern contains uppercase letters
-vim.opt.hlsearch = true -- Highlight search matches
-vim.opt.incsearch = true -- Show search matches as you type
 vim.opt.inccommand = "split" -- Show search substitution in split
 
 vim.opt.grepprg = "rg --vimgrep --smart-case"
@@ -73,21 +71,19 @@ vim.opt.expandtab = true -- Use spaces instead of tabs
 vim.opt.smartindent = true -- Smart autoindenting when starting a new line
 
 -- Command
-vim.opt.wildmenu = true -- Command line wild search
 vim.opt.wildmode = "longest:full,full"
 
 -- Completion (<C-x><C-o> omnifunc, <C-x><C-n> keywords, <C-x><C-f> file paths, <C-x><C-u> user defined)
 vim.opt.autocomplete = true -- Enable autocompletion
-vim.opt.complete = { ".,w,b,u,t,o" } -- Sources for completion
+vim.opt.complete:append("o") -- Default sources plus omnifunc
 vim.opt.completeopt = "fuzzy,noinsert,noselect,menu,menuone" -- how completion menu behaves
 vim.opt.pumheight = 10 -- Max height of the completion menu
-
 
 -- ================================================
 --                   Keymaps
 -- ================================================
 local function opts(desc, extra)
-    return vim.tbl_extend("force", { silent = true, noremap = true, desc = desc }, extra or {})
+    return vim.tbl_extend("force", { silent = true, desc = desc }, extra or {})
 end
 local map = vim.keymap.set
 
@@ -106,14 +102,17 @@ map(
 )
 
 -- Search
-map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts())
+map("n", "<Esc>", "<cmd>nohlsearch<CR>", opts("Clear search highlight"))
 map("n", "<C-t>", toggle_light_mode, opts("Toggle light theme"))
-map("n", "<leader>es", "<cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0), false)<cr>", opts("Open file explorer"))
-map("n", "<C-p>", "<cmd>Pick files<cr>", opts())
-map("n", "<C-f>", "<cmd>Pick grep_live<cr>", opts())
-map("n", "<C-b>", "<cmd>Pick buffers<cr>", opts())
+map("n", "<leader>es", function()
+    local path = vim.api.nvim_buf_get_name(0)
+    MiniFiles.open(vim.uv.fs_stat(path) and path or nil, false)
+end, opts("Open mini.files at current file"))
+map("n", "<C-p>", "<cmd>Pick files<cr>", opts("Find files"))
+map("n", "<C-f>", "<cmd>Pick grep_live<cr>", opts("Live grep"))
+map("n", "<C-b>", "<cmd>Pick buffers<cr>", opts("Find buffers"))
 map("n", "<leader>fg", "<cmd>Pick git_hunks<cr>", opts("Search git hunks"))
-map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts())
+map("n", "<M-r>", "<cmd>Pick visit_paths<cr>", opts("Recent visits"))
 map("n", "<leader>fh", "<cmd>Pick help<cr>", opts("Search help"))
 map("n", "<leader>fw", "<cmd>Pick grep pattern='<cword>'<cr>", opts("Grep word"))
 map(
@@ -137,7 +136,7 @@ local function pick_tags_then_grep()
         },
     })
 end
-vim.keymap.set("n", "<leader>ft", pick_tags_then_grep, { desc = "Pick tag → grep" })
+map("n", "<leader>ft", pick_tags_then_grep, opts("Pick tag → grep"))
 
 -- C# dotnet test output to file via $PROFILE.
 local function pick_failed_tests()
@@ -183,7 +182,7 @@ local function pick_failed_tests()
         },
     })
 end
-vim.keymap.set("n", "<leader>fT", pick_failed_tests, { desc = "Find failed test" })
+map("n", "<leader>fT", pick_failed_tests, opts("Find failed test"))
 
 local function pick_recent_files()
     local root = vim.fs.root(vim.fn.getcwd(), ".git")
@@ -210,31 +209,44 @@ local function pick_recent_files()
 
     require("mini.pick").start({ source = { items = items, name = "Recent branch files" } })
 end
-vim.keymap.set("n", "<leader>fr", pick_recent_files, { desc = "Recent modified files" })
+map("n", "<leader>fr", pick_recent_files, opts("Recent modified files"))
 
 -- AI
 map("i", "<M-l>", vim.lsp.inline_completion.get, opts("Accept Copilot suggestion"))
 map("i", "<M-]>", vim.lsp.inline_completion.select, opts("Next Copilot suggestion"))
 
-local copilot_buffer = nil
-local function copilot_open()
-    local buf = copilot_buffer
-    if buf and vim.api.nvim_buf_is_valid(buf) and vim.fn.jobwait({ vim.bo[buf].channel }, 0)[1] == -1 then
-        vim.cmd("buffer " .. buf)
-        return vim.bo[buf].channel, false
-    end
-    vim.cmd("terminal copilot --continue")
-    copilot_buffer = vim.api.nvim_get_current_buf()
-    return vim.bo[copilot_buffer].channel, true
+local terminals = {}
+
+local function terminal_running(buf)
+    return buf and vim.api.nvim_buf_is_valid(buf) and vim.fn.jobwait({ vim.bo[buf].channel }, 0)[1] == -1
 end
 
-map({ "n", "t" }, "<C-l>", function()
-    if vim.api.nvim_get_current_buf() == copilot_buffer then
-        return vim.cmd("bprevious")
+local function terminal_open(cmd)
+    local buf = terminals[cmd]
+    if terminal_running(buf) then
+        vim.cmd.buffer(buf)
+        return vim.bo[buf].channel, false
     end
-    copilot_open()
-    vim.cmd("startinsert")
-end, opts("Toggle Copilot CLI"))
+    vim.cmd("terminal " .. cmd)
+    terminals[cmd] = vim.api.nvim_get_current_buf()
+    return vim.bo.channel, true
+end
+
+local function terminal_toggle(cmd)
+    return function()
+        if vim.api.nvim_get_current_buf() == terminals[cmd] and terminal_running(terminals[cmd]) then
+            return vim.cmd(vim.fn.buflisted(vim.fn.bufnr("#")) == 1 and "buffer #" or "bprevious")
+        end
+        terminal_open(cmd)
+        vim.cmd.startinsert()
+    end
+end
+
+local function copilot_open()
+    return terminal_open("copilot --continue")
+end
+
+map({ "n", "t" }, "<C-l>", terminal_toggle("copilot --continue"), opts("Toggle Copilot CLI"))
 
 -- chansend submits at every newline, so send a one-line @file reference instead of the text.
 map({ "n", "x" }, "<leader>ia", function()
@@ -268,13 +280,17 @@ local last_time, last_line = 0, 0
 map("n", "<leader>gb", function()
     local now = vim.uv.now()
     local line = vim.fn.line(".")
+    local path = vim.uv.fs_realpath(vim.api.nvim_buf_get_name(0)) or vim.api.nvim_buf_get_name(0)
     local o = vim.fn.systemlist({
         "git",
+        "-C",
+        vim.fs.dirname(path),
         "blame",
         "--line-porcelain",
         "-L",
         vim.fn.line(".") .. ",+1",
-        vim.api.nvim_buf_get_name(0),
+        "--",
+        path,
     })
     if vim.v.shell_error ~= 0 then
         return vim.notify(o[1] or "git blame failed", vim.log.levels.WARN)
@@ -308,10 +324,14 @@ map("n", "<S-tab>", ":bprevious<CR>", opts("Previous buffer"))
 
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
-    callback = function()
-        local scope_pattern = [[\(public\|private\|protected\|class\|interface\|struct\|enum\)]]
-        map("n", "[[", "?^\\s*" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
-        map("n", "]]", "/^\\s*" .. scope_pattern .. "<CR>:nohl<CR>", { buffer = true })
+    callback = function(e)
+        local pattern = [[^\s*\(public\|private\|protected\|class\|interface\|struct\|enum\)]]
+        map("n", "[[", function()
+            vim.fn.search(pattern, "bs")
+        end, opts("Previous C# declaration", { buffer = e.buf }))
+        map("n", "]]", function()
+            vim.fn.search(pattern, "s")
+        end, opts("Next C# declaration", { buffer = e.buf }))
     end,
 })
 
@@ -326,41 +346,8 @@ map("t", "<C-Down>", "<C-\\><C-O><C-w>j<esc>", opts("Window down"))
 map("t", "<C-Up>", "<C-\\><C-O><C-w>k<esc>", opts("Window up"))
 map("t", "<C-Right>", "<C-\\><C-O><C-w>l<esc>", opts("Window right"))
 
-local term_buffer = nil
-map({"n", "t"}, "<C-s>", function()
-    if term_buffer and vim.api.nvim_buf_is_valid(term_buffer) then
-        if vim.api.nvim_buf_get_name(0) == vim.api.nvim_buf_get_name(term_buffer) then
-            vim.cmd("bprevious")
-        else
-            vim.cmd("buffer " .. term_buffer)
-            vim.cmd("startinsert")
-        end
-    else
-        vim.cmd("terminal")
-        vim.cmd("startinsert")
-        term_buffer = vim.api.nvim_get_current_buf()
-    end
-end, opts("Toggle terminal"))
-
-local lazygit_buffer = nil
-map({"n", "t"}, "<C-g>", function()
-    if
-        lazygit_buffer
-        and vim.api.nvim_buf_is_valid(lazygit_buffer)
-        and vim.fn.jobwait({ vim.bo[lazygit_buffer].channel }, 0)[1] == -1
-    then
-        if vim.api.nvim_buf_get_name(0) == vim.api.nvim_buf_get_name(lazygit_buffer) then
-            vim.cmd("bprevious")
-        else
-            vim.cmd("buffer " .. lazygit_buffer)
-            vim.cmd("startinsert")
-        end
-    else
-        vim.cmd("terminal lazygit")
-        vim.cmd("startinsert")
-        lazygit_buffer = vim.api.nvim_get_current_buf()
-    end
-end, opts("Toggle lazygit"))
+map({ "n", "t" }, "<C-s>", terminal_toggle(""), opts("Toggle terminal"))
+map({ "n", "t" }, "<C-g>", terminal_toggle("lazygit"), opts("Toggle lazygit"))
 
 local METHOD_MODIFIERS =
     { public = true, private = true, protected = true, internal = true, static = true, async = true }
@@ -394,7 +381,9 @@ local function uses_testing_platform(dir)
         return false
     end
     local ok, config = pcall(vim.json.decode, table.concat(vim.fn.readfile(global_json), "\n"))
-    return ok and type(config) == "table" and type(config.test) == "table"
+    return ok
+        and type(config) == "table"
+        and type(config.test) == "table"
         and config.test.runner == "Microsoft.Testing.Platform"
 end
 
@@ -408,6 +397,7 @@ local function run_dotnet_test(filter)
     end
 
     local buf = vim.api.nvim_create_buf(false, true)
+    vim.bo[buf].bufhidden = "wipe"
     local width = math.floor(vim.o.columns * 0.85)
     local height = math.floor(vim.o.lines * 0.85)
     vim.api.nvim_open_win(buf, true, {
@@ -506,7 +496,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- wiki
 local wiki = vim.fn.expand("~/git/wiki")
 local work_wiki = vim.fn.expand("~/OneDrive - Company/Marcus/10_Documents/05_wiki")
-if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+if vim.fn.has("win32") == 1 then
     wiki = "C:\\git\\wiki"
 end
 map("n", "<leader>ww", "<cmd>edit " .. wiki .. "/index.md<CR>:lcd %:p:h<CR>", opts("Open wiki index"))
@@ -516,7 +506,7 @@ map("n", "<leader>wj", function()
 end, opts("Open wiki journal"))
 map("n", "<leader>wc", "<cmd>edit " .. work_wiki .. "/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
 map("n", "<M-t>", function()
-    vim.cmd([[s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/]])
+    vim.cmd([[keeppatterns s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/e]])
 end, opts("Toggle checkbox"))
 
 -- Markdown preview with pandoc (no extra dependencies)
@@ -593,9 +583,9 @@ local pandoc_theme_button = [[
 
 map("n", "<leader>mp", function()
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-    local tmp = os.tmpname() .. ".html"
-    local header = os.tmpname()
-    local button = os.tmpname()
+    local tmp = vim.fn.tempname() .. ".html"
+    local header = vim.fn.tempname()
+    local button = vim.fn.tempname()
     vim.fn.writefile(vim.split(pandoc_theme_header, "\n"), header)
     vim.fn.writefile(vim.split(pandoc_theme_button, "\n"), button)
 
@@ -621,27 +611,17 @@ map("n", "<leader>mp", function()
     end
     vim.list_extend(cmd, { "-o", tmp })
 
-    vim.system(
-        cmd,
-        { stdin = table.concat(lines, "\n") },
-        function(obj)
-            os.remove(header)
-            os.remove(button)
-            if obj.code ~= 0 then
-                vim.schedule(function()
-                    vim.notify("pandoc failed: " .. (obj.stderr or ""), vim.log.levels.ERROR)
-                end)
-                return
-            end
-
+    vim.system(cmd, { stdin = table.concat(lines, "\n") }, function(obj)
+        if obj.code ~= 0 then
             vim.schedule(function()
-                vim.ui.open(tmp)
-                vim.defer_fn(function()
-                    vim.fn.delete(tmp)
-                end, 60000)
+                vim.notify("pandoc failed: " .. (obj.stderr or ""), vim.log.levels.ERROR)
             end)
+            return
         end
-    )
+        vim.schedule(function()
+            vim.ui.open(tmp)
+        end)
+    end)
 end, opts("Preview markdown with pandoc"))
 
 -- Harpoon -ish
@@ -664,7 +644,7 @@ vim.pack.add({
 })
 vim.cmd.packadd("cfilter") -- filder quickfix list.
 vim.cmd.packadd("nvim.undotree") -- UI to navigate undo tree.
-vim.cmd.packadd("nvim.difftool") -- not sure
+vim.cmd.packadd("nvim.difftool") -- :DiffTool, and `nvim -d a b` opens in the difftool layout
 
 vim.api.nvim_create_user_command("VimPackList", function()
     for _, value in ipairs(vim.pack.get()) do
@@ -701,8 +681,8 @@ local function shorten_pick_path(path, cwd)
 end
 
 local function pick_show(buf_id, items, query)
-    local opts = MiniPick.get_picker_opts() or {}
-    local cwd = (opts.source and opts.source.cwd) or vim.fn.getcwd()
+    local picker_opts = MiniPick.get_picker_opts() or {}
+    local cwd = (picker_opts.source and picker_opts.source.cwd) or vim.fn.getcwd()
     local display = vim.tbl_map(function(item)
         if type(item) ~= "string" then
             return item
@@ -884,30 +864,29 @@ vim.api.nvim_create_autocmd("FileType", {
 vim.lsp.enable("copilot")
 vim.lsp.inline_completion.enable()
 
--- vim.api.nvim_create_autocmd("LspAttach", {
---     callback = function(args)
---         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
---         if client:supports_method("textDocument/completion") then
---             vim.lsp.completion.enable(true, client.id, args.buf)
---         end
---     end,
--- })
-
 -- ================================================
 --                 Autocmds
 -- ================================================
 vim.api.nvim_create_autocmd("TextYankPost", {
     callback = function()
-        vim.highlight.on_yank({ timeout = 1000 })
+        vim.hl.on_yank({ timeout = 1000 })
     end,
 })
 
--- Restore cursor position when reopening files
-vim.opt.viewoptions = "folds,cursor" -- what gets saved in the session
-vim.api.nvim_create_autocmd("BufWinLeave", { command = "silent! mkview" })
-vim.api.nvim_create_autocmd("BufWinEnter", {
-    callback = function()
-        pcall(vim.cmd, "silent! loadview")
+-- Jump to the last cursor position, except in commit and rebase messages (:h restore-cursor).
+vim.api.nvim_create_autocmd("BufReadPre", {
+    callback = function(e)
+        vim.api.nvim_create_autocmd("FileType", {
+            buffer = e.buf,
+            once = true,
+            callback = function()
+                local line = vim.fn.line([['"]])
+                local skip = vim.bo.filetype:match("commit") or vim.bo.filetype == "gitrebase" or vim.wo.diff
+                if not skip and line >= 1 and line <= vim.fn.line("$") then
+                    vim.cmd([[normal! g`"]])
+                end
+            end,
+        })
     end,
 })
 
@@ -917,10 +896,11 @@ vim.api.nvim_create_autocmd("FileType", {
     command = "setlocal spell",
 })
 
--- Save session on exit
+-- Save session on exit. Checked at startup: <leader>a adds to the arglist later.
+local started_with_file = vim.fn.argc() > 0 and vim.fn.isdirectory(vim.fn.argv(0)) == 0
 vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
-        if vim.fn.argc() > 0 or vim.g.no_fancy_ui then
+        if started_with_file or vim.g.no_fancy_ui then
             return
         end
         MiniSessions.write(vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ".vim")
@@ -930,7 +910,11 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 -- ================================================
 --               Minimal Scrollbar
 -- ================================================
-vim.api.nvim_set_hl(0, "Scrollbar", { fg = "#6c7086", bg = "NONE" })
+local function scrollbar_hl()
+    vim.api.nvim_set_hl(0, "Scrollbar", { fg = "#6c7086", bg = "NONE" })
+end
+scrollbar_hl()
+vim.api.nvim_create_autocmd("ColorScheme", { callback = scrollbar_hl })
 
 local sb_win = nil
 local sb_buf = nil
@@ -941,7 +925,6 @@ local function scrollbar_hide()
         sb_win = nil
     end
 end
-
 
 local function scrollbar_show()
     if vim.g.no_fancy_ui then
@@ -964,7 +947,7 @@ local function scrollbar_show()
     local bot = info.botline
 
     -- Calculate scrollbar position
-    local scroll_pct = (top - 1) / (total - 1)
+    local scroll_pct = (top - 1) / math.max(1, total - (bot - top + 1))
     local thumb_pct = math.max(0.05, math.min(1, (bot - top) / total))
 
     local bar_height = math.max(1, math.floor(thumb_pct * height))
@@ -984,7 +967,7 @@ local function scrollbar_show()
         width = 1,
         height = bar_height,
         row = row,
-        col = vim.api.nvim_win_get_width(win) - 1,
+        col = vim.api.nvim_win_get_width(win),
         style = "minimal",
         focusable = false,
         noautocmd = true,
@@ -1001,7 +984,7 @@ local function scrollbar_show()
     vim.api.nvim_buf_set_lines(sb_buf, 0, -1, false, vim.fn["repeat"]({ "▌" }, bar_height))
 end
 
-vim.api.nvim_create_autocmd({ "WinScrolled", "BufEnter", "VimResized" }, {
+vim.api.nvim_create_autocmd({ "WinScrolled", "WinEnter", "BufEnter", "VimResized" }, {
     callback = function()
         local win = vim.fn.win_getid()
         local info = vim.fn.getwininfo(win)[1]
@@ -1023,179 +1006,112 @@ vim.api.nvim_create_autocmd({ "WinLeave", "BufWinLeave" }, {
 })
 
 -- ================================================
---        Diff review mode (git add -p, but nvim)
+--                     Review
 -- ================================================
--- Toggle with <leader>gR. While active, in the buffer under review:
---   y  stage hunk under cursor (git add -p "yes") and jump to next hunk
---   n  leave hunk unstaged (git add -p "no") and jump to next hunk
---   K  jump to previous hunk
---   c  comment on this hunk (stub - Azure DevOps integration TODO)
---   q  exit review mode
---
--- When a buffer runs out of hunks in one direction, review mode moves to the
--- next/previous changed file (`git diff --name-only HEAD`, sorted) and keeps
--- going, so a whole multi-file changeset can be reviewed without manually
--- reopening each file. NOTE: this only considers already-tracked files;
--- brand new untracked files won't show up unless you `git add -N` them first.
-local review_mode = {} -- buf_id -> saved keymaps, to restore on exit
-local review_mode_toggle -- forward declaration (used by review_switch_file below)
-
---- List files that differ from HEAD (staged + unstaged), as absolute paths.
---- @return string[] files, string|nil root
-local function review_get_changed_files()
-    local dir = vim.fn.expand("%:p:h")
-    local root = vim.fn.system({ "git", "-C", dir, "rev-parse", "--show-toplevel" })
+-- <leader>gR: unstaged hunks and untracked files to quickfix. Move with ]q/[q, stage with ghgh.
+-- <leader>gm: comment on the line or selection, appended to .git/review-comments.md. gF on a heading jumps back.
+local function git_repo(path)
+    local real = vim.uv.fs_realpath(path) or path
+    local dir = vim.fn.isdirectory(real) == 1 and real or vim.fs.dirname(real)
+    local out = vim.fn.systemlist({
+        "git",
+        "-C",
+        dir,
+        "rev-parse",
+        "--show-toplevel",
+        "--absolute-git-dir",
+        "--abbrev-ref",
+        "HEAD",
+    })
     if vim.v.shell_error ~= 0 then
-        return {}, nil
+        return nil
     end
-    root = vim.trim(root)
-    local out = vim.fn.system({ "git", "-C", root, "diff", "--name-only", "HEAD" })
-    if vim.v.shell_error ~= 0 then
-        return {}, root
-    end
-    local files = {}
-    for _, rel in ipairs(vim.split(out, "\n", { trimempty = true })) do
-        table.insert(files, vim.fs.normalize(root .. "/" .. rel))
-    end
-    table.sort(files)
-    return files, root
+    return {
+        root = vim.fs.normalize(out[1]),
+        gitdir = vim.fs.normalize(out[2]),
+        branch = out[3],
+        file = vim.fs.normalize(real),
+    }
 end
 
---- Block (without freezing the UI) until mini.diff has computed hunks for
---- `buf`, or `timeout_ms` elapses. Needed because opening a new file and
---- immediately jumping to its first hunk can otherwise race mini.diff's
---- asynchronous diff computation (it shells out to git under the hood).
-local function review_wait_hunks(buf, timeout_ms)
-    vim.wait(timeout_ms or 1000, function()
-        local ok, data = pcall(MiniDiff.get_buf_data, buf)
-        return ok and data ~= nil and #data.hunks > 0
-    end, 20)
-end
-
---- Turn review mode off in the current buffer, open `path`, enable mini.diff
---- and wait for its hunks there, then turn review mode back on and jump to
---- the first/last hunk depending on `goto_dir`.
----
---- IMPORTANT: MiniDiff.enable() + review_wait_hunks() must run BEFORE
---- review_mode_toggle()'s "enter" branch, because that branch immediately
---- calls MiniDiff.toggle_overlay()/goto_hunk() - which error if the buffer
---- isn't enabled yet, and an error at this point can trigger a blocking
---- message prompt (hangs headless nvim, e.g. under `git difftool`).
-local function review_switch_file(path, goto_dir)
-    if review_mode[vim.api.nvim_get_current_buf()] then
-        review_mode_toggle()
+local function review_hunks()
+    local repo = git_repo(vim.fn.getcwd())
+    if not repo then
+        return vim.notify("Review needs a git repository", vim.log.levels.WARN)
     end
-    vim.cmd.edit(vim.fn.fnameescape(path))
-    local buf = vim.api.nvim_get_current_buf()
-    -- mini.diff normally enables itself on a scheduled BufEnter callback
-    -- (an extra event-loop tick); call it directly so review_wait_hunks
-    -- below doesn't have to also wait out that scheduling delay.
-    pcall(MiniDiff.enable, buf)
-    review_wait_hunks(buf, 1000)
-    review_mode_toggle()
-    vim.api.nvim_buf_call(buf, function() MiniDiff.goto_hunk(goto_dir) end)
-end
-
---- Move to the next/previous hunk; if none remain in this buffer in that
---- direction, hop to the next/previous changed file in the repo.
---- @param direction "next"|"prev"
-local function review_advance(direction)
-    local before = vim.fn.line(".")
-    MiniDiff.goto_hunk(direction, { wrap = false })
-    if vim.fn.line(".") ~= before then
-        return -- moved within the current buffer, nothing more to do
+    local function git(...)
+        return vim.fn.systemlist({ "git", "-c", "core.quotePath=false", "-C", repo.root, ... })
     end
-
-    local files, root = review_get_changed_files()
-    if not root or #files == 0 then
-        vim.notify("Review: no more hunks", vim.log.levels.INFO)
-        return
-    end
-
-    -- Normalize to forward slashes: git paths use "/" while fnamemodify(":p")
-    -- returns "\" on Windows, so a raw string comparison never matches there.
-    local cur = vim.fs.normalize(vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p"))
-    local idx
-    for i, f in ipairs(files) do
-        if f == cur then
-            idx = i
-            break
+    local items, file, header = {}, nil, false
+    for _, line in ipairs(git("diff", "-U0", "--no-color", "--no-ext-diff")) do
+        if vim.startswith(line, "diff --git ") then
+            header, file = true, nil
+        elseif header and vim.startswith(line, "+++ ") then
+            file = line:match("^%+%+%+ b/(.-)\t?$")
+        elseif vim.startswith(line, "@@ ") then
+            header = false
+            local lnum = file and tonumber(line:match("^@@ %-[%d,]+ %+(%d+)"))
+            if lnum then
+                local item = { filename = vim.fs.joinpath(repo.root, file), lnum = math.max(lnum, 1), text = line }
+                table.insert(items, item)
+            end
         end
     end
-
-    local target = idx and files[idx + (direction == "next" and 1 or -1)]
-    if not target then
-        local edge = direction == "next" and "last" or "first"
-        vim.notify("Review: reached the " .. edge .. " changed file", vim.log.levels.INFO)
-        return
+    for _, path in ipairs(git("ls-files", "--others", "--exclude-standard")) do
+        table.insert(items, { filename = vim.fs.joinpath(repo.root, path), lnum = 1, text = "untracked file" })
     end
-
-    review_switch_file(target, direction == "next" and "first" or "last")
-    vim.notify("Reviewing: " .. vim.fn.fnamemodify(target, ":."), vim.log.levels.INFO)
-end
-
-local function review_stage_and_next()
-    local line = vim.fn.line(".")
-    MiniDiff.do_hunks(0, "apply", { line_start = line, line_end = line })
-    review_advance("next")
-end
-
-local function review_skip_and_next()
-    review_advance("next")
-end
-
-local function review_prev()
-    review_advance("prev")
+    if #items == 0 then
+        return vim.notify("Review: no unstaged changes", vim.log.levels.INFO)
+    end
+    vim.fn.setqflist({}, " ", { title = "Review: unstaged changes", items = items })
+    vim.cmd.cfirst()
 end
 
 local function review_comment()
-    -- TODO: wire up to Azure DevOps (e.g. `az repos pr` CLI or REST API).
-    -- For now, just report which hunk/lines the comment would target.
-    local line = vim.fn.line(".")
-    vim.notify(("Comment on hunk at line %d - not implemented yet"):format(line), vim.log.levels.WARN)
-end
-
-review_mode_toggle = function()
-    local buf = vim.api.nvim_get_current_buf()
-    if review_mode[buf] then
-        -- Exit: restore whatever y/n/c/K/q did before
-        for _, saved in ipairs(review_mode[buf]) do
-            if saved.buffer == 1 then
-                vim.fn.mapset("n", false, saved)
-            else
-                pcall(vim.keymap.del, "n", saved.lhs, { buffer = buf })
-            end
+    local first, last = vim.fn.line("v"), vim.fn.line(".")
+    first, last = math.min(first, last), math.max(first, last)
+    vim.cmd("normal! \27")
+    local repo = git_repo(vim.api.nvim_buf_get_name(0))
+    if not repo or vim.fn.filereadable(repo.file) == 0 then
+        return vim.notify("Review comments need a file in a git repository", vim.log.levels.WARN)
+    end
+    local where = ("%s:%d"):format(vim.fs.relpath(repo.root, repo.file) or repo.file, first)
+    if last > first then
+        where = where .. "-" .. last
+    end
+    local code = vim.api.nvim_buf_get_lines(0, first - 1, last, false)
+    local lang = vim.bo.filetype
+    vim.ui.input({ prompt = "Comment on " .. where .. ": " }, function(text)
+        if not text or vim.trim(text) == "" then
+            return
         end
-        review_mode[buf] = nil
-        MiniDiff.toggle_overlay(buf)
-        vim.notify("Diff review mode: OFF", vim.log.levels.INFO)
-        return
-    end
-
-    -- Enter: remember prior mappings so we can restore them
-    local to_save = { "y", "n", "K", "c", "q" }
-    local saved = {}
-    for _, lhs in ipairs(to_save) do
-        local existing = vim.fn.maparg(lhs, "n", false, true)
-        table.insert(saved, existing.buffer == 1 and existing or { lhs = lhs })
-    end
-    review_mode[buf] = saved
-
-    local bmap = function(lhs, fn, desc)
-        vim.keymap.set("n", lhs, fn, { buffer = buf, desc = desc })
-    end
-    bmap("y", review_stage_and_next, "Review: stage hunk, next")
-    bmap("n", review_skip_and_next, "Review: skip hunk, next")
-    bmap("K", review_prev, "Review: previous hunk")
-    bmap("c", review_comment, "Review: comment on hunk (TODO)")
-    bmap("q", review_mode_toggle, "Review: exit review mode")
-
-    MiniDiff.toggle_overlay(buf)
-    MiniDiff.goto_hunk("first")
-    vim.notify("Diff review mode: ON (y=stage n=skip K=prev c=comment q=quit)", vim.log.levels.INFO)
+        local path = vim.fs.joinpath(repo.gitdir, "review-comments.md")
+        local lines = {}
+        if not vim.uv.fs_stat(path) then
+            lines = { ("# Review: %s (%s)"):format(vim.fs.basename(repo.root), repo.branch), "" }
+        end
+        local fence = table.concat(code, "\n"):find("```", 1, true) and "````" or "```"
+        vim.list_extend(lines, { "## " .. where, "", fence .. lang })
+        vim.list_extend(lines, code)
+        vim.list_extend(lines, { fence, "", text, "" })
+        vim.fn.writefile(lines, path, "a")
+        vim.notify("Comment added to " .. path)
+    end)
 end
 
-map("n", "<leader>gR", review_mode_toggle, opts("Toggle diff review mode"))
+local function review_open_comments()
+    local name = vim.api.nvim_buf_get_name(0)
+    local repo = git_repo(vim.uv.fs_stat(name) and name or vim.fn.getcwd())
+    if not repo then
+        return vim.notify("Review comments need a git repository", vim.log.levels.WARN)
+    end
+    vim.cmd.split(vim.fn.fnameescape(vim.fs.joinpath(repo.gitdir, "review-comments.md")))
+    vim.opt_local.path:prepend(repo.root)
+end
+
+map("n", "<leader>gR", review_hunks, opts("Review unstaged hunks in quickfix"))
+map({ "n", "x" }, "<leader>gm", review_comment, opts("Add review comment"))
+map("n", "<leader>go", review_open_comments, opts("Open review comments"))
 
 --- =============================================
 ---                ui2
@@ -1209,51 +1125,30 @@ map("n", "<leader>gR", review_mode_toggle, opts("Toggle diff review mode"))
 if vim.g.no_fancy_ui then
     return
 end
-vim.o.cmdheight = 1
 require("vim._core.ui2").enable({
-    enable = true,
     msg = {
         targets = {
-            [""] = "cmd",
-            empty = "cmd",
+            typed_cmd = "cmd", -- Trigger, checked before kinds: typed commands answer in the cmdline
             bufwrite = "msg",
-            confirm = "cmd",
-            emsg = "pager",
             echo = "msg",
             echomsg = "msg",
-            echoerr = "cmd",
-            completion = "cmd",
+            lua_print = "msg",
+            quickfix = "msg",
+            shell_ret = "msg",
+            undo = "msg",
+            wmsg = "msg",
+            emsg = "pager",
             list_cmd = "pager",
             lua_error = "pager",
-            lua_print = "msg",
             progress = "pager",
             rpc_error = "pager",
-            quickfix = "msg",
-            search_cmd = "cmd",
-            search_count = "cmd",
             shell_cmd = "pager",
             shell_err = "pager",
             shell_out = "pager",
-            shell_ret = "msg",
-            undo = "msg",
             verbose = "pager",
-            wildlist = "cmd",
-            wmsg = "msg",
-            typed_cmd = "cmd",
         },
-        cmd = {
-            height = 0.5,
-        },
-        dialog = {
-            height = 0.5,
-        },
-        msg = {
-            height = 0.3,
-            timeout = 5000,
-        },
-        pager = {
-            height = 0.5,
-        },
+        msg = { height = 0.3, timeout = 5000 },
+        pager = { height = 0.5 },
     },
 })
 
