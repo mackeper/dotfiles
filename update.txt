@@ -1,0 +1,433 @@
+
+# Update ───────────────────────────────────────────────────────────────────────
+
+## mini.nvim
+Path:            C:/Users/user/AppData/Local/nvim-data/site/pack/core/opt/mini.nvim
+Source:          https://github.com/nvim-mini/mini.nvim
+Revision before: 6a8aab4b07c6caa1d0643c1c9dccd5b2d5f5e094
+Revision after:  0513ad9ada655a07af321c129b69dafaf9e63d80 (main)
+
+Pending updates:
+> 0513ad9 │ fix(hues): autoadjust behind `vim.schedule`
+> 84cc6f3 │ feat(hues): align highlight groups with 0.13 changes
+> d69d607 │ fix(hues): highlight `DiagnosticUnnecessary` with grey underline
+> fa90373 │ test(pick): adjust "`default_choose()` for directory path" approaches
+> 422759d │ test(bracketed): improve testing of opening a `diagnostic` float
+> 8be16f7 │ fix(ALL): make custom buffers 'nomodifiable' where it might be needed
+> 6f0cd50 │ fix(pick): make `default_{choose,preview}` fully support `~/...` paths
+> 2ce54c4 │ fix(bracketed): ensure that user's `diagnostic` config is respected
+> f91be3e │ refactor(bracketed): update `diagnostic` to not use deprecated methods
+> 65d615e │ fix(ALL): ensure custom buffers are modifiable if needed
+> fea052d │ refactor(extra): universally use `set_buflines()` helper
+> 50f51d3 │ fix(extra): update `manpages` picker to preserve `$HOME`
+> ba4362b │ test(cmdline): add more tests for mappings that enter Command-line mode
+> d370f7b │ fix(cmdline): track command line level immediately and using `v:event`
+> adb0b01 │ fix(hues): stop 'echasnovski/mini.nvim' integration fallback support
+> 33c7cc0 │ fix(base16): stop 'echasnovski/mini.nvim' integration fallback support
+> db75dd4 │ fix(surround): prepare to drop `use_nvim_treesitter` option
+> 436b4fd │ fix(ai): prepare to drop `use_nvim_treesitter` option
+> c0a9015 │ fix(ALL)!: remove compatibility code for outdated features
+> 4a7fa93 │ test(clue): remove outdated check conditions
+> 36f501e │ test(ALL): fix tests for Visual mode highlighting after Nightly changes
+> 561751e │ fix(icons): update `mock_nvim_web_devicons` to respect global `default`
+> ed76caa │ docs(completion): add 'complete' option value recommendation
+> 40a7552 │ refactor(surround): simplify internal cache and options handling
+> 92fb7b4 │ fix(basics): apply `<C-c>` mapping only if not manually created before
+> 81ed10e │ refactor(ai): inline default options computation in `find_textobject`
+> c79e75a │ feat(ai)!: use mode based default reference region in `find_textobject`
+> 6de7da3 │ fix(ai): update `select_textobject()` to change mode only if needed
+> 3585ff3 │ refactor(ai): simplify `select_textobject` code
+> 4389a4f │ fix(input): treat `|` and `\` as not special chars after Nightly changes
+> ac5dffc │ fix(files): use explicit `priority` for highlighting extmarks
+> bf51cf2 │ fix(jump2d): set higher extmark priority to ensure visible effects
+> 6664ea9 │ test(statuscolumn): ignore fold+sign columns when testing cursor sep hl
+> 6d5b9cf │ ci: improve `scripts/gendoc.lua`
+> a3440a3 │ fix(git): update `setup()` to resolve `config.job.git_executable` path
+> 25f25d3 │ fix(ALL): always use `default=true` when creating default hl groups
+> 4623463 │ refactor(jump2d): use common approach for creating default hl groups
+> 27b17ae │ feat(test): infer default highlighting from `Diagnostic{Error,Ok}`
+> 455856f │ fix(pick): stop and error if could not spawn user-supplied CLI process
+> c53d384 │ fix(ai): update `tag` textobject to allow whitespace before `>`
+> c7f2347 │ feat(basics): add `<C-c>` basic mapping for "Stop, clear, redraw"
+> ee23d71 │ fix(clue): stop creating custom mappings for macro replaying keys
+> 76dc752 │ test(ALL): adjust tests to emulate dot-repeat as a separate key
+> 9d01f39 │ ci: use Neovim=0.12.5 as a current stable release
+> 3218b04 │ docs(sessions): update `restart()` with more precise documentation
+> 23f77ff │ fix(sessions): update `restart()` to use `:restart!` on Neovim>=0.12.5
+> 6e0c942 │ docs(statuscolumn): fix several typos
+> a311ed2 │ test(jump2d): react to Nightly improving stuffed keys handling
+> fb2bbae │ docs(statuscolumn): add clarifications, update demo
+> 1098976 │ feat(hues): add 'mini.statuscolumn' explicit highlight groups
+> 1c42f45 │ feat(base16): add 'mini.statuscolumn' explicit highlight groups
+> cf10e4f │ feat(statuscolumn): add NEW MODULE
+> 0caecdd │ fix(pick): update `grep_live` to preserve source name in custom actions
+> eec0461 │ feat(hues): improve support for quickfix/location lists
+> ab4dac0 │ feat(base16): improve support for quickfix/location lists
+> 8d86a05 │ fix(test): make `run()` go through reporter if zero case is supplied
+> e58ad4b │ test(ALL): adjust tests for Visual mode dot-repeat after Nightly changes
+> 9bf3e93 │ fix(operators): make it work after Nightly refactor of C code
+> f66a0ef │ test(completion): react to Nightly changing highlight without `hl_eol`
+> ae0b619 │ test(visits): reduce number of side effects when testing with temp index
+> 2da6302 │ test(pick): make testing with different working directory more robust
+> 629bf67 │ fix(sessions): ensure to not block session-related Neovim events
+> 3e47ec3 │ test(ALL): react to Nightly adding the `bcd` command
+> de5e3d6 │ test(ALL): hide ruler for more robust screenshot tests
+> 9d26462 │ fix(files): do not open default explorer during diff mode
+> 5d4545a │ fix(files): ensure to open default explorer only for the current buffer
+> 8cef235 │ fix(hues): make `@lsp.mod.defaultLibrary` same as other "builtin" groups
+> bcb4b26 │ docs(doc): update default config in README to match source
+> 8bf5c57 │ docs(files): improve "Toggle explorer" example
+> 9011096 │ feat(diff)!: allow `set_ref_text()` to set truly empty reference text
+> 09aeacb │ fix(diff): highlight buffer lines one by one during overlay
+> 946ae64 │ test(extra): make `git_hunks()` preview not use tree-sitter on Nightly
+> aba7878 │ fix(pairs): make it work on lines with null byte character
+> a35f08f │ fix(files): ensure that file-preview includes the first column
+> 9459d7f │ fix(surround): update `find()` to add previous position to jumplist
+> 99fb78f │ test(surround): add test for opening enough folds in `find()`
+> 05a80b0 │ fix(diff): persist overlay status for hidden buffers
+> fc5c716 │ fix(files): respect new default explorer on Neovim>=0.13
+> c80f85c │ ci: make `gendoc` pre-commit commit work in more cases
+> db41c40 │ test(ALL): make common `validate_edit[1d]` helpers global test helpers
+> a7527b3 │ test(ALL): unify buffer name validation helpers
+> 4171fba │ ci: improve `gendoc`+`lintdoc` custom pre-commit-hook
+> b9916a6 │ fix(surround): use `{}` as default `config.custom_surroundings`
+> c809270 │ fix(ai): use `{}` as default `config.custom_textobjects`
+> f28b029 │ fix(git): respect variable prefix indent when completing options
+> fdc8b97 │ test(ALL): move common `forward_lua` helper to test helper
+> ce995f4 │ fix(snippets): improve performance of `parse()`
+> c55558e │ refactor(ai): simplify internal of computing textobject specification
+> 4459fa3 │ fix(surround): more carefully compute surrounding info
+> 2b2e02a │ fix(base16): drop outdated tree-sitter highlight groups
+> e356341 │ fix(hues): drop outdated tree-sitter highlight groups
+> 928971c │ feat(ALL)!: stop support of Neovim 0.9
+> d74190c │ fix(files): correctly compute LSP hooks URI for `C://` paths on Windows
+> b92e03b │ refactor(files): use custom `uri_to_fname` helper
+> 347927d │ fix(files): improve handling of directory rename/delete in LSP hooks
+> c5cdbad │ test(files): temporarily skip Neovim>=0.13 tests for default explorer
+> 9eb812b │ ci: implement custom Git hook scripts
+> a361821 │ ci: add automated spell checking
+> 48b214f │ test(ALL): fix various typos and abbreviations
+> dc8a991 │ ci: fix documentation generation automation
+> f73ec14 │ fix(files): ensure current win is within explorer after closing any win
+> a12fe93 │ fix(input): update `default_complete` 'cmdline' method to respect case
+> dfef946 │ fix(sessions): use `:restart!` on Nightly
+> b3fb9b6 │ fix(splitjoin): update to work if pre-hooks return no positions
+> 7c2caf0 │ refactor(basics): use alphabetical order of `win_borders` fillchars
+> 6531069 │ fix(ai): make empty span cover nothing
+> 1599a47 │ test(clue): make command-line window test more robust
+> e73ff5f │ fix(jump2d): do not override user's `<CR>` buffer mappings in qf+cmdwin
+> 930a131 │ test(ALL): react to Nightly adding filetype `directory`
+> c248713 │ test(ALL): use unified helper for reloading module inside child process
+> 56133a9 │ fix(ALL): prefer universally using `--stylua: ignore`
+> c594be5 │ test(snippets): test pressing `<C-n>`/`<C-p>` after jumping
+> 7ac922c │ fix(files): ensure `BufWinEnter` after `:edit <dir>`
+> 62b5186 │ fix(clue): react to Nightly changes to `keytrans()`
+> 418ff92 │ ci: remove redundant '.styluaignore' file
+> 512a92c │ docs: move 'benchmarks/' directory to `nvim-mini-assets` repo
+> 1518124 │ ci: stop CI testing on MacOS
+> b97bb11 │ ci: add documentation generation linting
+> 1fc618f │ docs: use development version
+> 1345d19 │ docs: bump version to 0.18.0 (tag: v0.18.0)
+> c7bf815 │ docs: prepare for 0.18.0 release
+> 64e77a7 │ docs(notify): fix typo after bulk adjusting documentation
+> fe1aa97 │ docs: update 'CHANGELOG.md' with version release dates
+> ecb05c5 │ docs(ALL): improve consistency of help files
+> bf8169f │ docs(ALL): fix many automatically detected typos
+> 6f3b194 │ ci: use Neovim=0.12.3 as a current stable release
+> 7ed410c │ docs(ALL): unify notes about how to use some modules in other plugins
+> ce33fdd │ docs(diff): prefer using `|vim.text.diff()|` in docs
+> a59a9b7 │ fix(icons): update `get()` to work when cwd is removed from disk
+> 4236dfa │ docs(icons): fix various typos
+> de21389 │ fix(ALL): preserve metatables when creating custom copies
+> ff8b358 │ docs(input): fix various typos
+> 4823e80 │ fix(extra): update `lsp` picker to highlight symbols after position data
+> 13e47c6 │ fix(extra): update `lsp` picker to preserve order for queried scopes
+> 34a2198 │ fix(jump): respect forced Operator-pending mode
+> ecb8ac6 │ fix(indentscope): respect forced Operator-pending mode in textobject
+> d5e6f5b │ docs: mention 45+ modules in the README
+> 39f852e │ docs(input): add notes about how to use 'mini.input' in other plugins
+> 204c97e │ fix(input): do not fall back to original handler for non-streaming paste
+> 15aa6de │ feat(pick): allow non-streaming paste from system clipboard
+> 5c7a796 │ fix(pick): forward the error which occurred when waiting for user input
+> b2ac652 │ fix(ALL): always treat <C-c> from the user as "cancel"
+> cbae4fa │ feat(ALL): prefer using `MiniInput.get()` if available
+> 85a840c │ feat(hues): add 'mini.input' explicit highlight groups
+> 7c77b83 │ feat(base16): add 'mini.input' explicit highlight groups
+> 065cd70 │ feat(input): add NEW MODULE
+> 11afe78 │ fix(files): ensure `reveal_cwd` also works when `/` is `cwd`
+> 232ceeb │ feat(visits): use `vim.ui.input` to ask user for not supplied label
+> a2a1d1d │ docs(cmdline): fix typos in README
+> 8b63dc6 │ feat(surround): check children treesitter languages after parents
+> 65ab682 │ feat(ai): check children treesitter languages after parents
+> 9d0b9b7 │ fix(extra): explicitly use standard ignore rules in `picker.git_files`
+> 86e8121 │ docs(extra): fix example description of `pickers.git_files`
+> cd8a30f │ fix(files): trigger window events after explorer is fully refreshed
+> 15abccb │ fix(pick): return early in `start()` when in command line window
+> bc97234 │ fix(misc): make `log_add()` work with non-copyable userdata
+> 2a8e1f6 │ fix(test): make `reference_screenshot` work with double width characters
+> 4465783 │ test(keymap): react to Nightly changes regarding autoindent
+> a405061 │ fix(surround): update `treesitter()` to find strictly nested inner range
+> 6791615 │ fix(basics): use vim.hl.hl_op() on Neovim>=0.13 instead of on_yank
+> 379c35c │ feat(pick): add pattern matching method for `grep` and `grep_live`
+> ee7b060 │ docs(ai): document workarounds for `al` / `il` conflicts on Neovim>=0.13
+> e92fea2 │ feat(extra): update `gen_ai_spec.line()` with `[count]` support
+> 264b5c8 │ docs(ALL): add tags for module speicific highlight groups
+> 95fdea5 │ test(pick): react to Nightly improving `bufdelete` from floating windows
+
+## nvim-lspconfig
+Path:            C:/Users/user/AppData/Local/nvim-data/site/pack/core/opt/nvim-lspconfig
+Source:          https://github.com/neovim/nvim-lspconfig
+Revision before: 246572944c2a1e2a646c2e7609ff619b0fe74c18
+Revision after:  c59fc922f718fa055f69f5f3bc888f23211571eb (master)
+
+Pending updates:
+> c59fc922 │ docs: update generated annotations skip-checks: true
+> 2312548a │ docs: update configs.md skip-checks: true
+> 813bd0bb │ fix(clice): add commands, sync with upstream #4547
+> db68de35 │ docs: update generated annotations skip-checks: true
+> 85d01e83 │ fix(types): add `tombi.` prefix #4546
+> 33497f49 │ docs: update generated annotations skip-checks: true
+> fccd839f │ feat(types): tombi schema #4545
+> 910f0c4d │ Merge #4544 from neovim/fixmisc
+> 577212eb │ regen
+> 3561cff9 │ fix(gen): annotate $ref defs once, sanitize schema strings
+> 5c6eecf8 │ docs: update generated annotations skip-checks: true
+> 0f9e596d │ build(gen): type annotations for emmylua_ls #4534
+> 3e8d598d │ docs: update configs.md skip-checks: true
+> e65e0c0e │ docs: update generated annotations skip-checks: true
+> eb6f01c8 │ feat: autocorrect #4542
+> a9bb4d5f │ docs: update generated annotations skip-checks: true
+> e3d4e3f2 │ docs: update configs.md skip-checks: true
+> 22ab578c │ fix(harper_ls): add jjdescription to filetypes #4540
+> 046b1a79 │ docs: update generated annotations skip-checks: true
+> 5f00f4bd │ docs: update configs.md skip-checks: true
+> 4d363f93 │ feat: armls #4515 (tag: v2.12.0)
+> ffd261c0 │ docs: update generated annotations skip-checks: true
+> 53d627f9 │ docs: update configs.md skip-checks: true
+> 36ce9508 │ feat: sysml_lsp #4538
+> 98e5981d │ docs: update configs.md skip-checks: true
+> 9745bbfa │ feat(docker_language_server): docker-bake language id #4536
+> b410cbfb │ docs: update configs.md skip-checks: true
+> c907f7b1 │ fix(mojo): root_markers 'pixi.toml', 'pixi.lock' #4535
+> ee402e22 │ docs: update generated annotations skip-checks: true
+> 7b593774 │ docs: update configs.md skip-checks: true
+> 7fd00431 │ fix(powershell_es): server command path #4532
+> ac9d2f7c │ docs: update generated annotations skip-checks: true
+> 2760d0d0 │ docs: update configs.md skip-checks: true
+> d840d583 │ feat: jetls #4529
+> 84b6b6c3 │ docs: update configs.md skip-checks: true
+> 1d9f94f5 │ feat: laravel_lsp #4496
+> 19576de1 │ docs: update configs.md skip-checks: true
+> 8ae966b5 │ fix(phpantom_lsp): blade filetype #4528
+> da1aff03 │ fix(powershell_es): incorrect script path in command #4527
+> d6c6b810 │ docs: update configs.md skip-checks: true
+> e0b05335 │ fix(robotcode): drop non-existent resource filetype (#4526)
+> 456f8cc9 │ refactor: move legacy-only code below version check #4523
+> 615d7b27 │ perf: defer requiring util until legacy branch #4521
+> 56fc7616 │ docs: update generated annotations skip-checks: true
+> 585eb6d4 │ docs: update configs.md skip-checks: true
+> b451a740 │ doc(ts)ls): installation instructions #4517
+> 84252f98 │ docs: update generated annotations skip-checks: true
+> 80f9d5ce │ docs: update configs.md skip-checks: true
+> a92e1eca │ feat(clice): clice #4522
+> 85e732c6 │ docs: workspace_required typo
+> ee1e3691 │ fix(util): undefined variable #4520
+> bbe6b383 │ fix(util): use vim.uv for fs_stat #4519
+> 16286347 │ docs: update generated annotations skip-checks: true
+> 38048904 │ docs: update configs.md skip-checks: true
+> 9bfb752d │ fix(esbonio): use version 2 CLI #4516
+> 684cb45c │ docs: update generated annotations skip-checks: true
+> 126f786f │ docs: update configs.md skip-checks: true
+> 9ccfa745 │ fix(powershell_es): validate shell, no profile #4513
+> 3928e638 │ docs: update configs.md skip-checks: true
+> a48a4580 │ fix(ast_grep): attach to shell buffers #4514
+> af9adce4 │ docs: update configs.md skip-checks: true
+> d950d91e │ fix(rust_analyzer): show non-error msg if rustc/cargo are missing #4500
+> 10e9995a │ docs: update configs.md skip-checks: true
+> 6e2807a4 │ feat: rust_glancer #4512
+> 31e3c02a │ docs: update configs.md skip-checks: true
+> 7f5fb590 │ feat: ms_terraform_lsp #4510
+> 221c4388 │ docs: update generated annotations skip-checks: true
+> 6f1858ae │ docs: update configs.md skip-checks: true
+> 62c718f5 │ fix(ols): skip config if missing "odin" command #4511
+> bff1bd61 │ docs: update configs.md skip-checks: true
+> fa98da40 │ fix(oxc): allow oxfmt and oxlint to run in single-file mode #4509
+> a00eb57d │ docs: update configs.md skip-checks: true
+> bf4d8351 │ feat: php_lsp #4489
+> c8a582ab │ docs: update configs.md skip-checks: true
+> 8b3e82ec │ fix(slang-server): use nearest dir with any marker as a workspace root #4508
+> 0662886b │ docs: update configs.md skip-checks: true
+> 60dd4da6 │ feat: symfony_lsp #4507
+> 6fc04197 │ docs: update configs.md skip-checks: true
+> 3fc5c454 │ fix(tsc): skip binaries that do not support --lsp #4505
+> 450ce420 │ docs: update configs.md skip-checks: true
+> 444a373a │ fix(vhdl_ls): drop .vhdl_ls.toml root marker #4506
+> fbaef615 │ docs: update generated annotations skip-checks: true
+> 83069b81 │ docs: update configs.md skip-checks: true
+> bcf945ab │ feat(tsc): enable CodeLens #4501
+> 51dbf535 │ docs: update generated annotations skip-checks: true
+> 310ac8b2 │ docs: update configs.md skip-checks: true
+> 24519eaa │ fix(julials): fix the default setup #4499
+> d2011e1d │ docs: update configs.md skip-checks: true
+> 033492ba │ feat: tsc #4493
+> 47657ffa │ docs: update configs.md skip-checks: true
+> 222a2ed4 │ fix(verible): add verible.filelist as root marker #4498
+> 4267d26e │ docs: update configs.md skip-checks: true
+> 43284832 │ feat: pkl #4495
+> c98cc837 │ docs: update generated annotations skip-checks: true
+> 4c12f981 │ docs: update configs.md skip-checks: true
+> 34fbcfa1 │ fix(vhdl_ls): require workspace #4494
+> 43ed3797 │ docs: update configs.md skip-checks: true
+> e9d0e577 │ fix(ols): reuse existing client when opening libraries #4491
+> 1c0d8f70 │ docs: update generated annotations skip-checks: true
+> e19728f0 │ docs: update configs.md skip-checks: true
+> 4dd307d6 │ docs(emmylua_ls): remove irrelevant issue link #4490
+> 9ae2b3b6 │ docs: update generated annotations skip-checks: true
+> 1d6a03a0 │ docs: update configs.md skip-checks: true
+> 4305b8c8 │ feat(oxfmt): enable for svelte #4488
+> b7b92094 │ docs: update generated annotations skip-checks: true
+> abaa374c │ fix(roslyn_ls): iter() expects a table #4487
+> 7ab79bb1 │ docs: update generated annotations skip-checks: true
+> 9badedba │ docs: update configs.md skip-checks: true
+> 4d8876bc │ docs(astro): TypeScript 7.x limitation, npm-global fallback (#4486)
+> d592c1e6 │ docs: update generated annotations skip-checks: true
+> 826c48e0 │ docs: update configs.md skip-checks: true
+> e5327b70 │ docs(astro): update language-tools URLs #4485
+> 15e2aa26 │ docs: update generated annotations skip-checks: true
+> 44878405 │ docs: update configs.md skip-checks: true
+> 30c775c3 │ feat: agentscript #4483
+> b89138d9 │ docs: update configs.md skip-checks: true (tag: v2.11.0)
+> b187583b │ refactor!: drop `lsp/rls.lua` #4481
+> 98b0b8a5 │ fix(ast_grep): stop reuse_client from spawning duplicate lsp client #4480
+> 7f87dbb4 │ docs: update generated annotations skip-checks: true
+> 9c3bcf42 │ fix(eslint): convert workspaceFolder.uri to a proper URI #4479
+> e7ca2c95 │ docs: update generated annotations skip-checks: true
+> abe6f511 │ docs: update configs.md skip-checks: true
+> b861f91e │ feat(pyright): disable tagged hints by default #4478
+> b386c50c │ docs: update generated annotations skip-checks: true
+> ef2dc5ef │ docs: update configs.md skip-checks: true
+> 3db5dd35 │ docs(docker-language-server): typo #4477
+> d5b6e3db │ docs: update configs.md skip-checks: true
+> 6f355f9d │ fix(roslyn_ls): update diagnostics on project/solution initialization #4474
+> 2c227d59 │ docs: update generated annotations skip-checks: true
+> 1e2b55a6 │ docs: update configs.md skip-checks: true
+> c591b17d │ feat: terragrunt-ls #4473
+> 5955a100 │ docs: update configs.md skip-checks: true
+> c69dfaef │ feat: pytest-language-server #4472
+> 6dffe69d │ docs: update configs.md skip-checks: true
+> 179c44dc │ feat: wolfram_lsp #4471
+> 1b261ff9 │ docs: update configs.md skip-checks: true
+> aa8da460 │ docs: qmlls6 #4470
+> d6ac7a0d │ docs: update generated annotations skip-checks: true
+> 144734ef │ docs: update configs.md skip-checks: true
+> 087d3606 │ feat: kdl_lsp #4468
+> d224a192 │ docs: update generated annotations skip-checks: true
+> b28e0c2f │ docs: update configs.md skip-checks: true
+> caca08c8 │ docs(angularls): update link to angularls #4466
+> 292f4440 │ docs: update generated annotations skip-checks: true
+> 544700ad │ docs: update configs.md skip-checks: true
+> d9794a48 │ fix(ruff_lsp): deprecate `ruff_lsp` in favour of `ruff` #4463
+> dd1c9b80 │ docs: update generated annotations skip-checks: true
+> 7a7f905f │ docs: update configs.md skip-checks: true
+> 4c2883c1 │ fix(svelte): support svelteserver installed in node_modules #4462
+> 3371bf29 │ docs: update configs.md skip-checks: true
+> 2d265672 │ Enable clangd lsp for c.doxygen / cpp.doxygen #4459
+> bfcc0171 │ docs: update configs.md skip-checks: true
+> 65a775d6 │ fix(hhvm): run server in project root #4456
+> fef8b117 │ docs: update configs.md skip-checks: true
+> 3d0f9acf │ added µcad lsp #4454
+> 68b41349 │ docs: update generated annotations skip-checks: true
+> 94e94a6e │ ci: bump actions/checkout from 6 to 7 #4455
+> 96f363ce │ docs: update generated annotations skip-checks: true
+> 249faacd │ docs: update configs.md skip-checks: true
+> c2cf6ed3 │ feat(terraformls): enable codelens #4453
+> a683e0dd │ docs: update configs.md skip-checks: true
+> 562b190c │ feat: fallow lsp #4450
+> 6a76cc40 │ docs: update generated annotations skip-checks: true
+> 89b870b1 │ docs: update configs.md skip-checks: true
+> fa5f6cda │ docs: update link to opencl_ls documentation #4451
+> ed19590a │ docs: update generated annotations skip-checks: true
+> 79c34c66 │ docs: update configs.md skip-checks: true
+> 04834420 │ fix(gitlab_duo): update npm registry command for GitLab LSP #4449
+> 229b7905 │ docs: update configs.md skip-checks: true (tag: v2.10.0)
+> be7b24e5 │ fix(emmylua_ls): move settings under emmylua section #4447
+> 07dff35e │ docs: update configs.md skip-checks: true
+> 1ac72fe6 │ feat: cqlls #4444
+> cbaa55ae │ docs: update generated annotations skip-checks: true
+> 114b1458 │ docs: update configs.md skip-checks: true
+> e7380ece │ feat(gopls): semantic tokens enabled by default on client side (#4446)
+> 9573948c │ feat(oxlint): check if tsgolint bin exists inside project #4437
+> 55ff5f49 │ docs: update configs.md skip-checks: true
+> 175ea674 │ feat(jls): add jls config #4439
+> e3cb6f1d │ docs: update configs.md skip-checks: true
+> f0564c60 │ fix(rescript): default parameters do not enable incrementalTypechecking #4440
+> 5aa24e96 │ docs: update generated annotations skip-checks: true
+> 695fa76a │ fix(flow): resolve project-local binary before npx fallback #4431
+> 6f76a3ee │ docs: update generated annotations skip-checks: true
+> 8f256446 │ docs: update configs.md skip-checks: true
+> 3a9e75e6 │ feat: slang-server #4441
+> a4ed4e76 │ docs: update configs.md skip-checks: true
+> 3f89b128 │ docs(roslyn_ls): dotnet tool install instructions #4435
+> 818330fd │ docs: update configs.md skip-checks: true
+> de5e39eb │ fix(roslyn_ls): drop unnecessary code, recommend maintained plugin #4436
+> dfbada1a │ fix(oxc): fix oxlint, oxfmt vite plus config search #4434
+> deb0df61 │ docs: update generated annotations skip-checks: true
+> 2633c398 │ fix(ruby-lsp): broken `reuse_client` logic #4433
+
+## mason.nvim
+Path:            C:/Users/user/AppData/Local/nvim-data/site/pack/core/opt/mason.nvim
+Source:          https://github.com/mason-org/mason.nvim
+Revision before: cbf8d285e1462dd24acf3507817be2bbcb035919
+Revision after:  2a6940af80375532e5e9e7c1f2fc6319a1b7a69d (main)
+
+Pending updates:
+> 2a6940a │ chore(main): release 2.3.1 (#2099) (tag: v2.3.1, tag: stable)
+> 6b0ee36 │ ci: update actions (#2104)
+> 9051e6b │ ci: add nvim v0.12.2, v0.12.3 to test matrix (#2103)
+> 3f24b4a │ chore(ui): remove link to non-existent link (#2091)
+> 16ba83b │ fix(nuget): also support .cmd shims on Windows (#2102)
+> 93e99ea │ refactor(fs): use fs.ls in readdir implementation, prefer fs_stat over fs_fstat (#2101)
+> 6daa747 │ refactor(fs): implement mkdirp natively via libuv (#2100)
+> 8838e7a │ fix(fs): implement rmrf natively via libuv (#2098)
+> bb639d4 │ chore(main): release 2.3.0 (#2072) (tag: v2.3.0)
+> 24e77d5 │ feat: add support for socket.dev firewall client (#2088)
+
+## mason-lspconfig.nvim
+Path:            C:/Users/user/AppData/Local/nvim-data/site/pack/core/opt/mason-lspconfig.nvim
+Source:          https://github.com/mason-org/mason-lspconfig.nvim
+Revision before: 7b01e2974a47d489bb92f47a41e4c0088ea8f86e
+Revision after:  e17625cdc8c2650787467398e02c5d63a2cde966 (main)
+
+Pending updates:
+> e17625c │ chore: update generated code (#704)
+> b329899 │ chore: update generated code (#702)
+> 137bd0f │ chore: update generated code (#701)
+> 49b16d6 │ chore: update generated code (#700)
+> 77e06f7 │ chore: update generated code (#699)
+> 0c5d026 │ chore: update generated code (#698)
+> b5576cd │ chore: update generated code (#697)
+> 5d32a9b │ chore: update generated code (#696)
+> 40276c4 │ chore: update generated code (#693)
+> 1b62147 │ chore: update generated code (#692)
+> 24d4ab0 │ chore: update generated code (#691)
+> 9d28935 │ chore: update generated code (#690)
+> 67029cc │ chore: update generated code (#688)
+> 7adc933 │ chore: update generated code (#687)
+> 916c29e │ chore: update generated code (#686)
+> a4068c3 │ chore: update generated code (#685)
+> 47059d7 │ chore: update generated code (#684)
+> 50bf387 │ chore: update generated code (#683)
+> 21c5b3e │ chore: update generated code (#682)
+> 906c32c │ ci: add nvim v0.12.3 to test matrix (#681)
+> a567126 │ chore(main): release 2.3.0 (#680) (tag: v2.3.0, tag: stable)
+> 0b278d7 │ feat: add mapping Vespa Language Server (#676)
+> 2f8e8bb │ fix(julials): ensure Julia environment is set before julia-lsp is run (#674)
+> 8d3cc8b │ chore(ci): downgrade release-please-action to v3 (#679)
+> 0a69575 │ chore: update generated code (#677)
+
+# Same ─────────────────────────────────────────────────────────────────────────
+
+## mason-tool-installer.nvim
+Path:     C:/Users/user/AppData/Local/nvim-data/site/pack/core/opt/mason-tool-installer.nvim
+Source:   https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim
+Revision: 443f1ef8b5e6bf47045cb2217b6f748a223cf7dc (main)

@@ -38,6 +38,17 @@ local function apply_theme(theme)
         vim.cmd.colorscheme("catppuccin")
         vim.api.nvim_set_hl(0, "Normal", { bg = "none" }) -- Transparent background
         vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+        local heading_colors = {
+            { "#f38ba8", "#493446" },
+            { "#fab387", "#4a3c40" },
+            { "#f9e2af", "#4a4548" },
+            { "#a6e3a1", "#394545" },
+            { "#74c7ec", "#2f4054" },
+            { "#b4befe", "#3c3e58" },
+        }
+        for level, c in ipairs(heading_colors) do
+            vim.api.nvim_set_hl(0, "@markup.heading." .. level .. ".markdown", { fg = c[1], bg = c[2], bold = true })
+        end
     end
 end
 
@@ -313,6 +324,19 @@ map("n", "n", "nzzzv", opts("Move to next match"))
 map("n", "N", "Nzzzv", opts("Move to previous match"))
 map("n", "<C-d>", "<C-d>zz", opts("Scroll down"))
 map("n", "<C-u>", "<C-u>zz", opts("Scroll up"))
+
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", opts("Down (screen line)", { expr = true }))
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", opts("Up (screen line)", { expr = true }))
+map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", opts("Down (screen line)", { expr = true }))
+map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", opts("Up (screen line)", { expr = true }))
+map("i", "<Down>", function()
+    return vim.fn.pumvisible() == 1 and "<Down>" or "<C-o>gj"
+end, opts("Down (screen line)", { expr = true }))
+map("i", "<Up>", function()
+    return vim.fn.pumvisible() == 1 and "<Up>" or "<C-o>gk"
+end, opts("Up (screen line)", { expr = true }))
+map({ "n", "x" }, "$", "&wrap ? 'g$' : '$'", opts("End of line (screen line when wrapped)", { expr = true }))
+map("n", "A", "&wrap ? 'g$a' : 'A'", opts("Append at end of line (screen line when wrapped)", { expr = true }))
 
 map("n", "<C-Left>", "<C-w>h", opts("Window left"))
 map("n", "<C-Down>", "<C-w>j", opts("Window down"))
@@ -623,6 +647,12 @@ map("n", "<leader>mp", function()
         end)
     end)
 end, opts("Preview markdown with pandoc"))
+map("n", "<leader>me", function()
+    local editing = vim.wo.concealcursor ~= ""
+    vim.wo.concealcursor = editing and "" or "nc"
+    vim.wo.conceallevel = editing and 0 or 2
+    vim.wo.spell = editing
+end, opts("Markdown edit (toggle conceal and spell)"))
 
 -- Harpoon -ish
 map("n", "<leader>a", "<cmd>$argadd %<cr><cmd>argdedup<cr>", opts("Harpoon add current file"))
@@ -737,9 +767,54 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
         require("mini.surround").setup({}) -- Add/change/delete surrounding pairs. E.g. sr"' to change surrounding " to '
         require("mini.align").setup({}) -- Align text by a delimiter. E.g. gaip= to align a paragraph by = signs.
         local hipatterns = require("mini.hipatterns")
+        local function md(pattern)
+            return function(buf)
+                return vim.bo[buf].filetype == "markdown" and pattern or nil
+            end
+        end
+        local function md_conceal(pattern, char, group, skip)
+            return {
+                pattern = md(pattern),
+                group = function(_, _, data)
+                    if not (skip and data.full_match:match(skip)) then
+                        return group
+                    end
+                end,
+                extmark_opts = function(_, _, data)
+                    return {
+                        end_row = data.line - 1,
+                        end_col = data.to_col,
+                        conceal = char,
+                        hl_group = data.hl_group,
+                        priority = 200,
+                    }
+                end,
+            }
+        end
+        local callout_groups = {
+            NOTE = "DiagnosticInfo",
+            TIP = "DiagnosticOk",
+            IMPORTANT = "DiagnosticHint",
+            WARNING = "DiagnosticWarn",
+            CAUTION = "DiagnosticError",
+        }
         hipatterns.setup({
             highlighters = {
                 hex_color = hipatterns.gen_highlighter.hex_color(),
+                md_bullet = md_conceal("^%s*()[-*+]() .*", "•", "@markup.list", "^%s*[-*+] %[[ xX]%]"),
+                md_unchecked = md_conceal("^%s*()[-*+] %[ %]()", "󰄱", "@markup.list.unchecked"),
+                md_checked = md_conceal("^%s*()[-*+] %[[xX]%]()", "󰄲", "@markup.list.checked"),
+                md_done = {
+                    pattern = md("^%s*[-*+] %[[xX]%] ()%S.*()"),
+                    group = "Comment",
+                    extmark_opts = { hl_group = { "Comment", "@markup.strikethrough" }, priority = 200 },
+                },
+                md_callout = {
+                    pattern = md("^>%s*()%[!%u+%]()"),
+                    group = function(_, match)
+                        return callout_groups[match:match("%u+")]
+                    end,
+                },
             },
         })
         local gen_loader = require("mini.snippets").gen_loader
@@ -814,6 +889,27 @@ require("mason-tool-installer").setup({
 
 -- Default roslyn_ls opens first sln alphabetically. Prefer sln named after repo, else prompt.
 vim.lsp.config("roslyn_ls", {
+    handlers = {
+        -- Core handler pulls workspace diagnostics: one bufadd() per solution document, O(n^2) in buffer count.
+        -- That freezes nvim for minutes on large solutions, so only re-pull diagnostics for loaded buffers.
+        ["workspace/diagnostic/refresh"] = function(_, _, ctx)
+            local client = vim.lsp.get_client_by_id(ctx.client_id)
+            if not client then
+                return vim.NIL
+            end
+            for buf in pairs(client.attached_buffers) do
+                if vim.api.nvim_buf_is_loaded(buf) then
+                    client:request(
+                        "textDocument/diagnostic",
+                        { textDocument = vim.lsp.util.make_text_document_params(buf) },
+                        nil,
+                        buf
+                    )
+                end
+            end
+            return vim.NIL
+        end,
+    },
     on_init = function(client)
         local root_dir = client.config.root_dir
         local slns = {}
@@ -892,8 +988,33 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 
 -- Enable spelling for certain filetypes
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "markdown", "text", "gitcommit" },
+    pattern = { "text", "gitcommit" },
     command = "setlocal spell",
+})
+
+-- Don't conceal [text] or [text][label]: the parser treats them as reference links even without a definition
+local md_inline_query = table.concat(
+    vim.tbl_map(function(f)
+        return table.concat(vim.fn.readfile(f), "\n")
+    end, vim.treesitter.query.get_files("markdown_inline", "highlights")),
+    "\n"
+)
+for _, node in ipairs({ "shortcut_link", "full_reference_link", "collapsed_reference_link" }) do
+    md_inline_query = md_inline_query:gsub("(%(" .. node .. '%s*%[[^@]-%]%s*@markup%.link)%s*%(#set! conceal ""%)', "%1")
+end
+vim.treesitter.query.set("markdown_inline", "highlights", md_inline_query)
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function(args)
+        vim.treesitter.start(args.buf)
+        vim.opt_local.wrap = true
+        vim.opt_local.linebreak = true
+        vim.opt_local.breakindent = true
+        vim.opt_local.breakindentopt = "list:-1"
+        vim.opt_local.conceallevel = 2
+        vim.opt_local.concealcursor = "nc"
+    end,
 })
 
 -- Save session on exit. Checked at startup: <leader>a adds to the arglist later.

@@ -5,6 +5,11 @@ description: >
   intent and reasoning. Conventional Commits format. Subject ≤50 chars, body only when "why"
   isn't obvious. Use when user says "write a commit", "commit message", "generate commit",
   "/commit", or invokes /caveman-commit. Auto-triggers when staging changes.
+metadata:
+  source: "https://github.com/JuliusBrussee/caveman/blob/main/skills/caveman-commit/SKILL.md"
+  author: "Julius Brussee"
+  license: Apache-2.0
+  modified: "Adapted for OpenCode in mackeper/dotfiles."
 ---
 
 Write commit messages terse and exact. Conventional Commits format. No fluff. Why over what.

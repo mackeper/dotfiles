@@ -1,0 +1,4 @@
+Caveman
+Copyright 2026 Julius Brussee
+
+The Caveman skills in this directory are adapted for OpenCode.

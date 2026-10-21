@@ -51,16 +51,18 @@ function Show-StartMessage {
         @("$([char]27)[38;5;10mUseful functions:$([char]27)[0m", ""),
         @("admin", "Open an elevated terminal"),
         @("build", "Build current project"),
+        @("run", "Reset DB + Test clinic (manual)"),
         @("driver", "Start/stop a treatment driver"),
         @("tabs", "Open preset tabs"),
         @("guid", "Generate a new GUID"),
         @("test", "FZF C# test runner"),
+        @("testall", "Run all solution tests"),
+        @("testfailed", "Rerun failed tests"),
+        @("tapp", "Start Treatment App (Debug)"),
+        @("btapp", "Build Treatment App projects"),
         @("", ""),
         @("$([char]27)[38;5;10mFzf functions:$([char]27)[0m", ""),
         @("fkill", "Fzf kill process"),
-        @("", ""),
-        @("", ""),
-        @("", ""),
         @("", "")
     )
     $col2Values = @(
@@ -75,6 +77,7 @@ function Show-StartMessage {
         @("gcm", "default branch"),
         @("gb", "git branch"),
         @("# Worktrees", ""),
+        @("gwt", "create worktree (fzf repo/branch)"),
         @("gwtl", "worktree list"),
         @("gwta", "worktree add"),
         @("gwtr", "worktree remove"),
@@ -96,8 +99,8 @@ function Show-StartMessage {
         $col1Width = $isCol1TitleRow ? $col1 + 14 : $col1
 
         $col1Value = $col1Values[$i][1] -eq "" `
-            ? ("{0,-8}" -f $col1Values[$i][0]) `
-            : ("{0,-8} → {1}" -f $col1Values[$i][0], $col1Values[$i][1])
+            ? ("{0,-10}" -f $col1Values[$i][0]) `
+            : ("{0,-10} → {1}" -f $col1Values[$i][0], $col1Values[$i][1])
 
         $col2Value = $col2Values[$i][1] -eq "" `
             ? ("{0,-8}" -f $col2Values[$i][0]) `
@@ -160,7 +163,11 @@ function prompt {
         if ($count) { $svcInfo = " $e[38;5;14m[$count svc]$e[0m" }
     }
 
-    "$e[38;5;10mPS$e[0m $e[38;5;15m$path$display$svcInfo$e[0m > "
+    # OSC 9;9 tells Windows Terminal the cwd so split/duplicate panes open here.
+    $loc = $executionContext.SessionState.Path.CurrentLocation
+    $osc = if ($loc.Provider.Name -eq 'FileSystem') { "$e]9;9;`"$($loc.ProviderPath)`"$e\" } else { '' }
+
+    "$osc$e[38;5;10mPS$e[0m $e[38;5;15m$path$display$svcInfo$e[0m > "
 }
 
 # ========================================
@@ -196,30 +203,69 @@ Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 # --- Work shortcuts ---
 function rc    { Set-Location 'C:\git\Product' }
 function rc2   { Set-Location 'C:\git\Product2' }
-function rcw  { Set-Location 'C:\git\Product.WT' }
+function rcw  { Set-Location 'C:\git\Product.worktrees' }
 
 function tx    { Set-Location 'C:\git\Product.Drivers' }
 function tx2   { Set-Location 'C:\git\Product.Drivers2' }
-function txw  { Set-Location 'C:\git\Product.Drivers.WT' }
+function txw  { Set-Location 'C:\git\Product.Drivers.worktrees' }
 
 function api   { Set-Location 'C:\git\Product.Treat.API' }
 function api2  { Set-Location 'C:\git\Product.Treat.API2' }
-function apiw { Set-Location 'C:\git\Product.Treat.API.WT' }
+function apiw { Set-Location 'C:\git\Product.Treat.API.worktrees' }
 
 function rs    { Set-Location 'C:\git\OtherProduct' }
 function dd    { Set-Location 'C:\git\Designer' }
 function tt    { Set-Location 'C:\git\Product.Tool' }
+function tapp  { Start-Process 'C:\git\Product\src\clients\Product.UI.Treatment.Application.WPF\bin\Debug\Product.UI.Treatment.Application.WPF.exe' }
+function btapp {
+  $BuildArgs = $args
+  Get-ChildItem 'C:\git\Product\src\clients\Product.UI.Treatment.Application*\*.csproj' | ForEach-Object {
+    dotnet build $_.FullName @BuildArgs
+    if ($LASTEXITCODE -ne 0) { throw "Build failed: $($_.Name)" }
+  }
+}
 
 function w { Set-Location '~/OneDrive - Company/Marcus/10_Documents/05_wiki' }
 function tools { Set-Location '~\OneDrive - Company\Marcus\05_Tools' }
-function skills { Set-Location '~\.copilot\skills' }
+function courses { Set-Location '~\OneDrive - Company\Marcus\10_Documents\06_courses' }
 
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
 function wiki  { Set-Location 'C:\git\wiki' }
 function dots  { Set-Location 'C:\git\dotfiles' }
-function cc    { Set-Location "$env:APPDATA\Code\User" }
+function codedots    { Set-Location "$env:APPDATA\Code\User" }
+function skills { Set-Location '~\.copilot' }
 function tmp   { mkdir -f C:\tmp; Set-Location C:\tmp }
+$CopilotToolRules = @(
+  '--allow-tool=shell(git status)', '--allow-tool=shell(git diff)', '--allow-tool=shell(git log)',
+  '--allow-tool=shell(git show)', '--allow-tool=shell(git branch --show-current)', '--allow-tool=shell(git rev-parse)',
+  '--allow-tool=shell(rg)', '--allow-tool=shell(fd)',
+  '--allow-tool=shell(dotnet build)', '--allow-tool=shell(dotnet test)',
+  '--deny-tool=shell(git push)'
+)
+function Get-CopilotAdditionalDirectoryArguments {
+  [CmdletBinding()]
+  param()
+
+  Get-ChildItem -LiteralPath 'C:\git' -Directory |
+    Where-Object {
+      $_.Name -like 'Product*' -or
+      $_.Name -like 'OtherProduct*' -or
+      $_.Name -eq 'Team.Tools'
+    } |
+    ForEach-Object {
+      '--add-dir'
+      $_.FullName
+    }
+}
+function c {
+  $CopilotArgs = @($CopilotToolRules) + @(Get-CopilotAdditionalDirectoryArguments) + @($args)
+  copilot @CopilotArgs
+}
+function cc {
+  $CopilotArgs = @($CopilotToolRules) + @(Get-CopilotAdditionalDirectoryArguments) + @($args)
+  copilot --continue @CopilotArgs
+}
 
 
 # ========================================
@@ -347,7 +393,7 @@ function gcm {
 }
 
 
-function gwt { git worktree @args }
+function gwt { & (Join-Path $PSScriptRoot 'gwt.ps1') @args }
 function gwtl { git worktree list @args }
 function gwta { git worktree add @args }
 function gwtr { git worktree remove @args }
@@ -419,6 +465,8 @@ function Build {
     if ($PWD.Path -match "C:\\git\\Product2?$") {
         Start-PodmanContainers
 
+        & (Join-Path $PWD "Stop.ps1")
+
         $scriptPath = Join-Path $PWD "Build.ps1"
 
         # Cake's tools are missing only after e.g. `git clean`. The official bootstrap
@@ -441,6 +489,27 @@ function Build {
     }
 
     (New-Object -ComObject SAPI.SpVoice).Speak("Build done")
+}
+
+function run {
+    [CmdletBinding()]
+    param(
+        [Parameter(Position = 0)]
+        [ValidateSet('manual')]
+        [string]$Mode
+    )
+
+    $clinic = $Mode -eq 'manual' ? 'ManualTest' : 'Test'
+    if ($PWD.Path -notmatch "C:\\git\\Product2?$") { throw "Run from Product root." }
+    $scriptPath = Join-Path $PWD "MonitorMicroservices.ps1"
+    $text = Get-Content $scriptPath -Raw
+    $loopCall = '(?m)^(\s*)MonitorMicroservices\s*$'
+    if ($text -notmatch $loopCall) { throw "MonitorMicroservices call not found in $scriptPath." }
+
+    # Same as Ctrl+X then Ctrl+T (or Ctrl+U for manual) once the monitor is up.
+    $text = $text -replace $loopCall, "`$1ResetDB; Populate -ClinicName '$clinic'`r`n`$1MonitorMicroservices"
+    $text = $text.Replace('$PSScriptRoot', "'$($PWD.Path)'")
+    & ([scriptblock]::Create($text))
 }
 
 function reconfig {
@@ -593,6 +662,51 @@ function Invoke-Test {
     Write-Host "Log: $logFile"
 }
 Set-Alias test Invoke-Test
+
+function Get-TestOutputPath {
+    $TestOutputDirectory = Join-Path $env:LOCALAPPDATA 'nvim-data'
+    New-Item -ItemType Directory -Path $TestOutputDirectory -Force | Out-Null
+    Join-Path $TestOutputDirectory 'test-output.log'
+}
+
+function Invoke-SolutionTest {
+    param([string[]]$ExtraArguments = @())
+    & dotnet test --solution .\src\Product.Drivers.sln `
+        --no-progress `
+        --output Normal `
+        --show-stdout Failed `
+        --show-stderr Failed `
+        @ExtraArguments 2>&1 |
+        Tee-Object -FilePath (Get-TestOutputPath)
+
+    $TestExitCode = $LASTEXITCODE
+    $global:LASTEXITCODE = $TestExitCode
+}
+
+function testall { Invoke-SolutionTest }
+
+function Get-FailedTest {
+    $TestOutputPath = Get-TestOutputPath
+    if (-not (Test-Path -LiteralPath $TestOutputPath)) { return }
+    Get-Content -LiteralPath $TestOutputPath |
+        Where-Object { $_ -match '^\s*failed\s+(.+?)\s+\([^)]*\)\s*$' } |
+        ForEach-Object { $Matches[1] -replace '\(.*\)$', '' } |
+        Select-Object -Unique
+}
+
+function testfailed {
+    $FailedTests = @(Get-FailedTest)
+    if ($FailedTests.Count -eq 0) {
+        Write-Host 'No failed tests found in the latest test output. Run testall first.'
+        return
+    }
+
+    Write-Host "Rerunning $($FailedTests.Count) failed test(s)..."
+    # Exit code 8 means zero tests ran, which is expected for projects without failures.
+    $FilterArguments = @('--ignore-exit-code', '8')
+    $FailedTests | ForEach-Object { $FilterArguments += @('--filter-method', $_) }
+    Invoke-SolutionTest -ExtraArguments $FilterArguments
+}
 
 # ========================================
 #              Mimic linux

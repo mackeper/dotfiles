@@ -5,15 +5,17 @@ description: "Extract text from a PDF file without external dependencies. Use wh
 
 # Extract PDF Text
 
-Use `C:\Users\user\AppData\Roaming\Code\User\tools\Extract-PdfText.ps1 <path>` to extract text content from a PDF file.
+Use `scripts/Extract-PdfText.ps1 <path>` in this skill folder to extract text content from a PDF file.
 
 The script uses only built-in .NET classes (DeflateStream) to decompress PDF content streams and parse text operators (Tj, TJ, Td). No external dependencies required.
 
 ## Usage
 
 ```powershell
-.\Extract-PdfText.ps1 "C:\path\to\file.pdf"
+pwsh -NoProfile -NonInteractive -File "<this skill folder>/scripts/Extract-PdfText.ps1" "<file.pdf>"
 ```
+
+The skill folder is `~/.copilot/skills/extract-pdf-text` (Copilot CLI) or `~/.config/opencode/skills/extract-pdf-text` (OpenCode).
 
 Output is plain text grouped by page with `--- Page N ---` markers.
 

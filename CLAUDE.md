@@ -1,21 +1,18 @@
-# Claude
+# dotfiles
 
-In all interactions and commit messages, be extremely concise and sacrifice
-gramar for the sake of conciseness.
+Personal config for Windows (`windows/`, `AutoHotkey/`), Linux (`linux/`) and macOS (`macos/`), plus shared app config in `.config/` (nvim, opencode). Public on GitHub: never add secrets, tokens or credentials.
 
-## Available tools
+## Style
 
-* `gh`: GitHub CLI for interacting with GitHub repositories.
-* `git`: Git version control system for managing source code.
-* `fd`: Fast and user-friendly alternative to `find` for searching files and directories.
-* `rg`: Ripgrep, a line-oriented search tool that recursively searches the current directory for a regex pattern.
-* `ls`: List directory contents.
-* `cat`: Concatenate and display file contents.
-* `python`: Python interpreter for executing Python code.
-* `bash`: Bash shell for executing shell commands.
-* `curl`: Command-line tool for transferring data with URLs.
-* `jq`: Command-line JSON processor for parsing and manipulating JSON data.
+- Be concise. Plain, grammatical sentences.
+- Commits: Conventional Commits per the commit skill. No `Co-authored-by`, no AI mention.
+
+## Tools
+
+- All platforms: `git`, `rg`, `fd`, `jq`, `curl`, `python`.
+- Windows: `pwsh` (PowerShell 7). Linux and macOS: `bash`.
+- Not installed: `gh`. Don't use it.
 
 ## Testing
 
-Follow AAA pattern: Arrange, Act, Assert. Separate sections with comments.
+Follow the AAA pattern: Arrange, Act, Assert. Separate the sections with comments.

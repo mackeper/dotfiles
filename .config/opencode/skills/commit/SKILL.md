@@ -1,6 +1,11 @@
 ---
 name: commit
 description: "ALWAYS use this skill when committing code changes — never commit directly without it."
+metadata:
+  source: "https://github.com/JuliusBrussee/caveman/blob/main/skills/caveman-commit/SKILL.md"
+  author: "Julius Brussee"
+  license: Apache-2.0
+  modified: "Adapted for OpenCode in mackeper/dotfiles."
 ---
 
 # commit
