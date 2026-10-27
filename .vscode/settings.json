@@ -171,8 +171,7 @@
         "https://*.visualstudio.com": true
     },
     "chat.agentSkillsLocations": {
-        "~/AppData/Roaming/Code/User/skills": true,
-        "~/../../git/Product/.github/skills": true
+        "~/AppData/Roaming/Code/User/skills": true
     },
     "chat.agentFilesLocations": {
         "~/AppData/Roaming/Code/User/agents": true

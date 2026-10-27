@@ -8,8 +8,6 @@
 ; ==================================================================
 ; ===                      Hotstrings                           ===
 ; ==================================================================
-:*:user@::user@example.com
-:*:marcus.ostling@::user@example.com
 :*:mpt@::mpt.ostling@gmail.com
 :*:mpt.ostling@::mpt.ostling@gmail.com
 :*:ftw@::marcus.ftw94@gmail.com
@@ -152,32 +150,6 @@ GetExplorerSelectionPaths() {
 }
 
 ; ==================================================================
-; ===                       Testing                             ===
-; ==================================================================
-
-; Write version
-!+v::WriteTestVersions()
-
-WriteTestVersions() {
-    Send "9.1.0.60649"
-    Send "{Tab}"
-    Send "VendorBDriver2.0.0.60945"
-    Send "{Tab}"
-    Send "17.2.0.162"
-}
-
-; Send "PASSED"
-!+p::WriteTestResult("PASSED")
-
-; Send "FAILED"
-!+F::WriteTestResult("FAILED")
-
-WriteTestResult(result) {
-    dt := FormatTime("", "yyyy-MM-dd HH:mm:ss")
-    SendText dt "`n" result
-}
-
-; ==================================================================
 ; ===                       Pomodoro                            ===
 ; ==================================================================
 
@@ -237,8 +209,8 @@ PomodoroFinished() {
 ; ===                        Apps                               ===
 ; ==================================================================
 
-; Auto-detect work vs. private machine from the logged-in Windows account
-isWorkMode := (A_UserName = "user")
+; Work machine if the private work config is present
+isWorkMode := FileExist("C:\git\dotfiles-work\Work.ahk") != ""
 
 ; App shortcuts
 
@@ -316,11 +288,6 @@ OpenWikiJournal() {
 }
 ^+J::OpenWikiJournal()
 
-OpenWikiCurrent() {
-    Run 'wt.exe -p "PowerShell" -d "' EnvGet("USERPROFILE") '\\OneDrive - Company\\Marcus\\10_Documents\\05_wiki" nvim "current.md" "+normal G"'
-}
-^+C::OpenWikiCurrent()
-
 ; Functions
 OpenOrFocusProgram(programPath, exeName) {
     pid := ProcessExist(exeName)
@@ -387,7 +354,6 @@ AddPaletteCommand("App: IDE (Rider / Visual Studio)", OpenIde)
 AddPaletteCommand("App: Teams / Discord", OpenChat)
 AddPaletteCommand("Wiki: Index", OpenWikiIndex)
 AddPaletteCommand("Wiki: Journal", OpenWikiJournal)
-AddPaletteCommand("Wiki: Current", OpenWikiCurrent)
 
 AddPaletteCommand("General: Generate GUID", PasteNewGuid)
 AddPaletteCommand("General: Paste signature (mvh)", PasteSignature)
@@ -397,9 +363,7 @@ AddPaletteCommand("General: Toggle window transparency", ToggleWindowTransparenc
 AddPaletteCommand("General: Toggle always on top", ToggleAlwaysOnTop)
 AddPaletteCommand("General: Reload all scripts", ReloadAllScripts)
 
-AddPaletteCommand("Testing: Write versions", WriteTestVersions)
-AddPaletteCommand("Testing: Write PASSED", WriteTestResult.Bind("PASSED"))
-AddPaletteCommand("Testing: Write FAILED", WriteTestResult.Bind("FAILED"))
+#Include *i C:\git\dotfiles-work\Work.ahk
 
 AddPaletteCommand("Pomodoro: Start focus (25 min)", StartPomodoro.Bind(25, "Focus"))
 AddPaletteCommand("Pomodoro: Start short break (5 min)", StartPomodoro.Bind(5, "Short break"))

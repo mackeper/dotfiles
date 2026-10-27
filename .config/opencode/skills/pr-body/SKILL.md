@@ -36,7 +36,7 @@ Use this template for writing the PR body:
 Refs: #<tfs id>
 ```
 
-Include the `Refs:` line only when a TFS work item exists. Take the id from the branch name (`users/user/<tfs id>-<short desc>`) or the user's request.
+Include the `Refs:` line only when a TFS work item exists. Take the id from the branch name (`users/<alias>/<tfs id>-<short desc>`) or the user's request.
 
 ## Output
 

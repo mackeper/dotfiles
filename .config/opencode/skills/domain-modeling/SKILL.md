@@ -18,7 +18,7 @@ $main = Split-Path (git rev-parse --path-format=absolute --git-common-dir)
 Join-Path (Split-Path $main) ".docs\$(Split-Path $main -Leaf)"
 ```
 
-For `C:\git\Product` (or any of its worktrees) the docs root is `C:\git\.docs\Product\`.
+For `C:\git\<Repo>` (or any of its worktrees) the docs root is `C:\git\.docs\<Repo>\`.
 
 Most repos have a single context:
 

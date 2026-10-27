@@ -17,9 +17,8 @@
 # 0.5: Speed up startup
 
 function Show-DailyTip {
-    $tipsFile = Join-Path $PSScriptRoot 'tips.json'
-    if (-not (Test-Path $tipsFile)) { return }
-    $data = Get-Content $tipsFile -Raw | ConvertFrom-Json
+    if (-not $TipsFile -or -not (Test-Path $TipsFile)) { return }
+    $data = Get-Content $TipsFile -Raw | ConvertFrom-Json
     if (-not $data) { return }
     $all = foreach ($cat in $data.PSObject.Properties) {
         foreach ($t in $cat.Value) { [PSCustomObject]@{ Category = $cat.Name; Tip = $t } }
@@ -72,7 +71,6 @@ function Show-StartMessage {
         @("gcm", "default branch"),
         @("gb", "git branch"),
         @("# Worktrees", ""),
-        @("gwt", "create worktree (fzf repo/branch)"),
         @("gwtl", "worktree list"),
         @("gwta", "worktree add"),
         @("gwtr", "worktree remove"),
@@ -351,7 +349,6 @@ function gcm {
 }
 
 
-function gwt { & (Join-Path $PSScriptRoot 'gwt.ps1') @args }
 function gwtl { git worktree list @args }
 function gwta { git worktree add @args }
 function gwtr { git worktree remove @args }

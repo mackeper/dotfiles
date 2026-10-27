@@ -669,7 +669,7 @@ return M
 
 ## 14. Short paths in the quickfix list
 
-Build and test lists show full paths such as `src/frameworks/Team/<project>/<folder>/<file>.cs|38 col 5|` and the message is pushed off the edge. You already wrote `shorten_pick_path` for mini.pick; reuse it so the quickfix list shows `./<csproj dir>/./File.cs|38 col 5| message`. Define this after `shorten_pick_path` in the Plugins section.
+Build and test lists show full paths such as `src/frameworks/<area>/<project>/<folder>/<file>.cs|38 col 5|` and the message is pushed off the edge. You already wrote `shorten_pick_path` for mini.pick; reuse it so the quickfix list shows `./<csproj dir>/./File.cs|38 col 5| message`. Define this after `shorten_pick_path` in the Plugins section.
 
 <!-- snippet: qf_text -->
 ```lua

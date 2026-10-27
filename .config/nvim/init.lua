@@ -65,6 +65,10 @@ vim.opt.scrolloff = 8 -- Keep X lines from top/bottom
 vim.opt.sidescrolloff = 8 -- Keep X characters from the side
 vim.opt.undofile = true -- Persistent undo
 vim.opt.spelllang = { "en_us", "sv" }
+local work_spellfile = "C:/git/dotfiles-work/nvim/en.utf-8.add"
+if vim.uv.fs_stat(work_spellfile) then
+    vim.opt.spellfile = { vim.fn.stdpath("config") .. "/spell/en.utf-8.add", work_spellfile }
+end
 vim.opt.fixendofline = false -- Don't automatically add newline at end of file
 
 -- Search
@@ -519,7 +523,7 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- wiki
 local wiki = vim.fn.expand("~/git/wiki")
-local work_wiki = vim.fn.expand("~/OneDrive - Company/Marcus/10_Documents/05_wiki")
+local work_wiki = vim.env.WORK_WIKI
 if vim.fn.has("win32") == 1 then
     wiki = "C:\\git\\wiki"
 end
@@ -528,7 +532,12 @@ map("n", "<leader>wj", function()
     vim.cmd.edit(vim.fn.fnameescape(wiki .. "/98_Journal/" .. os.date("%Y-%m-%d") .. ".md"))
     vim.cmd("lcd %:p:h")
 end, opts("Open wiki journal"))
-map("n", "<leader>wc", "<cmd>edit " .. work_wiki .. "/current.md<CR>:lcd %:p:h<CR>", opts("Open wiki current work"))
+if work_wiki then
+    map("n", "<leader>wc", function()
+        vim.cmd.edit(vim.fn.fnameescape(work_wiki .. "/current.md"))
+        vim.cmd("lcd %:p:h")
+    end, opts("Open wiki current work"))
+end
 map("n", "<M-t>", function()
     vim.cmd([[keeppatterns s/\v[-*] \[\zs[ x]\ze\]/\=submatch(0) ==# 'x' ? ' ' : 'x'/e]])
 end, opts("Toggle checkbox"))
