@@ -29,6 +29,8 @@ function Show-DailyTip {
     Write-Host "`n$([char]27)[38;5;8m[$($pick.Category)]$([char]27)[0m $([char]27)[38;5;14m`u{1F4A1} $($pick.Tip)$([char]27)[0m`n"
 }
 
+$StartMessageCommands = @()
+
 function Show-StartMessage {
     Clear-Host
 
@@ -50,16 +52,9 @@ function Show-StartMessage {
         @("", ""),
         @("$([char]27)[38;5;10mUseful functions:$([char]27)[0m", ""),
         @("admin", "Open an elevated terminal"),
-        @("build", "Build current project"),
-        @("run", "Reset DB + Test clinic (manual)"),
-        @("driver", "Start/stop a treatment driver"),
-        @("tabs", "Open preset tabs"),
         @("guid", "Generate a new GUID"),
-        @("test", "FZF C# test runner"),
-        @("testall", "Run all solution tests"),
-        @("testfailed", "Rerun failed tests"),
-        @("tapp", "Start Treatment App (Debug)"),
-        @("btapp", "Build Treatment App projects"),
+        @("test", "FZF C# test runner")
+    ) + $StartMessageCommands + @(
         @("", ""),
         @("$([char]27)[38;5;10mFzf functions:$([char]27)[0m", ""),
         @("fkill", "Fzf kill process"),
@@ -86,25 +81,24 @@ function Show-StartMessage {
         @("gchurn", "files that change the most"),
         @("gbugs", "files with most problems"),
         @("gmonthly", "commits by month"),
-        @("gdmg", "revert frequency"),
-        @("", ""),
-        @("", ""),
-        @("", ""),
-        @("", ""),
-        @("", "")
+        @("gdmg", "revert frequency")
     )
 
-    for ($i = 0; $i -lt $col1Values.Length; $i++) {
-        $isCol1TitleRow = $col1Values[$i][0] -ne "" -and $col1Values[$i][1] -eq ""
+    $empty = @("", "")
+    $rowCount = [Math]::Max($col1Values.Count, $col2Values.Count)
+    for ($i = 0; $i -lt $rowCount; $i++) {
+        $c1 = $i -lt $col1Values.Count ? $col1Values[$i] : $empty
+        $c2 = $i -lt $col2Values.Count ? $col2Values[$i] : $empty
+        $isCol1TitleRow = $c1[0] -ne "" -and $c1[1] -eq ""
         $col1Width = $isCol1TitleRow ? $col1 + 14 : $col1
 
-        $col1Value = $col1Values[$i][1] -eq "" `
-            ? ("{0,-10}" -f $col1Values[$i][0]) `
-            : ("{0,-10} → {1}" -f $col1Values[$i][0], $col1Values[$i][1])
+        $col1Value = $c1[1] -eq "" `
+            ? ("{0,-10}" -f $c1[0]) `
+            : ("{0,-10} → {1}" -f $c1[0], $c1[1])
 
-        $col2Value = $col2Values[$i][1] -eq "" `
-            ? ("{0,-8}" -f $col2Values[$i][0]) `
-            : ("{0,-8} → {1}" -f $col2Values[$i][0], $col2Values[$i][1])
+        $col2Value = $c2[1] -eq "" `
+            ? ("{0,-8}" -f $c2[0]) `
+            : ("{0,-8} → {1}" -f $c2[0], $c2[1])
 
         Write-Host ("{0,-$col1Width}{1}" -f $col1Value, $col2Value)
     }
@@ -157,11 +151,7 @@ function prompt {
         }
     }
 
-    $svcInfo = ''
-    if ($PWD.Path -match '^C:\\git\\Product(2|\.WT)?$') {
-        $count = @(Get-Process -Name 'Product*' -ErrorAction SilentlyContinue).Count
-        if ($count) { $svcInfo = " $e[38;5;14m[$count svc]$e[0m" }
-    }
+    $svcInfo = if (${function:Get-PromptSuffix}) { Get-PromptSuffix } else { '' }
 
     # OSC 9;9 tells Windows Terminal the cwd so split/duplicate panes open here.
     $loc = $executionContext.SessionState.Path.CurrentLocation
@@ -200,35 +190,6 @@ function la {
 }
 Set-Alias hide 'Set-PSReadLineOption -HistorySaveStyle SaveNothing'
 
-# --- Work shortcuts ---
-function rc    { Set-Location 'C:\git\Product' }
-function rc2   { Set-Location 'C:\git\Product2' }
-function rcw  { Set-Location 'C:\git\Product.worktrees' }
-
-function tx    { Set-Location 'C:\git\Product.Drivers' }
-function tx2   { Set-Location 'C:\git\Product.Drivers2' }
-function txw  { Set-Location 'C:\git\Product.Drivers.worktrees' }
-
-function api   { Set-Location 'C:\git\Product.Treat.API' }
-function api2  { Set-Location 'C:\git\Product.Treat.API2' }
-function apiw { Set-Location 'C:\git\Product.Treat.API.worktrees' }
-
-function rs    { Set-Location 'C:\git\OtherProduct' }
-function dd    { Set-Location 'C:\git\Designer' }
-function tt    { Set-Location 'C:\git\Product.Tool' }
-function tapp  { Start-Process 'C:\git\Product\src\clients\Product.UI.Treatment.Application.WPF\bin\Debug\Product.UI.Treatment.Application.WPF.exe' }
-function btapp {
-  $BuildArgs = $args
-  Get-ChildItem 'C:\git\Product\src\clients\Product.UI.Treatment.Application*\*.csproj' | ForEach-Object {
-    dotnet build $_.FullName @BuildArgs
-    if ($LASTEXITCODE -ne 0) { throw "Build failed: $($_.Name)" }
-  }
-}
-
-function w { Set-Location '~/OneDrive - Company/Marcus/10_Documents/05_wiki' }
-function tools { Set-Location '~\OneDrive - Company\Marcus\05_Tools' }
-function courses { Set-Location '~\OneDrive - Company\Marcus\10_Documents\06_courses' }
-
 # --- Personal shortcuts ---
 function g     { Set-Location 'C:\git' }
 function wiki  { Set-Location 'C:\git\wiki' }
@@ -243,16 +204,13 @@ $CopilotToolRules = @(
   '--allow-tool=shell(dotnet build)', '--allow-tool=shell(dotnet test)',
   '--deny-tool=shell(git push)'
 )
+$CopilotDirectoryPatterns = @('dotfiles')
 function Get-CopilotAdditionalDirectoryArguments {
   [CmdletBinding()]
   param()
 
   Get-ChildItem -LiteralPath 'C:\git' -Directory |
-    Where-Object {
-      $_.Name -like 'Product*' -or
-      $_.Name -like 'OtherProduct*' -or
-      $_.Name -eq 'Team.Tools'
-    } |
+    Where-Object { $Name = $_.Name; $CopilotDirectoryPatterns | Where-Object { $Name -like $_ } } |
     ForEach-Object {
       '--add-dir'
       $_.FullName
@@ -418,22 +376,6 @@ $env:LC_ALL = 'C.UTF-8'
 # ========================================
 function which($cmd) { $c = Get-Command $cmd; if ($c.Source) { $c.Source } else { $c.Definition } }
 
-# TODO: Update with private / work
-function tabs() {
-    wt -w 0 nt --tabColor '#00FF00' --title Dotfiles --suppressApplicationTitle ` -d 'C:\git\dotfiles'
-    wt -w 0 split-pane -V --tabColor '#00FF00' --title Copilot --suppressApplicationTitle ` -d "$env:APPDATA\Code\User"
-    wt -w 0 split-pane -H --tabColor '#00FF00' --title Wiki --suppressApplicationTitle ` -d 'C:\git\wiki'
-    wt -w 0 nt --tabColor '#F000F0' --title Product.WT --suppressApplicationTitle -d 'C:\git\Product.WT'
-    wt -w 0 nt --tabColor '#F000F0' --title Drivers.WT --suppressApplicationTitle -d 'C:\git\Product.Drivers.WT'
-    wt -w 0 nt --tabColor '#F000F0' --title TreatAPI.WT --suppressApplicationTitle -d 'C:\git\Product.Treat.API.WT'
-    wt -w 0 nt --tabColor '#0000ff' --title Product --suppressApplicationTitle -d 'C:\git\Product'
-    wt -w 0 split-pane -V --tabColor '#0000ff' --title Product --suppressApplicationTitle -d 'C:\git\Product' powershell -NoExit -File .\MonitorMicroservices.ps1
-    wt -w 0 nt --tabColor '#0000ff' --title Drivers --suppressApplicationTitle -d 'C:\git\Product.Drivers'
-    wt -w 0 nt --tabColor '#0000ff' --title TreatAPI --suppressApplicationTitle -d 'C:\git\Product.Treat.API'
-    wt -w 0 nt --tabColor '#ff0000' --title OtherProduct --suppressApplicationTitle -d 'C:\git\OtherProduct'
-}
-
-
 function Start-PodmanContainers {
     if (-not (Get-Command podman -ErrorAction SilentlyContinue)) {
         Write-Warning "podman not found; skipping container startup"
@@ -451,78 +393,6 @@ function Start-PodmanContainers {
     }
 }
 
-# TODO: Better solution than folder specific?
-function Build {
-    if ($PWD.Path -match "C:\\git\\Product\.Drivers2?") {
-        Get-ChildItem -Filter *DomainModel.csproj -Recurse -Depth 5 -File | ForEach-Object { dotnet build $_.FullName }
-        dotnet build "src\Product.Drivers.sln"
-    }
-
-    if ($PWD.Path -match "C:\\git\\Product\.Treat\.Api2?") {
-        dotnet build "src\Product.Treat.Api.sln"
-    }
-
-    if ($PWD.Path -match "C:\\git\\Product2?$") {
-        Start-PodmanContainers
-
-        & (Join-Path $PWD "Stop.ps1")
-
-        $scriptPath = Join-Path $PWD "Build.ps1"
-
-        # Cake's tools are missing only after e.g. `git clean`. The official bootstrap
-        # (bakeCake.ps1) needs admin solely to write the machine-level PATH, which the build
-        # never uses (RunCakeTargets.ps1 invokes Cake.exe by full path). So restore the tools
-        # unelevated by running preBakeCake.ps1 directly with the correct ToolPath; the whole
-        # build then runs without admin.
-        $cakeExe = Join-Path $PWD "cake\tools\cake\Cake.exe"
-        if (-not (Test-Path $cakeExe)) {
-            Write-Host "Cake tools missing (post-clean build): restoring Cake (no admin needed)..."
-            $toolPath = Join-Path $PWD "cake\tools"
-            & (Join-Path $PWD "cake\tfs\preBakeCake.ps1") -ToolPath $toolPath
-            if (-not (Test-Path $cakeExe)) {
-                Write-Error "Cake bootstrap failed (Cake.exe still missing); aborting build."
-                return
-            }
-        }
-
-        & $scriptPath
-    }
-
-    (New-Object -ComObject SAPI.SpVoice).Speak("Build done")
-}
-
-function run {
-    [CmdletBinding()]
-    param(
-        [Parameter(Position = 0)]
-        [ValidateSet('manual')]
-        [string]$Mode
-    )
-
-    $clinic = $Mode -eq 'manual' ? 'ManualTest' : 'Test'
-    if ($PWD.Path -notmatch "C:\\git\\Product2?$") { throw "Run from Product root." }
-    $scriptPath = Join-Path $PWD "MonitorMicroservices.ps1"
-    $text = Get-Content $scriptPath -Raw
-    $loopCall = '(?m)^(\s*)MonitorMicroservices\s*$'
-    if ($text -notmatch $loopCall) { throw "MonitorMicroservices call not found in $scriptPath." }
-
-    # Same as Ctrl+X then Ctrl+T (or Ctrl+U for manual) once the monitor is up.
-    $text = $text -replace $loopCall, "`$1ResetDB; Populate -ClinicName '$clinic'`r`n`$1MonitorMicroservices"
-    $text = $text.Replace('$PSScriptRoot', "'$($PWD.Path)'")
-    & ([scriptblock]::Create($text))
-}
-
-function reconfig {
-    param([switch]$Release)
-
-    $root = git rev-parse --show-toplevel 2>$null
-    if (-not $root) { Write-Error "Not inside a git repo."; return }
-    $root = $root -replace '/', '\'
-
-    $configuration = if ($Release) { 'Release' } else { 'Debug' }
-    $script = Join-Path $root 'Scripts\Build\RunConfigurationAction.ps1'
-    Start-Process powershell -Verb RunAs -ArgumentList '-NoExit','-NoProfile','-Command',"Set-Location '$root'; & '$script' -Configuration $configuration"
-}
 function guid {
     [guid]::NewGuid().ToString() | Tee-Object -Variable g
     Set-Clipboard $g
@@ -564,7 +434,10 @@ Set-PSReadLineKeyHandler -Key Alt+c  -ScriptBlock { Initialize-PSFzf; & (Get-Mod
 Set-PSReadLineKeyHandler -Key Tab    -ScriptBlock { Initialize-PSFzf; Invoke-FzfTabCompletion }
 
 # Stub commands: first call loads PSFzf, then forwards via module-qualified name (always resolves once loaded).
-function Invoke-Fzf { Initialize-PSFzf; PSFzf\Invoke-Fzf @args }
+function Invoke-Fzf {
+    Initialize-PSFzf
+    if ($MyInvocation.ExpectingInput) { $input | PSFzf\Invoke-Fzf @args } else { PSFzf\Invoke-Fzf @args }
+}
 function fkill { Initialize-PSFzf; PSFzf\Invoke-FuzzyKillProcess @args }
 
 Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
@@ -663,51 +536,6 @@ function Invoke-Test {
 }
 Set-Alias test Invoke-Test
 
-function Get-TestOutputPath {
-    $TestOutputDirectory = Join-Path $env:LOCALAPPDATA 'nvim-data'
-    New-Item -ItemType Directory -Path $TestOutputDirectory -Force | Out-Null
-    Join-Path $TestOutputDirectory 'test-output.log'
-}
-
-function Invoke-SolutionTest {
-    param([string[]]$ExtraArguments = @())
-    & dotnet test --solution .\src\Product.Drivers.sln `
-        --no-progress `
-        --output Normal `
-        --show-stdout Failed `
-        --show-stderr Failed `
-        @ExtraArguments 2>&1 |
-        Tee-Object -FilePath (Get-TestOutputPath)
-
-    $TestExitCode = $LASTEXITCODE
-    $global:LASTEXITCODE = $TestExitCode
-}
-
-function testall { Invoke-SolutionTest }
-
-function Get-FailedTest {
-    $TestOutputPath = Get-TestOutputPath
-    if (-not (Test-Path -LiteralPath $TestOutputPath)) { return }
-    Get-Content -LiteralPath $TestOutputPath |
-        Where-Object { $_ -match '^\s*failed\s+(.+?)\s+\([^)]*\)\s*$' } |
-        ForEach-Object { $Matches[1] -replace '\(.*\)$', '' } |
-        Select-Object -Unique
-}
-
-function testfailed {
-    $FailedTests = @(Get-FailedTest)
-    if ($FailedTests.Count -eq 0) {
-        Write-Host 'No failed tests found in the latest test output. Run testall first.'
-        return
-    }
-
-    Write-Host "Rerunning $($FailedTests.Count) failed test(s)..."
-    # Exit code 8 means zero tests ran, which is expected for projects without failures.
-    $FilterArguments = @('--ignore-exit-code', '8')
-    $FailedTests | ForEach-Object { $FilterArguments += @('--filter-method', $_) }
-    Invoke-SolutionTest -ExtraArguments $FilterArguments
-}
-
 # ========================================
 #              Mimic linux
 # ========================================
@@ -734,74 +562,6 @@ function tail {
 }
 function open { Invoke-Item $args }
 
-function Start-Driver {
-    param(
-        [Parameter(Position = 0)]
-        [ValidateSet('Start', 'Stop', IgnoreCase = $true)]
-        [string]$Command = 'Start',
-
-        [Parameter(Position = 1)]
-        [ValidateSet('VendorA', 'VendorE', 'VendorC', 'VendorC2', 'VendorD', 'StandardDriver', 'VendorG', 'VendorB', IgnoreCase = $true)]
-        [string]$Driver,
-
-        [switch]$Subscriptions
-    )
-
-    if (-not $Driver) {
-        $drivers = (Get-Command Start-Driver).Parameters['Driver'].Attributes.ValidValues -join ', '
-        Write-Host "Usage: driver <Start|Stop> <Driver> [-Subscriptions]"
-        Write-Host "  Drivers: $drivers"
-        return
-    }
-
-    $map = @{
-        VendorA     = 'VendorA/Product.Drivers.TDW1.VendorA'
-        VendorE          = 'VendorE/Product.Drivers.TDW1.VendorE'
-        VendorC        = 'VendorC/Product.Drivers.TDW2.VendorC'
-        VendorC2   = 'VendorC2/Product.Drivers.TDW2.VendorF.VendorC2'
-        VendorD     = 'VendorD/Product.Drivers.TDW2.VendorD'
-        StandardDriver = 'StandardDriver/Product.Drivers.TDW2.StandardDriver'
-        VendorG           = 'VendorG/Product.Drivers.TDW1.VendorG'
-        VendorB       = 'VendorB/Product.Drivers.RTX.VendorB'
-    }
-
-    $suffix = if ($Subscriptions) { ".Subscriptions.Host" } else { ".Host" }
-    $processName = "$($map[$Driver])$suffix".Split('/')[-1]
-
-    if ($Command -eq 'Stop') {
-        $procs = Get-Process -Name $processName -ErrorAction SilentlyContinue
-        if ($procs) {
-            $procs | Stop-Process -Force
-            Write-Host "Stopped $processName"
-        } else {
-            Write-Host "No running process found for $processName"
-        }
-        return
-    }
-
-    $repoRoot = $PWD.Path
-    while ($repoRoot -and -not (Test-Path (Join-Path $repoRoot 'src\drivers'))) {
-        $parent = Split-Path $repoRoot -Parent
-        if ($parent -eq $repoRoot) { $repoRoot = $null; break }
-        $repoRoot = $parent
-    }
-    if (-not $repoRoot) {
-        Write-Error "Could not find repo root. Navigate to a directory within the Product.Drivers repo."
-        return
-    }
-
-    $base = "src/drivers/$($map[$Driver])"
-    $project = "$base$suffix"
-
-    Push-Location $repoRoot
-    try {
-        dotnet run --project $project
-    } finally {
-        Pop-Location
-    }
-}
-Set-Alias driver Start-Driver
-
 function Invoke-AdminTerminal {
     param(
         [string]$Command = ""
@@ -822,5 +582,8 @@ function Invoke-AdminTerminal {
     }
 }
 Set-Alias admin Invoke-AdminTerminal
+
+$WorkProfile = 'C:\git\dotfiles-work\Work.ps1'
+if (Test-Path $WorkProfile) { . $WorkProfile }
 
 Show-StartMessage
